@@ -255,38 +255,25 @@
     text-align:center;
   }
   .selected-item-body{ flex:1; min-width:0; }
-  .selected-item-family{
-    font-size:12px;
-    line-height:18px;
-    color:var(--gray-500);
-  }
   .selected-item-question{
     font-size:14px;
     line-height:20px;
     color:var(--gray-900);
   }
-  .item-actions{
-    flex:0 0 auto;
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-  }
-  .move-btn, .delete-btn{
+  .delete-btn{
     flex:0 0 20px;
-    height:16px;
+    height:20px;
     color:var(--gray-400);
-    font-size:12px;
-    line-height:16px;
+    font-size:14px;
+    line-height:20px;
     text-align:center;
     background:none;
     border:none;
     cursor:pointer;
     padding:0;
   }
-  .delete-btn{ height:20px; font-size:14px; line-height:20px; margin-top:2px; }
-  .move-btn:hover, .delete-btn:hover{ color:var(--gray-900); }
-  .move-btn:disabled{ color:var(--gray-300); cursor:not-allowed; }
-  .move-btn:focus-visible, .delete-btn:focus-visible{ outline:2px solid var(--gray-900); outline-offset:2px; }
+  .delete-btn:hover{ color:var(--gray-900); }
+  .delete-btn:focus-visible{ outline:2px solid var(--gray-900); outline-offset:2px; }
 
   .divider{
     border:none;
@@ -658,17 +645,6 @@
 
   toastUndoBtn.addEventListener("click", undoDelete);
 
-  function moveCard(uid, direction){
-    var idx = state.selected.findIndex(function(item){ return item.uid === uid; });
-    if (idx === -1) return;
-    var newIdx = idx + direction;
-    if (newIdx < 0 || newIdx >= state.selected.length) return;
-    var tmp = state.selected[idx];
-    state.selected[idx] = state.selected[newIdx];
-    state.selected[newIdx] = tmp;
-    renderSelectedList();
-  }
-
   function reorder(fromUid, toUid){
     if (fromUid === toUid) return;
     var fromIdx = state.selected.findIndex(function(item){ return item.uid === fromUid; });
@@ -691,32 +667,8 @@
       '<div class="drag-handle" aria-hidden="true">⠿</div>' +
       '<div class="seq-badge">' + (index + 1) + '</div>' +
       '<div class="selected-item-body">' +
-        '<div class="selected-item-family">' + meta.family + ' · ' + meta.method + '</div>' +
         '<div class="selected-item-question">' + meta.question + '</div>' +
       '</div>';
-
-    var actions = document.createElement("div");
-    actions.className = "item-actions";
-
-    var upBtn = document.createElement("button");
-    upBtn.type = "button";
-    upBtn.className = "move-btn";
-    upBtn.setAttribute("aria-label", "把「" + label + "」上移一位");
-    upBtn.textContent = "▲";
-    upBtn.disabled = index === 0;
-    upBtn.addEventListener("click", function(){ moveCard(item.uid, -1); });
-    actions.appendChild(upBtn);
-
-    var downBtn = document.createElement("button");
-    downBtn.type = "button";
-    downBtn.className = "move-btn";
-    downBtn.setAttribute("aria-label", "把「" + label + "」下移一位");
-    downBtn.textContent = "▼";
-    downBtn.disabled = index === state.selected.length - 1;
-    downBtn.addEventListener("click", function(){ moveCard(item.uid, 1); });
-    actions.appendChild(downBtn);
-
-    row.appendChild(actions);
 
     var delBtn = document.createElement("button");
     delBtn.type = "button";
@@ -798,7 +750,6 @@
       row.innerHTML =
         '<div class="seq-badge">' + (index + 1) + '</div>' +
         '<div class="selected-item-body">' +
-          '<div class="selected-item-family">' + meta.family + ' · ' + meta.method + '</div>' +
           '<div class="selected-item-question">' + meta.question + '</div>' +
         '</div>';
       countdownOrderEl.appendChild(row);
