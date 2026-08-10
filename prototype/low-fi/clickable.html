@@ -25,27 +25,35 @@
     background:#E8E8E8;
     padding:24px 0 64px;
   }
-  .meta{
+  .app-header{
     max-width:1440px;
     margin:0 auto 16px;
+    height:64px;
     padding:0 24px;
-    font-size:12px;
-    line-height:20px;
-    color:var(--gray-700);
-  }
-  .meta a{ color:var(--gray-700); }
-  .limits{
-    max-width:1440px;
-    margin:0 auto 16px;
-    padding:12px 16px;
-    font-size:12px;
-    line-height:20px;
-    color:var(--gray-700);
-    background:repeating-linear-gradient(45deg, var(--gray-050), var(--gray-050) 10px, var(--gray-200) 10px, var(--gray-200) 20px);
-    border:1px solid var(--gray-400);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border:1px dashed var(--gray-400);
     border-radius:6px;
+    background:var(--gray-050);
   }
-  .limits b{ color:var(--gray-900); }
+  .header-placeholder{
+    font-size:14px;
+    line-height:22px;
+    color:var(--gray-500);
+  }
+  .header-nav-placeholder{
+    width:200px;
+    height:32px;
+    border:1px dashed var(--gray-400);
+    border-radius:4px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    line-height:18px;
+    color:var(--gray-400);
+  }
 
   .app{
     max-width:1440px;
@@ -347,15 +355,10 @@
 </head>
 <body>
 
-<div class="meta">
-  可点击低保真原型 · 即兴演讲训练工具 &nbsp;|&nbsp; 灰度低保真，不含品牌视觉，可直接点击体验 &nbsp;|&nbsp;
-  依据 <a href="../../docs/PRD-即兴演讲训练工具.md">PRD-即兴演讲训练工具.md</a> 核心流程搭建 &nbsp;|&nbsp;
-  静态标注版见 <a href="index.html">index.html</a>
-</div>
-<div class="limits">
-  <b>已确认的 MVP 范围（非临时假设）：</b>
-  倒计时结束不做提示音，计时到 0 直接自动返回选卡面板（已选卡片保留，可直接调整后再开始）；刷新页面会重置所有已选卡片和话题，不做历史记录/本地持久化。
-</div>
+<header class="app-header">
+  <div class="header-placeholder">产品名称占位</div>
+  <div class="header-nav-placeholder">导航占位</div>
+</header>
 
 <div class="app">
   <div class="layout">
