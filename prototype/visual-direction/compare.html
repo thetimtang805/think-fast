@@ -20,10 +20,10 @@
     color:#595959;
   }
   .columns{
-    max-width:1840px;
+    max-width:2200px;
     margin:0 auto;
     display:grid;
-    grid-template-columns:repeat(4, 1fr);
+    grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));
     gap:20px;
     align-items:start;
   }
@@ -309,6 +309,85 @@
   .direction-d .stage-number::after{
     content:" ✦";
   }
+
+  /* ---------- direction E: 参考图反推（咖啡馆小票 / 打字机双色） ---------- */
+  .direction-e{
+    --font:"JetBrains Mono","IBM Plex Mono","Space Mono","SF Mono",Consolas,
+           "PingFang SC","Microsoft YaHei",monospace;
+    --page-bg:#FAF3E6;
+    --page-border:#4A1B12;
+    --surface:#FFFBF3;
+    --border:#4A1B12;
+    --text:#4A1B12;
+    --text-secondary:#8A6656;
+    --radius:4px;
+    --radius-lg:14px;
+    --accent:#4A1B12;
+    --on-accent:#FAF3E6;
+    --weight-strong:700;
+    --selected-bg:#FFFBF3;
+    --selected-text:#4A1B12;
+    --item-bg:#FFFBF3;
+    --stage-bg:#4A1B12;
+    --stage-text:#FAF3E6;
+    --stage-caption:#FF6B54;
+  }
+  .direction-e .card{
+    position:relative;
+    border-width:1px;
+  }
+  .direction-e .card::before,
+  .direction-e .card::after{
+    content:"";
+    position:absolute;
+    top:-4px;
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#4A1B12;
+    opacity:0.55;
+  }
+  .direction-e .card::before{ left:10px; }
+  .direction-e .card::after{ right:10px; }
+  .direction-e .card.selected{
+    border-width:2px;
+  }
+  .direction-e .card.selected::after{
+    background:#FF6B54;
+    opacity:1;
+    width:8px;
+    height:8px;
+    top:-5px;
+  }
+  .direction-e .topic-dot{
+    color:#FF6B54;
+    margin-right:6px;
+  }
+  .direction-e .receipt{
+    background:var(--stage-bg);
+    color:var(--stage-text);
+    border-radius:var(--radius-lg);
+    padding:14px 14px 4px;
+    margin-bottom:16px;
+  }
+  .direction-e .receipt-item{
+    display:flex;
+    gap:8px;
+    font-size:13px;
+    padding:8px 0;
+    border-bottom:1px dashed rgba(250,243,230,0.35);
+  }
+  .direction-e .receipt-item:last-of-type{ border-bottom:none; }
+  .direction-e .receipt-seq{ color:#FF6B54; font-weight:700; }
+  .direction-e .receipt-foot{
+    text-align:center;
+    font-size:11px;
+    letter-spacing:2px;
+    padding:10px 0 6px;
+    color:rgba(250,243,230,0.6);
+    border-top:3px double rgba(250,243,230,0.35);
+    margin-top:4px;
+  }
 </style>
 </head>
 <body>
@@ -429,6 +508,40 @@
         <div class="panel-title">已选卡片</div>
         <div class="selected-item"><span class="seq">1</span>为什么？只留一个理由，是什么？</div>
         <div class="selected-item"><span class="seq">2</span>不做，或者搞砸了，最坏会怎样？</div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <button class="start-btn">开始练习</button>
+        <div class="stage">
+          <div class="stage-number">01:00</div>
+          <div class="stage-caption">倒计时进行中</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="col-label">方向 E · 参考图反推（咖啡馆小票）</p>
+    <p class="col-sub">从你发的 ALt. 参考图拆出来的：奶油底 + 酒红墨色的双色系统，等宽字体，一个珊瑚红点当唯一强调色。已选卡片改成"小票"——深色底、虚线分割、条形码式收尾，呼应"点单组成一场演讲"这个动作。详细拆解见 <a href="design-system-from-reference.md">design-system-from-reference.md</a>。</p>
+    <div class="demo direction-e">
+      <div class="topic-bar">
+        <div class="topic-input"><span class="topic-dot">●</span>甜汤圆比咸汤圆好吃</div>
+        <button class="btn">随机生成</button>
+      </div>
+      <div class="panel">
+        <div class="family-name">溯因 · Why → Abstract</div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <hr class="divider" />
+        <div class="panel-title">已选卡片</div>
+        <div class="receipt">
+          <div class="receipt-item"><span class="receipt-seq">01</span>为什么？只留一个理由，是什么？</div>
+          <div class="receipt-item"><span class="receipt-seq">02</span>不做，或者搞砸了，最坏会怎样？</div>
+          <div class="receipt-foot">· · · 共 2 张卡片 · · ·</div>
+        </div>
         <div class="timer-row">练习时长
           <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
         </div>
