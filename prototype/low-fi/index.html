@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>低保真原型 · 即兴演讲训练工具</title>
+<style>
+  :root{
+    --gray-900:#1F1F1F;
+    --gray-700:#595959;
+    --gray-500:#8C8C8C;
+    --gray-400:#BFBFBF;
+    --gray-300:#D9D9D9;
+    --gray-200:#F0F0F0;
+    --gray-100:#F5F5F5;
+    --gray-050:#FAFAFA;
+    --white:#FFFFFF;
+    --black:#000000;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"PingFang SC","Microsoft YaHei","HarmonyOS Sans","Noto Sans SC",
+                "SF Pro","Segoe UI",Arial,sans-serif;
+    color:var(--gray-900);
+    background:#E8E8E8;
+    padding:40px 0;
+  }
+  .meta{
+    max-width:1440px;
+    margin:0 auto 16px;
+    padding:0 24px;
+    font-size:12px;
+    line-height:20px;
+    color:var(--gray-700);
+  }
+  .board{
+    width:1440px;
+    min-height:900px;
+    margin:0 auto 56px;
+    background:var(--gray-100);
+    border:1px solid var(--gray-300);
+    padding:24px;
+  }
+  .board-label{
+    font-size:12px;
+    line-height:20px;
+    color:var(--white);
+    background:var(--gray-900);
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:4px;
+    margin-bottom:16px;
+  }
+  .annotation{
+    font-size:12px;
+    line-height:20px;
+    color:var(--gray-700);
+    background:var(--gray-050);
+    border:1px solid var(--gray-300);
+    border-radius:6px;
+    padding:12px 16px;
+    margin-bottom:24px;
+  }
+  .annotation b{color:var(--gray-900);}
+  .annotation.tbd{
+    background:repeating-linear-gradient(45deg, var(--gray-050), var(--gray-050) 10px, var(--gray-200) 10px, var(--gray-200) 20px);
+    border-color:var(--gray-400);
+  }
+
+  .layout{
+    display:flex;
+    gap:24px;
+    align-items:flex-start;
+  }
+  .col-left{ flex:0 0 60%; }
+  .col-right{ flex:0 0 calc(40% - 24px); }
+
+  .panel{
+    background:var(--white);
+    border:1px solid var(--gray-300);
+    border-radius:8px;
+    padding:16px;
+  }
+
+  /* 话题生成器 */
+  .topic-bar{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .topic-input{
+    flex:1;
+    height:40px;
+    border:1px solid var(--gray-300);
+    border-radius:6px;
+    background:var(--white);
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    font-size:14px;
+    line-height:22px;
+    color:var(--gray-900);
+  }
+  .topic-input.placeholder{ color:var(--gray-400); }
+  .btn{
+    height:40px;
+    padding:0 16px;
+    border-radius:6px;
+    font-size:14px;
+    line-height:22px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--gray-300);
+    background:var(--white);
+    color:var(--gray-900);
+    white-space:nowrap;
+  }
+  .btn-primary{
+    background:var(--gray-900);
+    color:var(--white);
+    border-color:var(--gray-900);
+  }
+  .btn-primary.disabled{
+    background:var(--gray-200);
+    color:var(--gray-400);
+    border-color:var(--gray-300);
+  }
+  .btn-sm{ height:32px; padding:0 12px; font-size:14px; }
+
+  /* 卡片墙 */
+  .family-row{
+    display:flex;
+    gap:12px;
+    padding:12px 0;
+    border-bottom:1px solid var(--gray-200);
+  }
+  .family-row:last-child{ border-bottom:none; }
+  .family-label{
+    flex:0 0 96px;
+    padding-top:8px;
+  }
+  .family-name{
+    font-size:14px;
+    line-height:22px;
+    font-weight:600;
+    color:var(--gray-900);
+  }
+  .family-sub{
+    font-size:12px;
+    line-height:18px;
+    color:var(--gray-500);
+  }
+  .family-cards{
+    flex:1;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+  }
+  .card{
+    border:1px solid var(--gray-300);
+    border-radius:6px;
+    background:var(--white);
+    padding:10px 12px;
+    min-height:88px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    position:relative;
+  }
+  .card-method{
+    font-size:12px;
+    line-height:18px;
+    color:var(--gray-500);
+  }
+  .card-question{
+    font-size:14px;
+    line-height:20px;
+    color:var(--gray-900);
+  }
+  .card.selected{
+    background:var(--gray-200);
+    border-color:var(--gray-900);
+  }
+  .card-badge{
+    position:absolute;
+    top:8px;
+    right:8px;
+    font-size:12px;
+    line-height:18px;
+    color:var(--white);
+    background:var(--gray-900);
+    border-radius:9px;
+    padding:0 6px;
+  }
+
+  /* 已选面板 */
+  .panel-title{
+    font-size:16px;
+    line-height:24px;
+    font-weight:600;
+    margin:0 0 12px;
+  }
+  .empty-state{
+    border:1px dashed var(--gray-400);
+    border-radius:6px;
+    padding:40px 16px;
+    text-align:center;
+    color:var(--gray-500);
+    font-size:14px;
+    line-height:22px;
+    margin-bottom:16px;
+  }
+  .selected-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .selected-item{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    border:1px solid var(--gray-300);
+    border-radius:6px;
+    padding:8px 10px;
+    background:var(--white);
+  }
+  .drag-handle{
+    flex:0 0 16px;
+    color:var(--gray-400);
+    font-size:14px;
+    line-height:20px;
+    padding-top:2px;
+  }
+  .seq-badge{
+    flex:0 0 20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--gray-900);
+    color:var(--white);
+    font-size:12px;
+    line-height:20px;
+    text-align:center;
+  }
+  .selected-item-body{ flex:1; }
+  .selected-item-family{
+    font-size:12px;
+    line-height:18px;
+    color:var(--gray-500);
+  }
+  .selected-item-question{
+    font-size:14px;
+    line-height:20px;
+    color:var(--gray-900);
+  }
+  .delete-icon{
+    flex:0 0 20px;
+    color:var(--gray-400);
+    font-size:14px;
+    line-height:20px;
+    text-align:center;
+  }
+
+  .divider{
+    border:none;
+    border-top:1px solid var(--gray-200);
+    margin:16px 0;
+  }
+  .timer-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .timer-label{
+    font-size:14px;
+    line-height:22px;
+    color:var(--gray-700);
+    margin-right:4px;
+  }
+  .segment{
+    display:flex;
+    border:1px solid var(--gray-300);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .segment-item{
+    height:32px;
+    padding:0 16px;
+    font-size:14px;
+    line-height:32px;
+    color:var(--gray-700);
+    border-right:1px solid var(--gray-300);
+    background:var(--white);
+  }
+  .segment-item:last-child{ border-right:none; }
+  .segment-item.active{
+    background:var(--gray-900);
+    color:var(--white);
+  }
+
+  /* 倒计时进行中占位 */
+  .countdown-stage{
+    text-align:center;
+    padding:64px 24px;
+  }
+  .countdown-number{
+    font-size:56px;
+    line-height:64px;
+    font-weight:700;
+    color:var(--gray-900);
+    margin-bottom:8px;
+  }
+  .countdown-caption{
+    font-size:14px;
+    line-height:22px;
+    color:var(--gray-500);
+    margin-bottom:24px;
+  }
+  .countdown-order{
+    display:inline-flex;
+    gap:8px;
+    margin-bottom:32px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .countdown-order .seq-badge{ display:inline-flex; align-items:center; justify-content:center; }
+</style>
+</head>
+<body>
+
+<div class="meta">
+  低保真原型 · 即兴演讲训练工具 &nbsp;|&nbsp; 画板 1440 × 900 &nbsp;|&nbsp; 灰度低保真，不含品牌视觉 &nbsp;|&nbsp;
+  依据 <a href="../../docs/PRD-即兴演讲训练工具.md">PRD-即兴演讲训练工具.md</a> 核心流程搭建，单页应用，无独立导航结构
+</div>
+
+<!-- ============ 状态 A：默认状态（未选任何卡片） ============ -->
+<div class="board">
+  <span class="board-label">状态 A · 默认状态（尚未选择任何卡片）</span>
+  <div class="annotation">
+    <b>页面目标：</b>用户抽一个话题，浏览 18 张卡片，尚未做任何选择。&nbsp;
+    <b>入口：</b>唯一页面，打开即所见。&nbsp;
+    <b>操作：</b>点击「随机生成」抽话题（可重复点击换一个）；点击任意卡片将其加入右侧已选面板。&nbsp;
+    <b>右侧空状态：</b>未选任何卡片时展示提示文案，「开始练习」按钮为禁用状态。
+  </div>
+
+  <div class="layout">
+    <div class="col-left">
+      <div class="topic-bar">
+        <div class="topic-input placeholder">点击右侧按钮，随机抽一个话题</div>
+        <button class="btn btn-primary">随机生成</button>
+      </div>
+
+      <div class="panel">
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">溯因</div>
+            <div class="family-sub">Why → Abstract</div>
+          </div>
+          <div class="family-cards">
+            <div class="card"><div class="card-method">直接追问法</div><div class="card-question">为什么？只留一个理由，是什么？</div></div>
+            <div class="card"><div class="card-method">连续追问法</div><div class="card-question">有人继续追问"为什么"，你还能往下说吗？</div></div>
+            <div class="card"><div class="card-method">本质提炼法</div><div class="card-question">归根到底，最本质的原因是什么？</div></div>
+          </div>
+        </div>
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">推果</div>
+            <div class="family-sub">Why → Concrete, So What</div>
+          </div>
+          <div class="family-cards">
+            <div class="card"><div class="card-method">直接推导法</div><div class="card-question">所以呢，会发生什么？</div></div>
+            <div class="card"><div class="card-method">连锁反应法</div><div class="card-question">这之后，还会引发什么连锁反应？</div></div>
+            <div class="card"><div class="card-method">最坏情况法</div><div class="card-question">不做，或者搞砸了，最坏会怎样？</div></div>
+          </div>
+        </div>
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">提炼</div>
+            <div class="family-sub">How → Abstract</div>
+          </div>
+          <div class="family-cards">
+            <div class="card"><div class="card-method">一句话概括法</div><div class="card-question">一句话概括你的策略是什么？</div></div>
+            <div class="card"><div class="card-method">可迁移性检验法</div><div class="card-question">能不能提炼成一条反复能用的方法？</div></div>
+            <div class="card"><div class="card-method">边界测试法</div><div class="card-question">这个方法在什么情况下会失效？</div></div>
+          </div>
+        </div>
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">拆步</div>
+            <div class="family-sub">How → Concrete</div>
+          </div>
+          <div class="family-cards">
+            <div class="card"><div class="card-method">起点法</div><div class="card-question">迈出的最小一步是什么？</div></div>
+            <div class="card"><div class="card-method">全流程列举法</div><div class="card-question">完整的方法是怎么样的？一点一点说。</div></div>
+            <div class="card"><div class="card-method">新手风险法</div><div class="card-question">换个新手来做，哪一步最需要提醒？</div></div>
+          </div>
+        </div>
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">复现</div>
+            <div class="family-sub">What → Concrete</div>
+          </div>
+          <div class="family-cards">
+            <div class="card"><div class="card-method">场景还原法（5W1H）</div><div class="card-question">当时具体发生了什么？谁、在哪、什么时候、做了什么？</div></div>
+            <div class="card"><div class="card-method">高光时刻法</div><div class="card-question">有没有哪个场景画面，特别让人印象深刻？</div></div>
+            <div class="card"><div class="card-method">对话/动作还原法</div><div class="card-question">有谁说了什么、做了什么，让你现在还记得？</div></div>
+          </div>
+        </div>
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">定性</div>
+            <div class="family-sub">What → Abstract</div>
+          </div>
+          <div class="family-cards">
+            <div class="card"><div class="card-method">归类法</div><div class="card-question">说白了，这就是什么？</div></div>
+            <div class="card"><div class="card-method">对比法</div><div class="card-question">最容易被拿来比较的是什么？差别在哪？</div></div>
+            <div class="card"><div class="card-method">类比法</div><div class="card-question">换成大白话，你会怎么形容？</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="panel">
+        <div class="panel-title">已选卡片</div>
+        <div class="empty-state">还没有选择卡片<br/>点击左侧卡片，开始组织你的思路</div>
+        <hr class="divider" />
+        <div class="timer-row">
+          <span class="timer-label">练习时长</span>
+          <div class="segment">
+            <div class="segment-item active">1 分钟</div>
+            <div class="segment-item">2 分钟</div>
+            <div class="segment-item">3 分钟</div>
+          </div>
+        </div>
+        <button class="btn btn-primary disabled" style="width:100%;">开始练习</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 状态 B：已选卡片 + 倒计时设置 ============ -->
+<div class="board">
+  <span class="board-label">状态 B · 已选若干卡片，准备开始练习</span>
+  <div class="annotation">
+    <b>触发：</b>用户点击了 4 张卡片（其中"复现·场景还原法"被重复点击 2 次）。&nbsp;
+    <b>已选面板：</b>每项显示序号、家族/方法名、问题文案；支持拖拽调整顺序（序号联动重排）和删除。&nbsp;
+    <b>源卡片墙：</b>被选过的卡片显示"已选"底色标识；本图用数字角标表达被选次数，<b>具体是否需要显示次数、还是统一一种标识，见下方待确认标注</b>。&nbsp;
+    <b>操作：</b>已选 ≥1 张卡片时，「开始练习」按钮从禁用变为可点击；点击后进入状态 C。
+  </div>
+  <div class="annotation tbd">
+    <b>待确认（不阻塞低保真，进入开发前需要拍板）：</b>重复选择同一张卡片时，源卡片区要不要显示"已选 N 次"角标（如本图），还是保持统一的单一"已选"底色标识，不做计数展示。
+  </div>
+
+  <div class="layout">
+    <div class="col-left">
+      <div class="topic-bar">
+        <div class="topic-input">甜汤圆比咸汤圆好吃</div>
+        <button class="btn btn-primary">随机生成</button>
+      </div>
+
+      <div class="panel">
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">溯因</div>
+            <div class="family-sub">Why → Abstract</div>
+          </div>
+          <div class="family-cards">
+            <div class="card selected"><div class="card-method">直接追问法</div><div class="card-question">为什么？只留一个理由，是什么？</div></div>
+            <div class="card"><div class="card-method">连续追问法</div><div class="card-question">有人继续追问"为什么"，你还能往下说吗？</div></div>
+            <div class="card"><div class="card-method">本质提炼法</div><div class="card-question">归根到底，最本质的原因是什么？</div></div>
+          </div>
+        </div>
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">推果</div>
+            <div class="family-sub">Why → Concrete, So What</div>
+          </div>
+          <div class="family-cards">
+            <div class="card"><div class="card-method">直接推导法</div><div class="card-question">所以呢，会发生什么？</div></div>
+            <div class="card"><div class="card-method">连锁反应法</div><div class="card-question">这之后，还会引发什么连锁反应？</div></div>
+            <div class="card"><div class="card-method">最坏情况法</div><div class="card-question">不做，或者搞砸了，最坏会怎样？</div></div>
+          </div>
+        </div>
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">提炼</div>
+            <div class="family-sub">How → Abstract</div>
+          </div>
+          <div class="family-cards">
+            <div class="card"><div class="card-method">一句话概括法</div><div class="card-question">一句话概括你的策略是什么？</div></div>
+            <div class="card"><div class="card-method">可迁移性检验法</div><div class="card-question">能不能提炼成一条反复能用的方法？</div></div>
+            <div class="card"><div class="card-method">边界测试法</div><div class="card-question">这个方法在什么情况下会失效？</div></div>
+          </div>
+        </div>
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">拆步</div>
+            <div class="family-sub">How → Concrete</div>
+          </div>
+          <div class="family-cards">
+            <div class="card"><div class="card-method">起点法</div><div class="card-question">迈出的最小一步是什么？</div></div>
+            <div class="card"><div class="card-method">全流程列举法</div><div class="card-question">完整的方法是怎么样的？一点一点说。</div></div>
+            <div class="card selected"><div class="card-method">新手风险法</div><div class="card-question">换个新手来做，哪一步最需要提醒？</div></div>
+          </div>
+        </div>
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">复现</div>
+            <div class="family-sub">What → Concrete</div>
+          </div>
+          <div class="family-cards">
+            <div class="card selected">
+              <div class="card-badge">×2</div>
+              <div class="card-method">场景还原法（5W1H）</div><div class="card-question">当时具体发生了什么？谁、在哪、什么时候、做了什么？</div>
+            </div>
+            <div class="card"><div class="card-method">高光时刻法</div><div class="card-question">有没有哪个场景画面，特别让人印象深刻？</div></div>
+            <div class="card"><div class="card-method">对话/动作还原法</div><div class="card-question">有谁说了什么、做了什么，让你现在还记得？</div></div>
+          </div>
+        </div>
+        <div class="family-row">
+          <div class="family-label">
+            <div class="family-name">定性</div>
+            <div class="family-sub">What → Abstract</div>
+          </div>
+          <div class="family-cards">
+            <div class="card"><div class="card-method">归类法</div><div class="card-question">说白了，这就是什么？</div></div>
+            <div class="card"><div class="card-method">对比法</div><div class="card-question">最容易被拿来比较的是什么？差别在哪？</div></div>
+            <div class="card"><div class="card-method">类比法</div><div class="card-question">换成大白话，你会怎么形容？</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-right">
+      <div class="panel">
+        <div class="panel-title">已选卡片</div>
+        <div class="selected-list">
+          <div class="selected-item">
+            <div class="drag-handle">⠿</div>
+            <div class="seq-badge">1</div>
+            <div class="selected-item-body">
+              <div class="selected-item-family">溯因 · 直接追问法</div>
+              <div class="selected-item-question">为什么？只留一个理由，是什么？</div>
+            </div>
+            <div class="delete-icon">✕</div>
+          </div>
+          <div class="selected-item">
+            <div class="drag-handle">⠿</div>
+            <div class="seq-badge">2</div>
+            <div class="selected-item-body">
+              <div class="selected-item-family">复现 · 场景还原法</div>
+              <div class="selected-item-question">当时具体发生了什么？谁、在哪、什么时候、做了什么？</div>
+            </div>
+            <div class="delete-icon">✕</div>
+          </div>
+          <div class="selected-item">
+            <div class="drag-handle">⠿</div>
+            <div class="seq-badge">3</div>
+            <div class="selected-item-body">
+              <div class="selected-item-family">复现 · 场景还原法</div>
+              <div class="selected-item-question">（重复添加，同一张卡再来一次）</div>
+            </div>
+            <div class="delete-icon">✕</div>
+          </div>
+          <div class="selected-item">
+            <div class="drag-handle">⠿</div>
+            <div class="seq-badge">4</div>
+            <div class="selected-item-body">
+              <div class="selected-item-family">拆步 · 新手风险法</div>
+              <div class="selected-item-question">换个新手来做，哪一步最需要提醒？</div>
+            </div>
+            <div class="delete-icon">✕</div>
+          </div>
+        </div>
+        <hr class="divider" />
+        <div class="timer-row">
+          <span class="timer-label">练习时长</span>
+          <div class="segment">
+            <div class="segment-item">1 分钟</div>
+            <div class="segment-item active">2 分钟</div>
+            <div class="segment-item">3 分钟</div>
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;">开始练习</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 状态 C：倒计时进行中（占位，待确认） ============ -->
+<div class="board">
+  <span class="board-label">状态 C · 倒计时进行中（占位，细节待确认）</span>
+  <div class="annotation tbd">
+    <b>此状态尚未在 PRD 里拍板，以下是最小占位表达，不代表最终方案：</b>
+    是否仍展示已选卡片列表、结束后有没有提示音/自动停止/可否回看，这些都在
+    <a href="../../docs/PRD-即兴演讲训练工具.md">PRD</a> 的"待确认"清单里，
+    需要你确认后再细化这个状态。
+  </div>
+
+  <div class="layout">
+    <div class="col-left" style="flex:1;">
+      <div class="panel countdown-stage">
+        <div class="countdown-number">01:47</div>
+        <div class="countdown-caption">倒计时进行中 · 按下方顺序即兴讲述</div>
+        <div class="countdown-order">
+          <span class="seq-badge">1</span>
+          <span class="seq-badge">2</span>
+          <span class="seq-badge">3</span>
+          <span class="seq-badge">4</span>
+        </div>
+        <div>
+          <button class="btn btn-sm">提前结束</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
