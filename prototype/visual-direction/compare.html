@@ -14,16 +14,16 @@
     padding:32px 24px 64px;
   }
   .page-title{
-    max-width:1400px;
+    max-width:1840px;
     margin:0 auto 24px;
     font-size:13px;
     color:#595959;
   }
   .columns{
-    max-width:1400px;
+    max-width:1840px;
     margin:0 auto;
     display:grid;
-    grid-template-columns:repeat(3, 1fr);
+    grid-template-columns:repeat(4, 1fr);
     gap:20px;
     align-items:start;
   }
@@ -268,6 +268,47 @@
     --stage-text:#F2A93B;
     --stage-caption:#8C97A6;
   }
+
+  /* ---------- direction D: 元气实验室（playful / 年轻 / 好玩） ---------- */
+  .direction-d{
+    --font:"PingFang SC","Microsoft YaHei","SF Pro","Segoe UI",Arial,sans-serif;
+    --page-bg:#FFF7E8;
+    --page-border:#FFD873;
+    --surface:#FFFFFF;
+    --border:#FFE1A0;
+    --text:#2B2118;
+    --text-secondary:#9C8560;
+    --radius:16px;
+    --radius-lg:20px;
+    --accent:#FF4D8D;
+    --on-accent:#FFFFFF;
+    --weight-strong:700;
+    --selected-bg:#FFF0F6;
+    --selected-text:#D6206A;
+    --item-bg:#FFFFFF;
+    --stage-bg:#17C4B0;
+    --stage-text:#FFFFFF;
+    --stage-caption:#D3FBF4;
+  }
+  .direction-d .btn,
+  .direction-d .start-btn{
+    border-radius:999px;
+  }
+  .direction-d .card.selected{
+    border:2px dashed var(--accent);
+    transform:rotate(-1deg);
+  }
+  .direction-d .seq{
+    font-weight:700;
+  }
+  .direction-d .selected-item:nth-child(odd) .seq{ background:#FFC93C; color:#5C3F00; }
+  .direction-d .selected-item:nth-child(even) .seq{ background:#17C4B0; color:#003C36; }
+  .direction-d .segment span.active{
+    border-radius:999px;
+  }
+  .direction-d .stage-number::after{
+    content:" ✦";
+  }
 </style>
 </head>
 <body>
@@ -364,6 +405,37 @@
         <div class="stage">
           <div class="stage-number">01:00</div>
           <div class="stage-caption">倒计时进行中 · 舞台模式</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="col-label">方向 D · 元气实验室</p>
+    <p class="col-sub">奶油黄底 + 亮粉强调色，大圆角、胶囊按钮。选中的卡片用虚线框 + 微微倾斜，像贴纸一样"跳出来"；已选卡片的序号轮流用黄/青提色，故意不整齐、有点闹。</p>
+    <div class="demo direction-d">
+      <div class="topic-bar">
+        <div class="topic-input">甜汤圆比咸汤圆好吃</div>
+        <button class="btn">随机生成</button>
+      </div>
+      <div class="panel">
+        <div class="family-name">溯因 · Why → Abstract</div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <hr class="divider" />
+        <div class="panel-title">已选卡片</div>
+        <div class="selected-item"><span class="seq">1</span>为什么？只留一个理由，是什么？</div>
+        <div class="selected-item"><span class="seq">2</span>不做，或者搞砸了，最坏会怎样？</div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <button class="start-btn">开始练习</button>
+        <div class="stage">
+          <div class="stage-number">01:00</div>
+          <div class="stage-caption">倒计时进行中</div>
         </div>
       </div>
     </div>
