@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>视觉方向对比 · 即兴演讲训练工具</title>
+<style>
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"PingFang SC","Microsoft YaHei","HarmonyOS Sans","Noto Sans SC",
+                "SF Pro","Segoe UI",Arial,sans-serif;
+    background:#E8E8E8;
+    padding:32px 24px 64px;
+  }
+  .page-title{
+    max-width:1400px;
+    margin:0 auto 24px;
+    font-size:13px;
+    color:#595959;
+  }
+  .columns{
+    max-width:1400px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+    align-items:start;
+  }
+  .col-label{
+    font-size:15px;
+    font-weight:600;
+    margin:0 0 4px;
+    color:#1F1F1F;
+  }
+  .col-sub{
+    font-size:12px;
+    color:#8C8C8C;
+    margin:0 0 12px;
+    line-height:18px;
+  }
+
+  /* ---------- shared component skeleton, themed via CSS variables ---------- */
+  .demo{
+    background:var(--page-bg);
+    border:1px solid var(--page-border);
+    border-radius:10px;
+    padding:20px;
+    font-family:var(--font);
+  }
+  .demo .topic-bar{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .demo .topic-input{
+    flex:1;
+    height:40px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:var(--surface);
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    font-size:14px;
+    color:var(--text);
+  }
+  .demo .btn{
+    height:40px;
+    padding:0 16px;
+    border-radius:var(--radius);
+    font-size:14px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--accent);
+    background:var(--accent);
+    color:var(--on-accent);
+    white-space:nowrap;
+    font-weight:var(--weight-strong);
+  }
+  .demo .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:14px;
+  }
+  .demo .family-name{
+    font-size:13px;
+    font-weight:var(--weight-strong);
+    color:var(--text);
+    margin-bottom:8px;
+  }
+  .demo .cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .demo .card{
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:var(--surface);
+    padding:10px;
+    font-size:13px;
+    line-height:18px;
+    color:var(--text);
+    min-height:64px;
+  }
+  .demo .card.selected{
+    background:var(--selected-bg);
+    border-color:var(--accent);
+    color:var(--selected-text);
+  }
+  .demo .divider{
+    border:none;
+    border-top:1px solid var(--border);
+    margin:14px 0;
+  }
+  .demo .panel-title{
+    font-size:14px;
+    font-weight:var(--weight-strong);
+    margin:0 0 10px;
+    color:var(--text);
+  }
+  .demo .selected-item{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:8px 10px;
+    background:var(--item-bg);
+    margin-bottom:8px;
+    font-size:13px;
+    color:var(--text);
+  }
+  .demo .seq{
+    flex:0 0 18px;
+    height:18px;
+    border-radius:50%;
+    background:var(--accent);
+    color:var(--on-accent);
+    font-size:11px;
+    line-height:18px;
+    text-align:center;
+  }
+  .demo .timer-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:14px;
+    font-size:13px;
+    color:var(--text-secondary);
+  }
+  .demo .segment{
+    display:flex;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .demo .segment span{
+    height:28px;
+    padding:0 12px;
+    font-size:13px;
+    line-height:28px;
+    color:var(--text-secondary);
+    border-right:1px solid var(--border);
+  }
+  .demo .segment span:last-child{ border-right:none; }
+  .demo .segment span.active{
+    background:var(--accent);
+    color:var(--on-accent);
+  }
+  .demo .start-btn{
+    width:100%;
+    height:40px;
+    border-radius:var(--radius);
+    background:var(--accent);
+    color:var(--on-accent);
+    border:none;
+    font-size:14px;
+    font-weight:var(--weight-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .demo .stage{
+    margin-top:16px;
+    background:var(--stage-bg);
+    border-radius:var(--radius-lg);
+    padding:18px;
+    text-align:center;
+  }
+  .demo .stage-number{
+    font-size:32px;
+    font-weight:700;
+    color:var(--stage-text);
+    margin-bottom:4px;
+  }
+  .demo .stage-caption{
+    font-size:12px;
+    color:var(--stage-caption);
+  }
+
+  /* ---------- direction A: 克制工具 ---------- */
+  .direction-a{
+    --font:"PingFang SC","Microsoft YaHei","SF Pro","Segoe UI",Arial,sans-serif;
+    --page-bg:#F5F5F5;
+    --page-border:#D9D9D9;
+    --surface:#FFFFFF;
+    --border:#D9D9D9;
+    --text:#1F1F1F;
+    --text-secondary:#595959;
+    --radius:6px;
+    --radius-lg:8px;
+    --accent:#1F1F1F;
+    --on-accent:#FFFFFF;
+    --weight-strong:600;
+    --selected-bg:#F0F0F0;
+    --selected-text:#1F1F1F;
+    --item-bg:#FFFFFF;
+    --stage-bg:#1F1F1F;
+    --stage-text:#FFFFFF;
+    --stage-caption:#BFBFBF;
+  }
+
+  /* ---------- direction B: 温暖教练 ---------- */
+  .direction-b{
+    --font:"PingFang SC","Microsoft YaHei","SF Pro","Segoe UI",Arial,sans-serif;
+    --page-bg:#FBF7F2;
+    --page-border:#EFE3D4;
+    --surface:#FFFEFC;
+    --border:#EFE0CE;
+    --text:#3A2E22;
+    --text-secondary:#8A7A68;
+    --radius:12px;
+    --radius-lg:16px;
+    --accent:#D85A30;
+    --on-accent:#FFFFFF;
+    --weight-strong:600;
+    --selected-bg:#FBEAE2;
+    --selected-text:#99381D;
+    --item-bg:#FFFEFC;
+    --stage-bg:#D85A30;
+    --stage-text:#FFFFFF;
+    --stage-caption:#FBDCCB;
+  }
+
+  /* ---------- direction C: 沉浸舞台 ---------- */
+  .direction-c{
+    --font:"PingFang SC","Microsoft YaHei","SF Pro","Segoe UI",Arial,sans-serif;
+    --page-bg:#F5F5F5;
+    --page-border:#D9D9D9;
+    --surface:#FFFFFF;
+    --border:#D9D9D9;
+    --text:#1F1F1F;
+    --text-secondary:#595959;
+    --radius:6px;
+    --radius-lg:8px;
+    --accent:#0C447C;
+    --on-accent:#FFFFFF;
+    --weight-strong:600;
+    --selected-bg:#E6F1FB;
+    --selected-text:#0C447C;
+    --item-bg:#FFFFFF;
+    --stage-bg:#12181F;
+    --stage-text:#F2A93B;
+    --stage-caption:#8C97A6;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">视觉方向对比 · 即兴演讲训练工具 &nbsp;|&nbsp; 结构复用低保真原型，只替换视觉 token（色彩/圆角/字重），不改变信息结构</div>
+
+<div class="columns">
+
+  <div>
+    <p class="col-label">方向 A · 克制工具</p>
+    <p class="col-sub">纯黑白灰 + 一个几乎不加色的强调色。小圆角、细边框，信息密度优先——像一个正经的思考工具，不哄你，只是好用。</p>
+    <div class="demo direction-a">
+      <div class="topic-bar">
+        <div class="topic-input">甜汤圆比咸汤圆好吃</div>
+        <button class="btn">随机生成</button>
+      </div>
+      <div class="panel">
+        <div class="family-name">溯因 · Why → Abstract</div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <hr class="divider" />
+        <div class="panel-title">已选卡片</div>
+        <div class="selected-item"><span class="seq">1</span>为什么？只留一个理由，是什么？</div>
+        <div class="selected-item"><span class="seq">2</span>不做，或者搞砸了，最坏会怎样？</div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <button class="start-btn">开始练习</button>
+        <div class="stage">
+          <div class="stage-number">01:00</div>
+          <div class="stage-caption">倒计时进行中</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="col-label">方向 B · 温暖教练</p>
+    <p class="col-sub">暖白背景 + 珊瑚橙强调色，圆角更松弛。让"练习"这件事显得轻松、被鼓励，而不是一项任务。</p>
+    <div class="demo direction-b">
+      <div class="topic-bar">
+        <div class="topic-input">甜汤圆比咸汤圆好吃</div>
+        <button class="btn">随机生成</button>
+      </div>
+      <div class="panel">
+        <div class="family-name">溯因 · Why → Abstract</div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <hr class="divider" />
+        <div class="panel-title">已选卡片</div>
+        <div class="selected-item"><span class="seq">1</span>为什么？只留一个理由，是什么？</div>
+        <div class="selected-item"><span class="seq">2</span>不做，或者搞砸了，最坏会怎样？</div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <button class="start-btn">开始练习</button>
+        <div class="stage">
+          <div class="stage-number">01:00</div>
+          <div class="stage-caption">倒计时进行中</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="col-label">方向 C · 沉浸舞台</p>
+    <p class="col-sub">选卡阶段浅色克制（蓝作强调色），一进倒计时练习就切成深色"舞台"——上台前的仪式感切换，练习画面对比强烈、数字醒目。</p>
+    <div class="demo direction-c">
+      <div class="topic-bar">
+        <div class="topic-input">甜汤圆比咸汤圆好吃</div>
+        <button class="btn">随机生成</button>
+      </div>
+      <div class="panel">
+        <div class="family-name">溯因 · Why → Abstract</div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <hr class="divider" />
+        <div class="panel-title">已选卡片</div>
+        <div class="selected-item"><span class="seq">1</span>为什么？只留一个理由，是什么？</div>
+        <div class="selected-item"><span class="seq">2</span>不做，或者搞砸了，最坏会怎样？</div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <button class="start-btn">开始练习</button>
+        <div class="stage">
+          <div class="stage-number">01:00</div>
+          <div class="stage-caption">倒计时进行中 · 舞台模式</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
