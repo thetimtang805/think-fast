@@ -342,13 +342,6 @@
     gap:8px;
     justify-content:center;
   }
-  .ended-title{
-    font-size:20px;
-    line-height:28px;
-    font-weight:600;
-    margin-bottom:8px;
-  }
-
   [hidden]{ display:none !important; }
 </style>
 </head>
@@ -360,8 +353,8 @@
   静态标注版见 <a href="index.html">index.html</a>
 </div>
 <div class="limits">
-  <b>这是原型阶段的固定假设，不代表最终产品决定（PRD 里仍标记为待确认）：</b>
-  倒计时结束后的表现（这里做成"时间到"提示 + 手动返回，不做提示音/自动跳转）、刷新页面后所有已选卡片和话题都会重置（不做历史记录/本地持久化）。
+  <b>已确认的 MVP 范围（非临时假设）：</b>
+  倒计时结束不做提示音，计时到 0 直接自动返回选卡面板（已选卡片保留，可直接调整后再开始）；刷新页面会重置所有已选卡片和话题，不做历史记录/本地持久化。
 </div>
 
 <div class="app">
@@ -393,23 +386,13 @@
         <button id="startBtn" class="btn btn-primary" style="width:100%;" type="button" disabled>开始练习</button>
       </div>
 
-      <!-- 倒计时进行中 / 结束 面板 -->
+      <!-- 倒计时进行中 面板：时间到会自动返回上面的选卡面板，不展示单独的结束画面 -->
       <div class="panel countdown-stage" id="countdownPanel" hidden>
-        <div id="runningView">
-          <div class="countdown-number" id="countdownNumber">01:00</div>
-          <div class="countdown-caption">倒计时进行中 · 按下面的顺序即兴讲述</div>
-          <div class="countdown-order" id="countdownOrder"></div>
-          <div class="countdown-actions">
-            <button id="stopBtn" class="btn btn-sm" type="button">提前结束</button>
-          </div>
-        </div>
-        <div id="endedView" hidden>
-          <div class="ended-title">时间到</div>
-          <div class="countdown-caption">这一轮练习结束了</div>
-          <div class="countdown-actions">
-            <button id="restartBtn" class="btn btn-sm" type="button">用同样的卡片再来一次</button>
-            <button id="backBtn" class="btn btn-primary btn-sm" type="button">返回重新组织</button>
-          </div>
+        <div class="countdown-number" id="countdownNumber">01:00</div>
+        <div class="countdown-caption">倒计时进行中 · 按下面的顺序即兴讲述</div>
+        <div class="countdown-order" id="countdownOrder"></div>
+        <div class="countdown-actions">
+          <button id="stopBtn" class="btn btn-sm" type="button">提前结束</button>
         </div>
       </div>
     </div>
@@ -495,13 +478,9 @@
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
   var countdownPanelEl = document.getElementById("countdownPanel");
-  var runningViewEl = document.getElementById("runningView");
-  var endedViewEl = document.getElementById("endedView");
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownOrderEl = document.getElementById("countdownOrder");
   var stopBtn = document.getElementById("stopBtn");
-  var restartBtn = document.getElementById("restartBtn");
-  var backBtn = document.getElementById("backBtn");
 
   var dragUid = null;
 
@@ -703,8 +682,6 @@
 
     selectionPanelEl.hidden = true;
     countdownPanelEl.hidden = false;
-    runningViewEl.hidden = false;
-    endedViewEl.hidden = true;
 
     renderCountdownOrder();
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
@@ -712,12 +689,7 @@
     state.timer.handle = window.setInterval(function(){
       state.timer.remaining -= 1;
       if (state.timer.remaining <= 0){
-        window.clearInterval(state.timer.handle);
-        state.timer.handle = null;
-        state.timer.status = "ended";
-        countdownNumberEl.textContent = "00:00";
-        runningViewEl.hidden = true;
-        endedViewEl.hidden = false;
+        stopPractice(true);
         return;
       }
       countdownNumberEl.textContent = formatTime(state.timer.remaining);
@@ -738,12 +710,6 @@
 
   startBtn.addEventListener("click", startPractice);
   stopBtn.addEventListener("click", function(){ stopPractice(true); });
-  backBtn.addEventListener("click", function(){ stopPractice(true); });
-  restartBtn.addEventListener("click", function(){
-    endedViewEl.hidden = true;
-    runningViewEl.hidden = false;
-    startPractice();
-  });
 
   renderTopic();
   renderCardWall();

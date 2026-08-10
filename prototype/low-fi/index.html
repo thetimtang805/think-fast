@@ -317,13 +317,14 @@
     margin-bottom:24px;
   }
   .countdown-order{
-    display:inline-flex;
+    display:flex;
+    flex-direction:column;
     gap:8px;
-    margin-bottom:32px;
-    flex-wrap:wrap;
-    justify-content:center;
+    max-width:420px;
+    margin:0 auto 32px;
+    text-align:left;
   }
-  .countdown-order .seq-badge{ display:inline-flex; align-items:center; justify-content:center; }
+  .countdown-order .selected-item{ cursor:default; }
 </style>
 </head>
 <body>
@@ -586,26 +587,50 @@
   </div>
 </div>
 
-<!-- ============ 状态 C：倒计时进行中（占位，待确认） ============ -->
+<!-- ============ 状态 C：倒计时进行中 ============ -->
 <div class="board">
-  <span class="board-label">状态 C · 倒计时进行中（占位，细节待确认）</span>
-  <div class="annotation tbd">
-    <b>此状态尚未在 PRD 里拍板，以下是最小占位表达，不代表最终方案：</b>
-    是否仍展示已选卡片列表、结束后有没有提示音/自动停止/可否回看，这些都在
-    <a href="../../docs/PRD-即兴演讲训练工具.md">PRD</a> 的"待确认"清单里，
-    需要你确认后再细化这个状态。
+  <span class="board-label">状态 C · 倒计时进行中</span>
+  <div class="annotation">
+    <b>已选卡片列表：</b>倒计时期间仍完整展示已选卡片的顺序列表（只读，不可拖拽/删除），方便照着讲。&nbsp;
+    <b>结束表现：</b>倒计时到 0 不做提示音，直接自动返回状态 B 的选卡面板，已选卡片保留，可以直接调整后再开始——不展示单独的"结束"确认画面。&nbsp;
+    <b>提前结束：</b>点击「提前结束」效果一样，立刻返回选卡面板。&nbsp;
+    <b>历史记录：</b>已确认不做，刷新页面话题和已选卡片都会重置。
   </div>
 
   <div class="layout">
     <div class="col-left" style="flex:1;">
       <div class="panel countdown-stage">
         <div class="countdown-number">01:47</div>
-        <div class="countdown-caption">倒计时进行中 · 按下方顺序即兴讲述</div>
+        <div class="countdown-caption">倒计时进行中 · 按下面的顺序即兴讲述</div>
         <div class="countdown-order">
-          <span class="seq-badge">1</span>
-          <span class="seq-badge">2</span>
-          <span class="seq-badge">3</span>
-          <span class="seq-badge">4</span>
+          <div class="selected-item">
+            <div class="seq-badge">1</div>
+            <div class="selected-item-body">
+              <div class="selected-item-family">溯因 · 直接追问法</div>
+              <div class="selected-item-question">为什么？只留一个理由，是什么？</div>
+            </div>
+          </div>
+          <div class="selected-item">
+            <div class="seq-badge">2</div>
+            <div class="selected-item-body">
+              <div class="selected-item-family">复现 · 场景还原法</div>
+              <div class="selected-item-question">当时具体发生了什么？谁、在哪、什么时候、做了什么？</div>
+            </div>
+          </div>
+          <div class="selected-item">
+            <div class="seq-badge">3</div>
+            <div class="selected-item-body">
+              <div class="selected-item-family">复现 · 场景还原法</div>
+              <div class="selected-item-question">（重复添加，同一张卡再来一次）</div>
+            </div>
+          </div>
+          <div class="selected-item">
+            <div class="seq-badge">4</div>
+            <div class="selected-item-body">
+              <div class="selected-item-family">拆步 · 新手风险法</div>
+              <div class="selected-item-question">换个新手来做，哪一步最需要提醒？</div>
+            </div>
+          </div>
         </div>
         <div>
           <button class="btn btn-sm">提前结束</button>
