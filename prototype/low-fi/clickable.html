@@ -96,6 +96,9 @@
     font-size:14px;
     line-height:22px;
     color:var(--gray-900);
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
   }
   .topic-input.placeholder{ color:var(--gray-400); }
 
@@ -117,6 +120,7 @@
   }
   .btn:hover{ background:var(--gray-050); }
   .btn:active{ background:var(--gray-200); }
+  .btn:focus-visible{ outline:2px solid var(--gray-900); outline-offset:2px; }
   .btn-primary{
     background:var(--gray-900);
     color:var(--white);
@@ -178,6 +182,7 @@
     color:var(--gray-900);
   }
   .card:hover{ border-color:var(--gray-500); }
+  .card:active{ background:var(--gray-050); }
   .card:focus-visible{ outline:2px solid var(--gray-900); outline-offset:2px; }
   .card.selected{
     background:var(--gray-200);
@@ -260,19 +265,28 @@
     line-height:20px;
     color:var(--gray-900);
   }
-  .delete-btn{
+  .item-actions{
+    flex:0 0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .move-btn, .delete-btn{
     flex:0 0 20px;
-    height:20px;
+    height:16px;
     color:var(--gray-400);
-    font-size:14px;
-    line-height:20px;
+    font-size:12px;
+    line-height:16px;
     text-align:center;
     background:none;
     border:none;
     cursor:pointer;
     padding:0;
   }
-  .delete-btn:hover{ color:var(--gray-900); }
+  .delete-btn{ height:20px; font-size:14px; line-height:20px; margin-top:2px; }
+  .move-btn:hover, .delete-btn:hover{ color:var(--gray-900); }
+  .move-btn:disabled{ color:var(--gray-300); cursor:not-allowed; }
+  .move-btn:focus-visible, .delete-btn:focus-visible{ outline:2px solid var(--gray-900); outline-offset:2px; }
 
   .divider{
     border:none;
@@ -312,6 +326,8 @@
     cursor:pointer;
   }
   .segment-item:last-child{ border-right:none; }
+  .segment-item:hover{ background:var(--gray-050); }
+  .segment-item:focus-visible{ outline:2px solid var(--gray-900); outline-offset:-2px; }
   .segment-item.active{
     background:var(--gray-900);
     color:var(--white);
@@ -351,6 +367,37 @@
     justify-content:center;
   }
   [hidden]{ display:none !important; }
+
+  /* 撤销提示 */
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:24px;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:var(--gray-900);
+    color:var(--white);
+    border-radius:6px;
+    padding:10px 16px;
+    font-size:14px;
+    line-height:22px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.2);
+    z-index:10;
+  }
+  .toast-undo{
+    background:none;
+    border:none;
+    color:var(--white);
+    text-decoration:underline;
+    font-size:14px;
+    line-height:22px;
+    cursor:pointer;
+    padding:0;
+    white-space:nowrap;
+  }
+  .toast-undo:focus-visible{ outline:2px solid var(--white); outline-offset:2px; }
 </style>
 </head>
 <body>
@@ -400,6 +447,11 @@
       </div>
     </div>
   </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite" hidden>
+  <span id="toastMessage"></span>
+  <button id="toastUndoBtn" class="toast-undo" type="button">撤销</button>
 </div>
 
 <script>
@@ -469,7 +521,9 @@
       status: "idle",   // idle | running | ended
       remaining: 0,
       handle: null
-    }
+    },
+    lastDeleted: null,   // { item, index } for undo
+    toastHandle: null
   };
 
   var topicInputEl = document.getElementById("topicInput");
@@ -484,6 +538,9 @@
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownOrderEl = document.getElementById("countdownOrder");
   var stopBtn = document.getElementById("stopBtn");
+  var toastEl = document.getElementById("toast");
+  var toastMessageEl = document.getElementById("toastMessage");
+  var toastUndoBtn = document.getElementById("toastUndoBtn");
 
   var dragUid = null;
 
@@ -560,12 +617,56 @@
   function removeCard(uid){
     var idx = state.selected.findIndex(function(item){ return item.uid === uid; });
     if (idx === -1) return;
-    var cardId = state.selected[idx].cardId;
+    var removed = state.selected[idx];
+    var cardId = removed.cardId;
     state.selected.splice(idx, 1);
     state.counts[cardId] = Math.max(0, (state.counts[cardId] || 0) - 1);
     renderCardWall();
     renderSelectedList();
     renderStartButton();
+    showUndoToast(removed, idx);
+  }
+
+  function undoDelete(){
+    if (!state.lastDeleted) return;
+    var insertAt = Math.min(state.lastDeleted.index, state.selected.length);
+    state.selected.splice(insertAt, 0, state.lastDeleted.item);
+    state.counts[state.lastDeleted.item.cardId] = (state.counts[state.lastDeleted.item.cardId] || 0) + 1;
+    hideToast();
+    renderCardWall();
+    renderSelectedList();
+    renderStartButton();
+  }
+
+  function showUndoToast(item, index){
+    state.lastDeleted = { item: item, index: index };
+    var meta = CARD_BY_ID[item.cardId];
+    toastMessageEl.textContent = "已删除「" + meta.method + "」";
+    toastEl.hidden = false;
+    if (state.toastHandle){ window.clearTimeout(state.toastHandle); }
+    state.toastHandle = window.setTimeout(hideToast, 5000);
+  }
+
+  function hideToast(){
+    toastEl.hidden = true;
+    state.lastDeleted = null;
+    if (state.toastHandle){
+      window.clearTimeout(state.toastHandle);
+      state.toastHandle = null;
+    }
+  }
+
+  toastUndoBtn.addEventListener("click", undoDelete);
+
+  function moveCard(uid, direction){
+    var idx = state.selected.findIndex(function(item){ return item.uid === uid; });
+    if (idx === -1) return;
+    var newIdx = idx + direction;
+    if (newIdx < 0 || newIdx >= state.selected.length) return;
+    var tmp = state.selected[idx];
+    state.selected[idx] = state.selected[newIdx];
+    state.selected[newIdx] = tmp;
+    renderSelectedList();
   }
 
   function reorder(fromUid, toUid){
@@ -580,23 +681,47 @@
 
   function buildSelectedItemEl(item, index, container){
     var meta = CARD_BY_ID[item.cardId];
+    var label = meta.family + ' · ' + meta.method;
     var row = document.createElement("div");
     row.className = "selected-item";
     row.draggable = true;
     row.setAttribute("data-uid", item.uid);
 
     row.innerHTML =
-      '<div class="drag-handle">⠿</div>' +
+      '<div class="drag-handle" aria-hidden="true">⠿</div>' +
       '<div class="seq-badge">' + (index + 1) + '</div>' +
       '<div class="selected-item-body">' +
         '<div class="selected-item-family">' + meta.family + ' · ' + meta.method + '</div>' +
         '<div class="selected-item-question">' + meta.question + '</div>' +
       '</div>';
 
+    var actions = document.createElement("div");
+    actions.className = "item-actions";
+
+    var upBtn = document.createElement("button");
+    upBtn.type = "button";
+    upBtn.className = "move-btn";
+    upBtn.setAttribute("aria-label", "把「" + label + "」上移一位");
+    upBtn.textContent = "▲";
+    upBtn.disabled = index === 0;
+    upBtn.addEventListener("click", function(){ moveCard(item.uid, -1); });
+    actions.appendChild(upBtn);
+
+    var downBtn = document.createElement("button");
+    downBtn.type = "button";
+    downBtn.className = "move-btn";
+    downBtn.setAttribute("aria-label", "把「" + label + "」下移一位");
+    downBtn.textContent = "▼";
+    downBtn.disabled = index === state.selected.length - 1;
+    downBtn.addEventListener("click", function(){ moveCard(item.uid, 1); });
+    actions.appendChild(downBtn);
+
+    row.appendChild(actions);
+
     var delBtn = document.createElement("button");
     delBtn.type = "button";
     delBtn.className = "delete-btn";
-    delBtn.setAttribute("aria-label", "删除这张卡片");
+    delBtn.setAttribute("aria-label", "删除「" + label + "」这张卡片");
     delBtn.textContent = "✕";
     delBtn.addEventListener("click", function(){ removeCard(item.uid); });
     row.appendChild(delBtn);
@@ -642,7 +767,9 @@
   }
 
   function renderStartButton(){
-    startBtn.disabled = state.selected.length === 0;
+    var empty = state.selected.length === 0;
+    startBtn.disabled = empty;
+    startBtn.title = empty ? "先从左侧选至少一张卡片" : "";
   }
 
   durationSegmentEl.addEventListener("click", function(e){
@@ -713,6 +840,13 @@
 
   startBtn.addEventListener("click", startPractice);
   stopBtn.addEventListener("click", function(){ stopPractice(true); });
+
+  window.addEventListener("beforeunload", function(e){
+    if (state.selected.length > 0){
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
 
   renderTopic();
   renderCardWall();
