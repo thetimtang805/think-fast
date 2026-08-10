@@ -175,17 +175,17 @@
     background:var(--gray-200);
     border-color:var(--gray-900);
   }
-  .card-badge{
+  .card-dots{
     position:absolute;
-    top:8px;
-    right:8px;
-    width:18px;
-    height:18px;
+    bottom:8px;
+    left:8px;
+    display:flex;
+    gap:4px;
+  }
+  .card-dot{
+    width:6px;
+    height:6px;
     border-radius:50%;
-    font-size:12px;
-    line-height:18px;
-    text-align:center;
-    color:var(--white);
     background:var(--gray-900);
   }
 
@@ -545,10 +545,14 @@
         btn.setAttribute("aria-pressed", count > 0 ? "true" : "false");
 
         if (count > 0){
-          var badge = document.createElement("span");
-          badge.className = "card-badge";
-          badge.textContent = String(count);
-          btn.appendChild(badge);
+          var dots = document.createElement("span");
+          dots.className = "card-dots";
+          for (var i = 0; i < count; i++){
+            var dot = document.createElement("span");
+            dot.className = "card-dot";
+            dots.appendChild(dot);
+          }
+          btn.appendChild(dots);
         }
         var q = document.createElement("span");
         q.textContent = card.question;

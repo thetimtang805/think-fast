@@ -177,17 +177,17 @@
     background:var(--gray-200);
     border-color:var(--gray-900);
   }
-  .card-badge{
+  .card-dots{
     position:absolute;
-    top:8px;
-    right:8px;
-    width:18px;
-    height:18px;
+    bottom:8px;
+    left:8px;
+    display:flex;
+    gap:4px;
+  }
+  .card-dot{
+    width:6px;
+    height:6px;
     border-radius:50%;
-    font-size:12px;
-    line-height:18px;
-    text-align:center;
-    color:var(--white);
     background:var(--gray-900);
   }
 
@@ -446,11 +446,8 @@
   <div class="annotation">
     <b>触发：</b>用户点击了 4 张卡片（其中"复现·场景还原法"被重复点击 2 次）。&nbsp;
     <b>已选面板：</b>每项显示序号、家族/方法名、问题文案；支持拖拽调整顺序（序号联动重排）和删除。&nbsp;
-    <b>源卡片墙：</b>被选过的卡片显示"已选"底色标识；本图用数字角标表达被选次数，<b>具体是否需要显示次数、还是统一一种标识，见下方待确认标注</b>。&nbsp;
+    <b>源卡片墙：</b>被选过的卡片显示"已选"底色标识；卡片左下角用小圆点数量表达被选次数（点几次出现几个点），不使用数字角标——避免和右侧已选面板的序号圆圈在视觉上冲突。&nbsp;
     <b>操作：</b>已选 ≥1 张卡片时，「开始练习」按钮从禁用变为可点击；点击后进入状态 C。
-  </div>
-  <div class="annotation tbd">
-    <b>待确认（不阻塞低保真，进入开发前需要拍板）：</b>重复选择同一张卡片时，源卡片区要不要显示"已选 N 次"角标（如本图），还是保持统一的单一"已选"底色标识，不做计数展示。
   </div>
 
   <div class="layout">
@@ -467,7 +464,7 @@
             <div class="family-sub">Why → Abstract</div>
           </div>
           <div class="family-cards">
-            <div class="card selected"><div class="card-badge">1</div><div class="card-question">为什么？只留一个理由，是什么？</div></div>
+            <div class="card selected"><div class="card-question">为什么？只留一个理由，是什么？</div><span class="card-dots"><span class="card-dot"></span></span></div>
             <div class="card"><div class="card-question">有人继续追问"为什么"，你还能往下说吗？</div></div>
             <div class="card"><div class="card-question">归根到底，最本质的原因是什么？</div></div>
           </div>
@@ -502,7 +499,7 @@
           <div class="family-cards">
             <div class="card"><div class="card-question">迈出的最小一步是什么？</div></div>
             <div class="card"><div class="card-question">完整的方法是怎么样的？一点一点说。</div></div>
-            <div class="card selected"><div class="card-badge">1</div><div class="card-question">换个新手来做，哪一步最需要提醒？</div></div>
+            <div class="card selected"><div class="card-question">换个新手来做，哪一步最需要提醒？</div><span class="card-dots"><span class="card-dot"></span></span></div>
           </div>
         </div>
         <div class="family-row">
@@ -512,8 +509,8 @@
           </div>
           <div class="family-cards">
             <div class="card selected">
-              <div class="card-badge">2</div>
               <div class="card-question">当时具体发生了什么？谁、在哪、什么时候、做了什么？</div>
+              <span class="card-dots"><span class="card-dot"></span><span class="card-dot"></span></span>
             </div>
             <div class="card"><div class="card-question">有没有哪个场景画面，特别让人印象深刻？</div></div>
             <div class="card"><div class="card-question">有谁说了什么、做了什么，让你现在还记得？</div></div>
