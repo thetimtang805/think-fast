@@ -168,11 +168,6 @@
     gap:4px;
     position:relative;
   }
-  .card-method{
-    font-size:12px;
-    line-height:18px;
-    color:var(--gray-500);
-  }
   .card-question{
     font-size:14px;
     line-height:20px;
@@ -186,12 +181,14 @@
     position:absolute;
     top:8px;
     right:8px;
+    width:18px;
+    height:18px;
+    border-radius:50%;
     font-size:12px;
     line-height:18px;
+    text-align:center;
     color:var(--white);
     background:var(--gray-900);
-    border-radius:9px;
-    padding:0 6px;
   }
 
   /* 已选面板 */
@@ -360,9 +357,9 @@
             <div class="family-sub">Why → Abstract</div>
           </div>
           <div class="family-cards">
-            <div class="card"><div class="card-method">直接追问法</div><div class="card-question">为什么？只留一个理由，是什么？</div></div>
-            <div class="card"><div class="card-method">连续追问法</div><div class="card-question">有人继续追问"为什么"，你还能往下说吗？</div></div>
-            <div class="card"><div class="card-method">本质提炼法</div><div class="card-question">归根到底，最本质的原因是什么？</div></div>
+            <div class="card"><div class="card-question">为什么？只留一个理由，是什么？</div></div>
+            <div class="card"><div class="card-question">有人继续追问"为什么"，你还能往下说吗？</div></div>
+            <div class="card"><div class="card-question">归根到底，最本质的原因是什么？</div></div>
           </div>
         </div>
         <div class="family-row">
@@ -371,9 +368,9 @@
             <div class="family-sub">Why → Concrete, So What</div>
           </div>
           <div class="family-cards">
-            <div class="card"><div class="card-method">直接推导法</div><div class="card-question">所以呢，会发生什么？</div></div>
-            <div class="card"><div class="card-method">连锁反应法</div><div class="card-question">这之后，还会引发什么连锁反应？</div></div>
-            <div class="card"><div class="card-method">最坏情况法</div><div class="card-question">不做，或者搞砸了，最坏会怎样？</div></div>
+            <div class="card"><div class="card-question">所以呢，会发生什么？</div></div>
+            <div class="card"><div class="card-question">这之后，还会引发什么连锁反应？</div></div>
+            <div class="card"><div class="card-question">不做，或者搞砸了，最坏会怎样？</div></div>
           </div>
         </div>
         <div class="family-row">
@@ -382,9 +379,9 @@
             <div class="family-sub">How → Abstract</div>
           </div>
           <div class="family-cards">
-            <div class="card"><div class="card-method">一句话概括法</div><div class="card-question">一句话概括你的策略是什么？</div></div>
-            <div class="card"><div class="card-method">可迁移性检验法</div><div class="card-question">能不能提炼成一条反复能用的方法？</div></div>
-            <div class="card"><div class="card-method">边界测试法</div><div class="card-question">这个方法在什么情况下会失效？</div></div>
+            <div class="card"><div class="card-question">一句话概括你的策略是什么？</div></div>
+            <div class="card"><div class="card-question">能不能提炼成一条反复能用的方法？</div></div>
+            <div class="card"><div class="card-question">这个方法在什么情况下会失效？</div></div>
           </div>
         </div>
         <div class="family-row">
@@ -393,9 +390,9 @@
             <div class="family-sub">How → Concrete</div>
           </div>
           <div class="family-cards">
-            <div class="card"><div class="card-method">起点法</div><div class="card-question">迈出的最小一步是什么？</div></div>
-            <div class="card"><div class="card-method">全流程列举法</div><div class="card-question">完整的方法是怎么样的？一点一点说。</div></div>
-            <div class="card"><div class="card-method">新手风险法</div><div class="card-question">换个新手来做，哪一步最需要提醒？</div></div>
+            <div class="card"><div class="card-question">迈出的最小一步是什么？</div></div>
+            <div class="card"><div class="card-question">完整的方法是怎么样的？一点一点说。</div></div>
+            <div class="card"><div class="card-question">换个新手来做，哪一步最需要提醒？</div></div>
           </div>
         </div>
         <div class="family-row">
@@ -404,9 +401,9 @@
             <div class="family-sub">What → Concrete</div>
           </div>
           <div class="family-cards">
-            <div class="card"><div class="card-method">场景还原法（5W1H）</div><div class="card-question">当时具体发生了什么？谁、在哪、什么时候、做了什么？</div></div>
-            <div class="card"><div class="card-method">高光时刻法</div><div class="card-question">有没有哪个场景画面，特别让人印象深刻？</div></div>
-            <div class="card"><div class="card-method">对话/动作还原法</div><div class="card-question">有谁说了什么、做了什么，让你现在还记得？</div></div>
+            <div class="card"><div class="card-question">当时具体发生了什么？谁、在哪、什么时候、做了什么？</div></div>
+            <div class="card"><div class="card-question">有没有哪个场景画面，特别让人印象深刻？</div></div>
+            <div class="card"><div class="card-question">有谁说了什么、做了什么，让你现在还记得？</div></div>
           </div>
         </div>
         <div class="family-row">
@@ -415,9 +412,9 @@
             <div class="family-sub">What → Abstract</div>
           </div>
           <div class="family-cards">
-            <div class="card"><div class="card-method">归类法</div><div class="card-question">说白了，这就是什么？</div></div>
-            <div class="card"><div class="card-method">对比法</div><div class="card-question">最容易被拿来比较的是什么？差别在哪？</div></div>
-            <div class="card"><div class="card-method">类比法</div><div class="card-question">换成大白话，你会怎么形容？</div></div>
+            <div class="card"><div class="card-question">说白了，这就是什么？</div></div>
+            <div class="card"><div class="card-question">最容易被拿来比较的是什么？差别在哪？</div></div>
+            <div class="card"><div class="card-question">换成大白话，你会怎么形容？</div></div>
           </div>
         </div>
       </div>
@@ -469,9 +466,9 @@
             <div class="family-sub">Why → Abstract</div>
           </div>
           <div class="family-cards">
-            <div class="card selected"><div class="card-method">直接追问法</div><div class="card-question">为什么？只留一个理由，是什么？</div></div>
-            <div class="card"><div class="card-method">连续追问法</div><div class="card-question">有人继续追问"为什么"，你还能往下说吗？</div></div>
-            <div class="card"><div class="card-method">本质提炼法</div><div class="card-question">归根到底，最本质的原因是什么？</div></div>
+            <div class="card selected"><div class="card-badge">1</div><div class="card-question">为什么？只留一个理由，是什么？</div></div>
+            <div class="card"><div class="card-question">有人继续追问"为什么"，你还能往下说吗？</div></div>
+            <div class="card"><div class="card-question">归根到底，最本质的原因是什么？</div></div>
           </div>
         </div>
         <div class="family-row">
@@ -480,9 +477,9 @@
             <div class="family-sub">Why → Concrete, So What</div>
           </div>
           <div class="family-cards">
-            <div class="card"><div class="card-method">直接推导法</div><div class="card-question">所以呢，会发生什么？</div></div>
-            <div class="card"><div class="card-method">连锁反应法</div><div class="card-question">这之后，还会引发什么连锁反应？</div></div>
-            <div class="card"><div class="card-method">最坏情况法</div><div class="card-question">不做，或者搞砸了，最坏会怎样？</div></div>
+            <div class="card"><div class="card-question">所以呢，会发生什么？</div></div>
+            <div class="card"><div class="card-question">这之后，还会引发什么连锁反应？</div></div>
+            <div class="card"><div class="card-question">不做，或者搞砸了，最坏会怎样？</div></div>
           </div>
         </div>
         <div class="family-row">
@@ -491,9 +488,9 @@
             <div class="family-sub">How → Abstract</div>
           </div>
           <div class="family-cards">
-            <div class="card"><div class="card-method">一句话概括法</div><div class="card-question">一句话概括你的策略是什么？</div></div>
-            <div class="card"><div class="card-method">可迁移性检验法</div><div class="card-question">能不能提炼成一条反复能用的方法？</div></div>
-            <div class="card"><div class="card-method">边界测试法</div><div class="card-question">这个方法在什么情况下会失效？</div></div>
+            <div class="card"><div class="card-question">一句话概括你的策略是什么？</div></div>
+            <div class="card"><div class="card-question">能不能提炼成一条反复能用的方法？</div></div>
+            <div class="card"><div class="card-question">这个方法在什么情况下会失效？</div></div>
           </div>
         </div>
         <div class="family-row">
@@ -502,9 +499,9 @@
             <div class="family-sub">How → Concrete</div>
           </div>
           <div class="family-cards">
-            <div class="card"><div class="card-method">起点法</div><div class="card-question">迈出的最小一步是什么？</div></div>
-            <div class="card"><div class="card-method">全流程列举法</div><div class="card-question">完整的方法是怎么样的？一点一点说。</div></div>
-            <div class="card selected"><div class="card-method">新手风险法</div><div class="card-question">换个新手来做，哪一步最需要提醒？</div></div>
+            <div class="card"><div class="card-question">迈出的最小一步是什么？</div></div>
+            <div class="card"><div class="card-question">完整的方法是怎么样的？一点一点说。</div></div>
+            <div class="card selected"><div class="card-badge">1</div><div class="card-question">换个新手来做，哪一步最需要提醒？</div></div>
           </div>
         </div>
         <div class="family-row">
@@ -514,11 +511,11 @@
           </div>
           <div class="family-cards">
             <div class="card selected">
-              <div class="card-badge">×2</div>
-              <div class="card-method">场景还原法（5W1H）</div><div class="card-question">当时具体发生了什么？谁、在哪、什么时候、做了什么？</div>
+              <div class="card-badge">2</div>
+              <div class="card-question">当时具体发生了什么？谁、在哪、什么时候、做了什么？</div>
             </div>
-            <div class="card"><div class="card-method">高光时刻法</div><div class="card-question">有没有哪个场景画面，特别让人印象深刻？</div></div>
-            <div class="card"><div class="card-method">对话/动作还原法</div><div class="card-question">有谁说了什么、做了什么，让你现在还记得？</div></div>
+            <div class="card"><div class="card-question">有没有哪个场景画面，特别让人印象深刻？</div></div>
+            <div class="card"><div class="card-question">有谁说了什么、做了什么，让你现在还记得？</div></div>
           </div>
         </div>
         <div class="family-row">
@@ -527,9 +524,9 @@
             <div class="family-sub">What → Abstract</div>
           </div>
           <div class="family-cards">
-            <div class="card"><div class="card-method">归类法</div><div class="card-question">说白了，这就是什么？</div></div>
-            <div class="card"><div class="card-method">对比法</div><div class="card-question">最容易被拿来比较的是什么？差别在哪？</div></div>
-            <div class="card"><div class="card-method">类比法</div><div class="card-question">换成大白话，你会怎么形容？</div></div>
+            <div class="card"><div class="card-question">说白了，这就是什么？</div></div>
+            <div class="card"><div class="card-question">最容易被拿来比较的是什么？差别在哪？</div></div>
+            <div class="card"><div class="card-question">换成大白话，你会怎么形容？</div></div>
           </div>
         </div>
       </div>
