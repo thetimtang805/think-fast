@@ -220,6 +220,28 @@
     border-radius:50%;
     background:var(--accent);
   }
+  .card-plus{
+    position:absolute;
+    bottom:8px;
+    right:8px;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    background:var(--accent);
+    color:var(--on-accent);
+    font-size:13px;
+    line-height:18px;
+    text-align:center;
+    opacity:0;
+    transform:scale(0.8);
+    transition:opacity .12s ease, transform .12s ease;
+    pointer-events:none;
+  }
+  .card:hover .card-plus,
+  .card:focus-visible .card-plus{
+    opacity:1;
+    transform:scale(1);
+  }
 
   /* 已选面板 */
   .panel-title{
@@ -614,6 +636,12 @@
         var q = document.createElement("span");
         q.textContent = card.question;
         btn.appendChild(q);
+
+        var plus = document.createElement("span");
+        plus.className = "card-plus";
+        plus.setAttribute("aria-hidden", "true");
+        plus.textContent = "+";
+        btn.appendChild(plus);
 
         btn.addEventListener("click", function(){ addCard(card.id); });
         cardsWrap.appendChild(btn);
