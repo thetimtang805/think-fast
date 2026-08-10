@@ -627,8 +627,7 @@
 
   function showUndoToast(item, index){
     state.lastDeleted = { item: item, index: index };
-    var meta = CARD_BY_ID[item.cardId];
-    toastMessageEl.textContent = "已删除「" + meta.method + "」";
+    toastMessageEl.textContent = "已删除卡片";
     toastEl.hidden = false;
     if (state.toastHandle){ window.clearTimeout(state.toastHandle); }
     state.toastHandle = window.setTimeout(hideToast, 5000);
