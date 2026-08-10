@@ -244,6 +244,12 @@
     opacity:1;
     transform:scale(1);
   }
+  @keyframes cardPop{
+    0%{ transform:scale(1); }
+    45%{ transform:scale(0.96); }
+    100%{ transform:scale(1); }
+  }
+  .card-pop{ animation:cardPop .18s ease; }
 
   /* 已选面板 */
   .panel-title{
@@ -276,9 +282,27 @@
     border-radius:var(--radius);
     padding:8px 10px;
     background:var(--surface);
+    max-height:200px;
   }
   .selected-item.dragging{ opacity:0.4; }
   .selected-item.drag-over{ border-color:var(--accent); border-style:dashed; }
+  @keyframes itemEnter{
+    from{ opacity:0; transform:translateY(-6px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .item-enter{ animation:itemEnter .18s ease; }
+  .item-leaving{
+    opacity:0;
+    transform:translateX(6px) scale(0.98);
+    max-height:0;
+    margin-bottom:0;
+    padding-top:0;
+    padding-bottom:0;
+    border-width:0;
+    overflow:hidden;
+    transition:opacity .12s ease, transform .12s ease, max-height .16s ease .04s,
+               margin-bottom .16s ease .04s, padding .16s ease .04s, border-width .16s ease .04s;
+  }
   .drag-handle{
     flex:0 0 16px;
     color:var(--text-disabled);
@@ -407,12 +431,32 @@
   }
   [hidden]{ display:none !important; }
 
+  /* 选卡面板 ↔ 倒计时舞台 切换 */
+  @keyframes panelFadeOut{
+    from{ opacity:1; transform:translateY(0); }
+    to{ opacity:0; transform:translateY(-4px); }
+  }
+  @keyframes panelFadeIn{
+    from{ opacity:0; transform:translateY(4px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .panel-fade-out{ animation:panelFadeOut .14s ease forwards; }
+  .panel-fade-in{ animation:panelFadeIn .18s ease; }
+
   /* 撤销提示 */
+  @keyframes toastIn{
+    from{ opacity:0; transform:translate(-50%, 8px); }
+    to{ opacity:1; transform:translate(-50%, 0); }
+  }
+  @keyframes toastOut{
+    from{ opacity:1; transform:translate(-50%, 0); }
+    to{ opacity:0; transform:translate(-50%, 8px); }
+  }
   .toast{
     position:fixed;
     left:50%;
     bottom:24px;
-    transform:translateX(-50%);
+    transform:translate(-50%, 0);
     display:flex;
     align-items:center;
     gap:12px;
@@ -425,6 +469,8 @@
     box-shadow:0 2px 8px rgba(0,0,0,0.2);
     z-index:10;
   }
+  .toast.toast-show{ animation:toastIn .16s ease; }
+  .toast.toast-hide{ animation:toastOut .14s ease forwards; }
   .toast-undo{
     background:none;
     border:none;
@@ -437,6 +483,14 @@
     white-space:nowrap;
   }
   .toast-undo:focus-visible{ outline:2px solid var(--on-accent); outline-offset:2px; }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:0.001ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:0.001ms !important;
+    }
+  }
 </style>
 </head>
 <body>
@@ -565,7 +619,9 @@
       handle: null
     },
     lastDeleted: null,   // { item, index } for undo
-    toastHandle: null
+    toastHandle: null,
+    justClickedCardId: null,  // 触发一次卡片墙的 pop 反馈
+    justAddedUid: null        // 触发一次已选列表的 enter 动画
   };
 
   var topicInputEl = document.getElementById("topicInput");
@@ -621,7 +677,8 @@
         var count = state.counts[card.id] || 0;
         var btn = document.createElement("button");
         btn.type = "button";
-        btn.className = "card" + (count > 0 ? " selected" : "");
+        btn.className = "card" + (count > 0 ? " selected" : "") +
+                         (card.id === state.justClickedCardId ? " card-pop" : "");
         btn.setAttribute("data-card-id", card.id);
         btn.setAttribute("aria-pressed", count > 0 ? "true" : "false");
 
@@ -652,11 +709,15 @@
       row.appendChild(cardsWrap);
       cardWallEl.appendChild(row);
     });
+    state.justClickedCardId = null;
   }
 
   function addCard(cardId){
-    state.selected.push({ uid: state.nextUid++, cardId: cardId });
+    var uid = state.nextUid++;
+    state.selected.push({ uid: uid, cardId: cardId });
     state.counts[cardId] = (state.counts[cardId] || 0) + 1;
+    state.justClickedCardId = cardId;
+    state.justAddedUid = uid;
     renderCardWall();
     renderSelectedList();
     renderStartButton();
@@ -675,6 +736,13 @@
     showUndoToast(removed, idx);
   }
 
+  function requestRemoveCard(uid){
+    var row = selectedListEl.querySelector('[data-uid="' + uid + '"]');
+    if (!row){ removeCard(uid); return; }
+    row.classList.add("item-leaving");
+    window.setTimeout(function(){ removeCard(uid); }, 160);
+  }
+
   function undoDelete(){
     if (!state.lastDeleted) return;
     var insertAt = Math.min(state.lastDeleted.index, state.selected.length);
@@ -690,12 +758,22 @@
     state.lastDeleted = { item: item, index: index };
     toastMessageEl.textContent = "已删除卡片";
     toastEl.hidden = false;
+    toastEl.classList.remove("toast-hide");
+    // 强制重排，确保重复触发时动画能重新播放
+    void toastEl.offsetWidth;
+    toastEl.classList.add("toast-show");
     if (state.toastHandle){ window.clearTimeout(state.toastHandle); }
     state.toastHandle = window.setTimeout(hideToast, 5000);
   }
 
   function hideToast(){
-    toastEl.hidden = true;
+    if (toastEl.hidden) { state.lastDeleted = null; return; }
+    toastEl.classList.remove("toast-show");
+    toastEl.classList.add("toast-hide");
+    window.setTimeout(function(){
+      toastEl.hidden = true;
+      toastEl.classList.remove("toast-hide");
+    }, 140);
     state.lastDeleted = null;
     if (state.toastHandle){
       window.clearTimeout(state.toastHandle);
@@ -719,7 +797,7 @@
     var meta = CARD_BY_ID[item.cardId];
     var label = meta.family + ' · ' + meta.method;
     var row = document.createElement("div");
-    row.className = "selected-item";
+    row.className = "selected-item" + (item.uid === state.justAddedUid ? " item-enter" : "");
     row.draggable = true;
     row.setAttribute("data-uid", item.uid);
 
@@ -735,7 +813,7 @@
     delBtn.className = "delete-btn";
     delBtn.setAttribute("aria-label", "删除「" + label + "」这张卡片");
     delBtn.textContent = "✕";
-    delBtn.addEventListener("click", function(){ removeCard(item.uid); });
+    delBtn.addEventListener("click", function(){ requestRemoveCard(item.uid); });
     row.appendChild(delBtn);
 
     row.addEventListener("dragstart", function(){
@@ -776,6 +854,7 @@
     state.selected.forEach(function(item, index){
       selectedListEl.appendChild(buildSelectedItemEl(item, index, selectedListEl));
     });
+    state.justAddedUid = null;
   }
 
   function renderStartButton(){
@@ -816,16 +895,25 @@
     });
   }
 
+  function switchPanel(fromEl, toEl){
+    fromEl.classList.add("panel-fade-out");
+    window.setTimeout(function(){
+      fromEl.hidden = true;
+      fromEl.classList.remove("panel-fade-out");
+      toEl.hidden = false;
+      toEl.classList.add("panel-fade-in");
+      window.setTimeout(function(){ toEl.classList.remove("panel-fade-in"); }, 200);
+    }, 140);
+  }
+
   function startPractice(){
     if (state.selected.length === 0) return;
     state.timer.status = "running";
     state.timer.remaining = state.duration * 60;
 
-    selectionPanelEl.hidden = true;
-    countdownPanelEl.hidden = false;
-
     renderCountdownOrder();
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
+    switchPanel(selectionPanelEl, countdownPanelEl);
 
     state.timer.handle = window.setInterval(function(){
       state.timer.remaining -= 1;
@@ -844,8 +932,7 @@
     }
     state.timer.status = "idle";
     if (backToSelection){
-      countdownPanelEl.hidden = true;
-      selectionPanelEl.hidden = false;
+      switchPanel(countdownPanelEl, selectionPanelEl);
     }
   }
 
