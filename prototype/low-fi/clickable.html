@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>可点击低保真原型 · 即兴演讲训练工具</title>
+<style>
+  :root{
+    --gray-900:#1F1F1F;
+    --gray-700:#595959;
+    --gray-500:#8C8C8C;
+    --gray-400:#BFBFBF;
+    --gray-300:#D9D9D9;
+    --gray-200:#F0F0F0;
+    --gray-100:#F5F5F5;
+    --gray-050:#FAFAFA;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"PingFang SC","Microsoft YaHei","HarmonyOS Sans","Noto Sans SC",
+                "SF Pro","Segoe UI",Arial,sans-serif;
+    color:var(--gray-900);
+    background:#E8E8E8;
+    padding:24px 0 64px;
+  }
+  .meta{
+    max-width:1440px;
+    margin:0 auto 16px;
+    padding:0 24px;
+    font-size:12px;
+    line-height:20px;
+    color:var(--gray-700);
+  }
+  .meta a{ color:var(--gray-700); }
+  .limits{
+    max-width:1440px;
+    margin:0 auto 16px;
+    padding:12px 16px;
+    font-size:12px;
+    line-height:20px;
+    color:var(--gray-700);
+    background:repeating-linear-gradient(45deg, var(--gray-050), var(--gray-050) 10px, var(--gray-200) 10px, var(--gray-200) 20px);
+    border:1px solid var(--gray-400);
+    border-radius:6px;
+  }
+  .limits b{ color:var(--gray-900); }
+
+  .app{
+    max-width:1440px;
+    margin:0 auto;
+    background:var(--gray-100);
+    border:1px solid var(--gray-300);
+    padding:24px;
+  }
+
+  .layout{
+    display:flex;
+    gap:24px;
+    align-items:flex-start;
+  }
+  .col-left{ flex:0 0 60%; min-width:0; }
+  .col-right{ flex:0 0 calc(40% - 24px); min-width:0; }
+
+  .panel{
+    background:var(--white);
+    border:1px solid var(--gray-300);
+    border-radius:8px;
+    padding:16px;
+  }
+
+  /* 话题生成器 */
+  .topic-bar{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .topic-input{
+    flex:1;
+    height:40px;
+    border:1px solid var(--gray-300);
+    border-radius:6px;
+    background:var(--white);
+    display:flex;
+    align-items:center;
+    padding:0 12px;
+    font-size:14px;
+    line-height:22px;
+    color:var(--gray-900);
+  }
+  .topic-input.placeholder{ color:var(--gray-400); }
+
+  button{ font-family:inherit; }
+  .btn{
+    height:40px;
+    padding:0 16px;
+    border-radius:6px;
+    font-size:14px;
+    line-height:22px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--gray-300);
+    background:var(--white);
+    color:var(--gray-900);
+    white-space:nowrap;
+    cursor:pointer;
+  }
+  .btn:hover{ background:var(--gray-050); }
+  .btn:active{ background:var(--gray-200); }
+  .btn-primary{
+    background:var(--gray-900);
+    color:var(--white);
+    border-color:var(--gray-900);
+  }
+  .btn-primary:hover{ background:#000; }
+  .btn-primary:disabled{
+    background:var(--gray-200);
+    color:var(--gray-400);
+    border-color:var(--gray-300);
+    cursor:not-allowed;
+  }
+  .btn-sm{ height:32px; padding:0 12px; font-size:14px; }
+
+  /* 卡片墙 */
+  .family-row{
+    display:flex;
+    gap:12px;
+    padding:12px 0;
+    border-bottom:1px solid var(--gray-200);
+  }
+  .family-row:last-child{ border-bottom:none; }
+  .family-label{
+    flex:0 0 96px;
+    padding-top:8px;
+  }
+  .family-name{
+    font-size:14px;
+    line-height:22px;
+    font-weight:600;
+    color:var(--gray-900);
+  }
+  .family-sub{
+    font-size:12px;
+    line-height:18px;
+    color:var(--gray-500);
+  }
+  .family-cards{
+    flex:1;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+  }
+  .card{
+    border:1px solid var(--gray-300);
+    border-radius:6px;
+    background:var(--white);
+    padding:10px 12px;
+    min-height:88px;
+    display:flex;
+    flex-direction:column;
+    gap:4px;
+    position:relative;
+    text-align:left;
+    width:100%;
+    cursor:pointer;
+    font-size:14px;
+    line-height:20px;
+    color:var(--gray-900);
+  }
+  .card:hover{ border-color:var(--gray-500); }
+  .card:focus-visible{ outline:2px solid var(--gray-900); outline-offset:2px; }
+  .card.selected{
+    background:var(--gray-200);
+    border-color:var(--gray-900);
+  }
+  .card-badge{
+    position:absolute;
+    top:8px;
+    right:8px;
+    width:18px;
+    height:18px;
+    border-radius:50%;
+    font-size:12px;
+    line-height:18px;
+    text-align:center;
+    color:var(--white);
+    background:var(--gray-900);
+  }
+
+  /* 已选面板 */
+  .panel-title{
+    font-size:16px;
+    line-height:24px;
+    font-weight:600;
+    margin:0 0 12px;
+  }
+  .empty-state{
+    border:1px dashed var(--gray-400);
+    border-radius:6px;
+    padding:40px 16px;
+    text-align:center;
+    color:var(--gray-500);
+    font-size:14px;
+    line-height:22px;
+    margin-bottom:16px;
+  }
+  .selected-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .selected-item{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    border:1px solid var(--gray-300);
+    border-radius:6px;
+    padding:8px 10px;
+    background:var(--white);
+  }
+  .selected-item.dragging{ opacity:0.4; }
+  .selected-item.drag-over{ border-color:var(--gray-900); border-style:dashed; }
+  .drag-handle{
+    flex:0 0 16px;
+    color:var(--gray-400);
+    font-size:14px;
+    line-height:20px;
+    padding-top:2px;
+    cursor:grab;
+  }
+  .seq-badge{
+    flex:0 0 20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--gray-900);
+    color:var(--white);
+    font-size:12px;
+    line-height:20px;
+    text-align:center;
+  }
+  .selected-item-body{ flex:1; min-width:0; }
+  .selected-item-family{
+    font-size:12px;
+    line-height:18px;
+    color:var(--gray-500);
+  }
+  .selected-item-question{
+    font-size:14px;
+    line-height:20px;
+    color:var(--gray-900);
+  }
+  .delete-btn{
+    flex:0 0 20px;
+    height:20px;
+    color:var(--gray-400);
+    font-size:14px;
+    line-height:20px;
+    text-align:center;
+    background:none;
+    border:none;
+    cursor:pointer;
+    padding:0;
+  }
+  .delete-btn:hover{ color:var(--gray-900); }
+
+  .divider{
+    border:none;
+    border-top:1px solid var(--gray-200);
+    margin:16px 0;
+  }
+  .timer-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .timer-label{
+    font-size:14px;
+    line-height:22px;
+    color:var(--gray-700);
+    margin-right:4px;
+  }
+  .segment{
+    display:flex;
+    border:1px solid var(--gray-300);
+    border-radius:6px;
+    overflow:hidden;
+  }
+  .segment-item{
+    height:32px;
+    padding:0 16px;
+    font-size:14px;
+    line-height:32px;
+    color:var(--gray-700);
+    border-right:1px solid var(--gray-300);
+    background:var(--white);
+    border-top:none;
+    border-bottom:none;
+    border-left:none;
+    cursor:pointer;
+  }
+  .segment-item:last-child{ border-right:none; }
+  .segment-item.active{
+    background:var(--gray-900);
+    color:var(--white);
+  }
+
+  /* 倒计时 */
+  .countdown-stage{
+    text-align:center;
+    padding:64px 24px;
+  }
+  .countdown-number{
+    font-size:56px;
+    line-height:64px;
+    font-weight:700;
+    color:var(--gray-900);
+    margin-bottom:8px;
+    font-variant-numeric:tabular-nums;
+  }
+  .countdown-caption{
+    font-size:14px;
+    line-height:22px;
+    color:var(--gray-500);
+    margin-bottom:24px;
+  }
+  .countdown-order{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    max-width:420px;
+    margin:0 auto 32px;
+    text-align:left;
+  }
+  .countdown-order .selected-item{ cursor:default; }
+  .countdown-actions{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+  }
+  .ended-title{
+    font-size:20px;
+    line-height:28px;
+    font-weight:600;
+    margin-bottom:8px;
+  }
+
+  [hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+
+<div class="meta">
+  可点击低保真原型 · 即兴演讲训练工具 &nbsp;|&nbsp; 灰度低保真，不含品牌视觉，可直接点击体验 &nbsp;|&nbsp;
+  依据 <a href="../../docs/PRD-即兴演讲训练工具.md">PRD-即兴演讲训练工具.md</a> 核心流程搭建 &nbsp;|&nbsp;
+  静态标注版见 <a href="index.html">index.html</a>
+</div>
+<div class="limits">
+  <b>这是原型阶段的固定假设，不代表最终产品决定（PRD 里仍标记为待确认）：</b>
+  倒计时结束后的表现（这里做成"时间到"提示 + 手动返回，不做提示音/自动跳转）、刷新页面后所有已选卡片和话题都会重置（不做历史记录/本地持久化）。
+</div>
+
+<div class="app">
+  <div class="layout">
+    <div class="col-left">
+      <div class="topic-bar">
+        <div id="topicInput" class="topic-input placeholder">点击右侧按钮，随机抽一个话题</div>
+        <button id="randomTopicBtn" class="btn btn-primary" type="button">随机生成</button>
+      </div>
+
+      <div class="panel" id="cardWall"></div>
+    </div>
+
+    <div class="col-right">
+      <!-- 选卡 + 设置倒计时 面板 -->
+      <div class="panel" id="selectionPanel">
+        <div class="panel-title">已选卡片</div>
+        <div id="emptyState" class="empty-state">还没有选择卡片<br/>点击左侧卡片，开始组织你的思路</div>
+        <div id="selectedList" class="selected-list" hidden></div>
+        <hr class="divider" />
+        <div class="timer-row">
+          <span class="timer-label">练习时长</span>
+          <div class="segment" id="durationSegment">
+            <button class="segment-item active" type="button" data-duration="1">1 分钟</button>
+            <button class="segment-item" type="button" data-duration="2">2 分钟</button>
+            <button class="segment-item" type="button" data-duration="3">3 分钟</button>
+          </div>
+        </div>
+        <button id="startBtn" class="btn btn-primary" style="width:100%;" type="button" disabled>开始练习</button>
+      </div>
+
+      <!-- 倒计时进行中 / 结束 面板 -->
+      <div class="panel countdown-stage" id="countdownPanel" hidden>
+        <div id="runningView">
+          <div class="countdown-number" id="countdownNumber">01:00</div>
+          <div class="countdown-caption">倒计时进行中 · 按下面的顺序即兴讲述</div>
+          <div class="countdown-order" id="countdownOrder"></div>
+          <div class="countdown-actions">
+            <button id="stopBtn" class="btn btn-sm" type="button">提前结束</button>
+          </div>
+        </div>
+        <div id="endedView" hidden>
+          <div class="ended-title">时间到</div>
+          <div class="countdown-caption">这一轮练习结束了</div>
+          <div class="countdown-actions">
+            <button id="restartBtn" class="btn btn-sm" type="button">用同样的卡片再来一次</button>
+            <button id="backBtn" class="btn btn-primary btn-sm" type="button">返回重新组织</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var TOPICS = [
+    "甜汤圆比咸汤圆好吃",
+    "猫比狗更适合当宠物",
+    "上班摸鱼应该被允许",
+    "点外卖比自己做饭更划算",
+    "早起的人不一定更自律",
+    "内向的人更适合当领导",
+    "手写笔记比电子笔记更有效",
+    "短视频正在毁掉专注力",
+    "加班多不等于贡献大",
+    "完美主义本质是一种拖延"
+  ];
+
+  var FAMILIES = [
+    { name:"溯因", sub:"Why → Abstract", cards:[
+      { id:"f1c1", method:"直接追问法", question:"为什么？只留一个理由，是什么？" },
+      { id:"f1c2", method:"连续追问法", question:"有人继续追问“为什么”，你还能往下说吗？" },
+      { id:"f1c3", method:"本质提炼法", question:"归根到底，最本质的原因是什么？" }
+    ]},
+    { name:"推果", sub:"Why → Concrete, So What", cards:[
+      { id:"f2c1", method:"直接推导法", question:"所以呢，会发生什么？" },
+      { id:"f2c2", method:"连锁反应法", question:"这之后，还会引发什么连锁反应？" },
+      { id:"f2c3", method:"最坏情况法", question:"不做，或者搞砸了，最坏会怎样？" }
+    ]},
+    { name:"提炼", sub:"How → Abstract", cards:[
+      { id:"f3c1", method:"一句话概括法", question:"一句话概括你的策略是什么？" },
+      { id:"f3c2", method:"可迁移性检验法", question:"能不能提炼成一条反复能用的方法？" },
+      { id:"f3c3", method:"边界测试法", question:"这个方法在什么情况下会失效？" }
+    ]},
+    { name:"拆步", sub:"How → Concrete", cards:[
+      { id:"f4c1", method:"起点法", question:"迈出的最小一步是什么？" },
+      { id:"f4c2", method:"全流程列举法", question:"完整的方法是怎么样的？一点一点说。" },
+      { id:"f4c3", method:"新手风险法", question:"换个新手来做，哪一步最需要提醒？" }
+    ]},
+    { name:"复现", sub:"What → Concrete", cards:[
+      { id:"f5c1", method:"场景还原法（5W1H）", question:"当时具体发生了什么？谁、在哪、什么时候、做了什么？" },
+      { id:"f5c2", method:"高光时刻法", question:"有没有哪个场景画面，特别让人印象深刻？" },
+      { id:"f5c3", method:"对话/动作还原法", question:"有谁说了什么、做了什么，让你现在还记得？" }
+    ]},
+    { name:"定性", sub:"What → Abstract", cards:[
+      { id:"f6c1", method:"归类法", question:"说白了，这就是什么？" },
+      { id:"f6c2", method:"对比法", question:"最容易被拿来比较的是什么？差别在哪？" },
+      { id:"f6c3", method:"类比法", question:"换成大白话，你会怎么形容？" }
+    ]}
+  ];
+
+  var CARD_BY_ID = {};
+  FAMILIES.forEach(function(family){
+    family.cards.forEach(function(card){
+      CARD_BY_ID[card.id] = { family: family.name, method: card.method, question: card.question };
+    });
+  });
+
+  var state = {
+    topic: "",
+    selected: [],       // [{ uid, cardId }]
+    counts: {},          // cardId -> selected count
+    duration: 1,         // minutes
+    nextUid: 1,
+    timer: {
+      status: "idle",   // idle | running | ended
+      remaining: 0,
+      handle: null
+    }
+  };
+
+  var topicInputEl = document.getElementById("topicInput");
+  var randomTopicBtn = document.getElementById("randomTopicBtn");
+  var cardWallEl = document.getElementById("cardWall");
+  var emptyStateEl = document.getElementById("emptyState");
+  var selectedListEl = document.getElementById("selectedList");
+  var durationSegmentEl = document.getElementById("durationSegment");
+  var startBtn = document.getElementById("startBtn");
+  var selectionPanelEl = document.getElementById("selectionPanel");
+  var countdownPanelEl = document.getElementById("countdownPanel");
+  var runningViewEl = document.getElementById("runningView");
+  var endedViewEl = document.getElementById("endedView");
+  var countdownNumberEl = document.getElementById("countdownNumber");
+  var countdownOrderEl = document.getElementById("countdownOrder");
+  var stopBtn = document.getElementById("stopBtn");
+  var restartBtn = document.getElementById("restartBtn");
+  var backBtn = document.getElementById("backBtn");
+
+  var dragUid = null;
+
+  function renderTopic(){
+    if (!state.topic){
+      topicInputEl.textContent = "点击右侧按钮，随机抽一个话题";
+      topicInputEl.classList.add("placeholder");
+    } else {
+      topicInputEl.textContent = state.topic;
+      topicInputEl.classList.remove("placeholder");
+    }
+  }
+
+  function pickTopic(){
+    var pool = TOPICS.filter(function(t){ return t !== state.topic; });
+    var next = pool[Math.floor(Math.random() * pool.length)];
+    state.topic = next || TOPICS[0];
+    renderTopic();
+  }
+
+  function renderCardWall(){
+    cardWallEl.innerHTML = "";
+    FAMILIES.forEach(function(family){
+      var row = document.createElement("div");
+      row.className = "family-row";
+
+      var label = document.createElement("div");
+      label.className = "family-label";
+      label.innerHTML = '<div class="family-name">' + family.name + '</div><div class="family-sub">' + family.sub + '</div>';
+      row.appendChild(label);
+
+      var cardsWrap = document.createElement("div");
+      cardsWrap.className = "family-cards";
+
+      family.cards.forEach(function(card){
+        var count = state.counts[card.id] || 0;
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "card" + (count > 0 ? " selected" : "");
+        btn.setAttribute("data-card-id", card.id);
+        btn.setAttribute("aria-pressed", count > 0 ? "true" : "false");
+
+        if (count > 0){
+          var badge = document.createElement("span");
+          badge.className = "card-badge";
+          badge.textContent = String(count);
+          btn.appendChild(badge);
+        }
+        var q = document.createElement("span");
+        q.textContent = card.question;
+        btn.appendChild(q);
+
+        btn.addEventListener("click", function(){ addCard(card.id); });
+        cardsWrap.appendChild(btn);
+      });
+
+      row.appendChild(cardsWrap);
+      cardWallEl.appendChild(row);
+    });
+  }
+
+  function addCard(cardId){
+    state.selected.push({ uid: state.nextUid++, cardId: cardId });
+    state.counts[cardId] = (state.counts[cardId] || 0) + 1;
+    renderCardWall();
+    renderSelectedList();
+    renderStartButton();
+  }
+
+  function removeCard(uid){
+    var idx = state.selected.findIndex(function(item){ return item.uid === uid; });
+    if (idx === -1) return;
+    var cardId = state.selected[idx].cardId;
+    state.selected.splice(idx, 1);
+    state.counts[cardId] = Math.max(0, (state.counts[cardId] || 0) - 1);
+    renderCardWall();
+    renderSelectedList();
+    renderStartButton();
+  }
+
+  function reorder(fromUid, toUid){
+    if (fromUid === toUid) return;
+    var fromIdx = state.selected.findIndex(function(item){ return item.uid === fromUid; });
+    var toIdx = state.selected.findIndex(function(item){ return item.uid === toUid; });
+    if (fromIdx === -1 || toIdx === -1) return;
+    var moved = state.selected.splice(fromIdx, 1)[0];
+    state.selected.splice(toIdx, 0, moved);
+    renderSelectedList();
+  }
+
+  function buildSelectedItemEl(item, index, container){
+    var meta = CARD_BY_ID[item.cardId];
+    var row = document.createElement("div");
+    row.className = "selected-item";
+    row.draggable = true;
+    row.setAttribute("data-uid", item.uid);
+
+    row.innerHTML =
+      '<div class="drag-handle">⠿</div>' +
+      '<div class="seq-badge">' + (index + 1) + '</div>' +
+      '<div class="selected-item-body">' +
+        '<div class="selected-item-family">' + meta.family + ' · ' + meta.method + '</div>' +
+        '<div class="selected-item-question">' + meta.question + '</div>' +
+      '</div>';
+
+    var delBtn = document.createElement("button");
+    delBtn.type = "button";
+    delBtn.className = "delete-btn";
+    delBtn.setAttribute("aria-label", "删除这张卡片");
+    delBtn.textContent = "✕";
+    delBtn.addEventListener("click", function(){ removeCard(item.uid); });
+    row.appendChild(delBtn);
+
+    row.addEventListener("dragstart", function(){
+      dragUid = item.uid;
+      row.classList.add("dragging");
+    });
+    row.addEventListener("dragend", function(){
+      dragUid = null;
+      row.classList.remove("dragging");
+      Array.prototype.forEach.call(container.children, function(el){ el.classList.remove("drag-over"); });
+    });
+    row.addEventListener("dragover", function(e){
+      e.preventDefault();
+      row.classList.add("drag-over");
+    });
+    row.addEventListener("dragleave", function(){
+      row.classList.remove("drag-over");
+    });
+    row.addEventListener("drop", function(e){
+      e.preventDefault();
+      row.classList.remove("drag-over");
+      if (dragUid !== null){ reorder(dragUid, item.uid); }
+    });
+
+    return row;
+  }
+
+  function renderSelectedList(){
+    if (state.selected.length === 0){
+      emptyStateEl.hidden = false;
+      selectedListEl.hidden = true;
+      selectedListEl.innerHTML = "";
+      return;
+    }
+    emptyStateEl.hidden = true;
+    selectedListEl.hidden = false;
+    selectedListEl.innerHTML = "";
+    state.selected.forEach(function(item, index){
+      selectedListEl.appendChild(buildSelectedItemEl(item, index, selectedListEl));
+    });
+  }
+
+  function renderStartButton(){
+    startBtn.disabled = state.selected.length === 0;
+  }
+
+  durationSegmentEl.addEventListener("click", function(e){
+    var btn = e.target.closest(".segment-item");
+    if (!btn) return;
+    state.duration = Number(btn.getAttribute("data-duration"));
+    Array.prototype.forEach.call(durationSegmentEl.children, function(child){
+      child.classList.toggle("active", child === btn);
+    });
+  });
+
+  randomTopicBtn.addEventListener("click", pickTopic);
+
+  function formatTime(totalSeconds){
+    var m = Math.floor(totalSeconds / 60);
+    var s = totalSeconds % 60;
+    return (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s);
+  }
+
+  function renderCountdownOrder(){
+    countdownOrderEl.innerHTML = "";
+    state.selected.forEach(function(item, index){
+      var meta = CARD_BY_ID[item.cardId];
+      var row = document.createElement("div");
+      row.className = "selected-item";
+      row.innerHTML =
+        '<div class="seq-badge">' + (index + 1) + '</div>' +
+        '<div class="selected-item-body">' +
+          '<div class="selected-item-family">' + meta.family + ' · ' + meta.method + '</div>' +
+          '<div class="selected-item-question">' + meta.question + '</div>' +
+        '</div>';
+      countdownOrderEl.appendChild(row);
+    });
+  }
+
+  function startPractice(){
+    if (state.selected.length === 0) return;
+    state.timer.status = "running";
+    state.timer.remaining = state.duration * 60;
+
+    selectionPanelEl.hidden = true;
+    countdownPanelEl.hidden = false;
+    runningViewEl.hidden = false;
+    endedViewEl.hidden = true;
+
+    renderCountdownOrder();
+    countdownNumberEl.textContent = formatTime(state.timer.remaining);
+
+    state.timer.handle = window.setInterval(function(){
+      state.timer.remaining -= 1;
+      if (state.timer.remaining <= 0){
+        window.clearInterval(state.timer.handle);
+        state.timer.handle = null;
+        state.timer.status = "ended";
+        countdownNumberEl.textContent = "00:00";
+        runningViewEl.hidden = true;
+        endedViewEl.hidden = false;
+        return;
+      }
+      countdownNumberEl.textContent = formatTime(state.timer.remaining);
+    }, 1000);
+  }
+
+  function stopPractice(backToSelection){
+    if (state.timer.handle){
+      window.clearInterval(state.timer.handle);
+      state.timer.handle = null;
+    }
+    state.timer.status = "idle";
+    if (backToSelection){
+      countdownPanelEl.hidden = true;
+      selectionPanelEl.hidden = false;
+    }
+  }
+
+  startBtn.addEventListener("click", startPractice);
+  stopBtn.addEventListener("click", function(){ stopPractice(true); });
+  backBtn.addEventListener("click", function(){ stopPractice(true); });
+  restartBtn.addEventListener("click", function(){
+    endedViewEl.hidden = true;
+    runningViewEl.hidden = false;
+    startPractice();
+  });
+
+  renderTopic();
+  renderCardWall();
+  renderSelectedList();
+  renderStartButton();
+})();
+</script>
+
+</body>
+</html>
