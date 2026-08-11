@@ -479,6 +479,14 @@
     text-align:center;
     padding:64px 24px;
   }
+  .countdown-phase-label{
+    font-size:13px;
+    line-height:20px;
+    font-weight:600;
+    letter-spacing:0.04em;
+    color:rgba(255,255,255,0.6);
+    margin-bottom:4px;
+  }
   .countdown-number{
     font-size:56px;
     line-height:64px;
@@ -650,13 +658,18 @@
         <button id="startBtn" class="btn btn-primary" style="width:100%;" type="button" disabled>开始练习</button>
       </div>
 
-      <!-- 倒计时进行中 面板：时间到会自动返回上面的选卡面板，不展示单独的结束画面 -->
+      <!-- 倒计时面板：准备（5秒）→ 正式倒计时 → 时间到（重新练一次 / 返回） -->
       <div class="panel countdown-stage" id="countdownPanel" hidden>
+        <div class="countdown-phase-label" id="countdownPhaseLabel" hidden>准备开始</div>
         <div class="countdown-number" id="countdownNumber">01:00</div>
         <div class="countdown-caption" id="countdownCaption">倒计时进行中 · 按下面的顺序即兴讲述</div>
         <div class="countdown-order" id="countdownOrder"></div>
-        <div class="countdown-actions">
+        <div class="countdown-actions" id="countdownActionsRunning">
           <button id="stopBtn" class="btn btn-sm btn-ghost-dark" type="button">提前结束</button>
+        </div>
+        <div class="countdown-actions" id="countdownActionsDone" hidden>
+          <button id="restartBtn" class="btn btn-sm btn-ghost-dark" type="button">重新练一次</button>
+          <button id="backBtn" class="btn btn-sm btn-ghost-dark" type="button">返回</button>
         </div>
       </div>
     </div>
@@ -813,10 +826,15 @@
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
   var countdownPanelEl = document.getElementById("countdownPanel");
+  var countdownPhaseLabelEl = document.getElementById("countdownPhaseLabel");
   var countdownCaptionEl = document.getElementById("countdownCaption");
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownOrderEl = document.getElementById("countdownOrder");
+  var countdownActionsRunningEl = document.getElementById("countdownActionsRunning");
+  var countdownActionsDoneEl = document.getElementById("countdownActionsDone");
   var stopBtn = document.getElementById("stopBtn");
+  var restartBtn = document.getElementById("restartBtn");
+  var backBtn = document.getElementById("backBtn");
   var toastEl = document.getElementById("toast");
   var toastMessageEl = document.getElementById("toastMessage");
   var toastUndoBtn = document.getElementById("toastUndoBtn");
@@ -1246,26 +1264,62 @@
     }, 140);
   }
 
-  function startPractice(){
-    if (state.selected.length === 0) return;
-    state.timer.status = "running";
-    state.timer.remaining = state.duration * 60;
+  var PREP_SECONDS = 5;
 
-    renderCountdownOrder();
-    var currentTopic = TOPICS[state.topicMode][state.lang][state.topicIndex];
-    countdownCaptionEl.textContent = currentTopic;
-    countdownNumberEl.textContent = formatTime(state.timer.remaining);
-    appEl.classList.add("practice-mode");
-    switchPanel(selectionPanelEl, countdownPanelEl);
+  function beginCountdownRun(){
+    // 假设倒计时面板已经可见、话题/卡片顺序已经渲染好，只负责重置计时器状态并开始跑表。
+    state.timer.status = "prep";
+    state.timer.remaining = PREP_SECONDS;
+    countdownActionsDoneEl.hidden = true;
+    countdownActionsRunningEl.hidden = false;
+    countdownPhaseLabelEl.hidden = false;
+    countdownPhaseLabelEl.textContent = "准备开始";
+    countdownNumberEl.textContent = String(state.timer.remaining);
 
     state.timer.handle = window.setInterval(function(){
       state.timer.remaining -= 1;
+
+      if (state.timer.status === "prep"){
+        if (state.timer.remaining <= 0){
+          state.timer.status = "running";
+          state.timer.remaining = state.duration * 60;
+          countdownPhaseLabelEl.hidden = true;
+          countdownNumberEl.textContent = formatTime(state.timer.remaining);
+        } else {
+          countdownNumberEl.textContent = String(state.timer.remaining);
+        }
+        return;
+      }
+
       if (state.timer.remaining <= 0){
-        stopPractice(true);
+        window.clearInterval(state.timer.handle);
+        state.timer.handle = null;
+        state.timer.status = "done";
+        countdownNumberEl.textContent = "时间到了";
+        countdownActionsRunningEl.hidden = true;
+        countdownActionsDoneEl.hidden = false;
         return;
       }
       countdownNumberEl.textContent = formatTime(state.timer.remaining);
     }, 1000);
+  }
+
+  function startPractice(){
+    if (state.selected.length === 0) return;
+    renderCountdownOrder();
+    var currentTopic = TOPICS[state.topicMode][state.lang][state.topicIndex];
+    countdownCaptionEl.textContent = currentTopic;
+    appEl.classList.add("practice-mode");
+    switchPanel(selectionPanelEl, countdownPanelEl);
+    beginCountdownRun();
+  }
+
+  function restartPractice(){
+    if (state.timer.handle){
+      window.clearInterval(state.timer.handle);
+      state.timer.handle = null;
+    }
+    beginCountdownRun();
   }
 
   function stopPractice(backToSelection){
@@ -1282,6 +1336,8 @@
 
   startBtn.addEventListener("click", startPractice);
   stopBtn.addEventListener("click", function(){ stopPractice(true); });
+  restartBtn.addEventListener("click", restartPractice);
+  backBtn.addEventListener("click", function(){ stopPractice(true); });
 
   window.addEventListener("beforeunload", function(e){
     if (state.selected.length > 0){
