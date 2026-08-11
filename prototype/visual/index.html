@@ -43,10 +43,18 @@
     border:1px solid var(--border);
     border-radius:var(--radius);
     background:var(--surface);
+    overflow:hidden;
   }
-  .header-side{ display:flex; align-items:center; }
-  .header-side.right{ justify-content:flex-end; }
+  .header-side{ position:relative; height:100%; }
+  .header-deco{
+    position:absolute;
+    opacity:0.9;
+    pointer-events:none;
+    user-select:none;
+  }
   .header-tagline{
+    position:relative;
+    z-index:1;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -583,7 +591,11 @@
 <body>
 
 <header class="app-header">
-  <div class="header-side"></div>
+  <div class="header-side">
+    <img class="header-deco" style="top:60px; left:8px; width:40px; transform:rotate(-10deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/sketched-security-vault_sm.png" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:6px; left:60px; width:150px; transform:rotate(180deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/ai-data-processing-hub_sm.webp" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:100px; left:230px; width:64px; transform:rotate(6deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/retro-computer-monitor-technology_sm.png" alt="" aria-hidden="true" />
+  </div>
   <div class="header-tagline">
     <span class="tagline-fixed">Think fast in</span>
     <span class="tagline-scene-wrap" id="taglineSceneWrap">
@@ -591,7 +603,11 @@
       <img class="tagline-icon" id="taglineIcon" src="" alt="" aria-hidden="true" />
     </span>
   </div>
-  <div class="header-side right"></div>
+  <div class="header-side right">
+    <img class="header-deco" style="top:105px; right:230px; width:56px; transform:rotate(-8deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/hot-tea-mug-beverage-break_sm.png" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:10px; right:60px; width:150px; transform:rotate(-6deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/robot-coding-on-laptop_sm.webp" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:55px; right:8px; width:44px; transform:rotate(12deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/vintage-desk-lamp-icon_sm.png" alt="" aria-hidden="true" />
+  </div>
 </header>
 
 <div class="app" id="appRoot">
