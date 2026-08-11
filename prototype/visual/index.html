@@ -709,34 +709,34 @@
 
   var FAMILIES = [
     { sub:"Why → Abstract", name:"溯因", cards:[
-      { id:"f1c1", method:"直接追问法", question:{zh:"为什么？只留一个理由，是什么？", en:"Why? Give just one reason."} },
-      { id:"f1c2", method:"连续追问法", question:{zh:"有人继续追问“为什么”，你还能往下说吗？", en:"If someone keeps asking “why,” can you keep going?"} },
-      { id:"f1c3", method:"本质提炼法", question:{zh:"归根到底，最本质的原因是什么？", en:"At its core, what's the real reason?"} }
+      { id:"f1c1", method:"直接追问法", question:"为什么？只留一个理由，是什么？" },
+      { id:"f1c2", method:"连续追问法", question:"有人继续追问“为什么”，你还能往下说吗？" },
+      { id:"f1c3", method:"本质提炼法", question:"归根到底，最本质的原因是什么？" }
     ]},
     { sub:"Why → Concrete, So What", name:"推果", cards:[
-      { id:"f2c1", method:"直接推导法", question:{zh:"所以呢，会发生什么？", en:"So what happens next?"} },
-      { id:"f2c2", method:"连锁反应法", question:{zh:"这之后，还会引发什么连锁反应？", en:"What chain reaction does this trigger?"} },
-      { id:"f2c3", method:"最坏情况法", question:{zh:"不做，或者搞砸了，最坏会怎样？", en:"If you don't do it, or it goes wrong, what's the worst that happens?"} }
+      { id:"f2c1", method:"直接推导法", question:"所以呢，会发生什么？" },
+      { id:"f2c2", method:"连锁反应法", question:"这之后，还会引发什么连锁反应？" },
+      { id:"f2c3", method:"最坏情况法", question:"不做，或者搞砸了，最坏会怎样？" }
     ]},
     { sub:"How → Abstract", name:"提炼", cards:[
-      { id:"f3c1", method:"一句话概括法", question:{zh:"一句话概括你的策略是什么？", en:"Sum up your strategy in one sentence."} },
-      { id:"f3c2", method:"可迁移性检验法", question:{zh:"能不能提炼成一条反复能用的方法？", en:"Can this become a method you can reuse?"} },
-      { id:"f3c3", method:"边界测试法", question:{zh:"这个方法在什么情况下会失效？", en:"When would this method stop working?"} }
+      { id:"f3c1", method:"一句话概括法", question:"一句话概括你的策略是什么？" },
+      { id:"f3c2", method:"可迁移性检验法", question:"能不能提炼成一条反复能用的方法？" },
+      { id:"f3c3", method:"边界测试法", question:"这个方法在什么情况下会失效？" }
     ]},
     { sub:"How → Concrete", name:"拆步", cards:[
-      { id:"f4c1", method:"起点法", question:{zh:"迈出的最小一步是什么？", en:"What's the smallest first step?"} },
-      { id:"f4c2", method:"全流程列举法", question:{zh:"完整的方法是怎么样的？一点一点说。", en:"Walk through the whole process, step by step."} },
-      { id:"f4c3", method:"新手风险法", question:{zh:"换个新手来做，哪一步最需要提醒？", en:"If a beginner did this, which step needs the most warning?"} }
+      { id:"f4c1", method:"起点法", question:"迈出的最小一步是什么？" },
+      { id:"f4c2", method:"全流程列举法", question:"完整的方法是怎么样的？一点一点说。" },
+      { id:"f4c3", method:"新手风险法", question:"换个新手来做，哪一步最需要提醒？" }
     ]},
     { sub:"What → Concrete", name:"复现", cards:[
-      { id:"f5c1", method:"场景还原法（5W1H）", question:{zh:"当时具体发生了什么？谁、在哪、什么时候、做了什么？", en:"What exactly happened? Who, where, when, and what did they do?"} },
-      { id:"f5c2", method:"高光时刻法", question:{zh:"有没有哪个场景画面，特别让人印象深刻？", en:"Is there a scene that stands out most vividly?"} },
-      { id:"f5c3", method:"对话/动作还原法", question:{zh:"有谁说了什么、做了什么，让你现在还记得？", en:"What did someone say or do that you still remember?"} }
+      { id:"f5c1", method:"场景还原法（5W1H）", question:"当时具体发生了什么？谁、在哪、什么时候、做了什么？" },
+      { id:"f5c2", method:"高光时刻法", question:"有没有哪个场景画面，特别让人印象深刻？" },
+      { id:"f5c3", method:"对话/动作还原法", question:"有谁说了什么、做了什么，让你现在还记得？" }
     ]},
     { sub:"What → Abstract", name:"定性", cards:[
-      { id:"f6c1", method:"归类法", question:{zh:"说白了，这就是什么？", en:"Put simply, what is this?"} },
-      { id:"f6c2", method:"对比法", question:{zh:"最容易被拿来比较的是什么？差别在哪？", en:"What's it most often compared to? What's the difference?"} },
-      { id:"f6c3", method:"类比法", question:{zh:"换成大白话，你会怎么形容？", en:"In plain words, how would you describe it?"} }
+      { id:"f6c1", method:"归类法", question:"说白了，这就是什么？" },
+      { id:"f6c2", method:"对比法", question:"最容易被拿来比较的是什么？差别在哪？" },
+      { id:"f6c3", method:"类比法", question:"换成大白话，你会怎么形容？" }
     ]}
   ];
 
@@ -801,9 +801,6 @@
     state.lang = state.lang === "zh" ? "en" : "zh";
     updateToggleLabels();
     renderTopicSettled();
-    renderCardWall();
-    renderSelectedList();
-    renderCountdownOrder();
   }
 
   function toggleTopicMode(){
@@ -988,7 +985,7 @@
           btn.appendChild(dots);
         }
         var q = document.createElement("span");
-        q.textContent = card.question[state.lang];
+        q.textContent = card.question;
         btn.appendChild(q);
 
         var plus = document.createElement("span");
@@ -1100,7 +1097,7 @@
       '<div class="drag-handle" aria-hidden="true">⠿</div>' +
       '<div class="seq-badge">' + (index + 1) + '</div>' +
       '<div class="selected-item-body">' +
-        '<div class="selected-item-question">' + meta.question[state.lang] + '</div>' +
+        '<div class="selected-item-question">' + meta.question + '</div>' +
       '</div>';
 
     var delBtn = document.createElement("button");
@@ -1184,7 +1181,7 @@
       row.innerHTML =
         '<div class="seq-badge">' + (index + 1) + '</div>' +
         '<div class="selected-item-body">' +
-          '<div class="selected-item-question">' + meta.question[state.lang] + '</div>' +
+          '<div class="selected-item-question">' + meta.question + '</div>' +
         '</div>';
       countdownOrderEl.appendChild(row);
     });
