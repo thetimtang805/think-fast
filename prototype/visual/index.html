@@ -270,6 +270,9 @@
   .card:hover{ border-color:var(--text-muted); }
   .card:active{ background:var(--hover); }
   .card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .card:disabled{ cursor:not-allowed; opacity:0.5; }
+  .card:disabled:hover{ border-color:var(--border); }
+  .card:disabled .card-plus{ display:none; }
   .card.selected{
     background:var(--border-soft);
     border-color:var(--accent);
@@ -319,11 +322,22 @@
   .card-pop{ animation:cardPop .18s ease; }
 
   /* 已选面板 */
+  .panel-title-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin:0 0 12px;
+  }
   .panel-title{
     font-size:16px;
     line-height:24px;
     font-weight:600;
-    margin:0 0 12px;
+  }
+  .selected-count{
+    font-size:12px;
+    line-height:20px;
+    color:var(--text-muted);
+    font-variant-numeric:tabular-nums;
   }
   .empty-state{
     border:1px dashed var(--text-disabled);
@@ -618,7 +632,10 @@
     <div class="col-right">
       <!-- 选卡 + 设置倒计时 面板 -->
       <div class="panel" id="selectionPanel">
-        <div class="panel-title" id="panelTitle">已选卡片</div>
+        <div class="panel-title-row">
+          <div class="panel-title" id="panelTitle">已选卡片</div>
+          <div class="selected-count" id="selectedCount">0 / 10</div>
+        </div>
         <div id="emptyState" class="empty-state">还没有选择卡片<br/>点击左侧卡片，开始组织你的思路</div>
         <div id="selectedList" class="selected-list" hidden></div>
         <hr class="divider" />
@@ -791,6 +808,7 @@
   var cardWallEl = document.getElementById("cardWall");
   var emptyStateEl = document.getElementById("emptyState");
   var selectedListEl = document.getElementById("selectedList");
+  var selectedCountEl = document.getElementById("selectedCount");
   var durationSegmentEl = document.getElementById("durationSegment");
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
@@ -968,9 +986,12 @@
   }
 
   var CARD_DOT_CAP = 8; // 重复选卡次数很多时，圆点最多显示这么多个，避免溢出卡片边界
+  var MAX_TOTAL_SELECTED = 10; // 已选卡片总数上限
+  var MAX_PER_CARD = 5;        // 单张卡片最多重复添加次数
 
   function renderCardWall(){
     cardWallEl.innerHTML = "";
+    var atTotalCap = state.selected.length >= MAX_TOTAL_SELECTED;
     FAMILIES.forEach(function(family){
       var row = document.createElement("div");
       row.className = "family-row";
@@ -985,12 +1006,17 @@
 
       family.cards.forEach(function(card){
         var count = state.counts[card.id] || 0;
+        var atCardCap = count >= MAX_PER_CARD;
         var btn = document.createElement("button");
         btn.type = "button";
         btn.className = "card" + (count > 0 ? " selected" : "") +
                          (card.id === state.justClickedCardId ? " card-pop" : "");
         btn.setAttribute("data-card-id", card.id);
         btn.setAttribute("aria-pressed", count > 0 ? "true" : "false");
+        if (atCardCap || atTotalCap){
+          btn.disabled = true;
+          btn.title = atCardCap ? "这张卡片最多选 " + MAX_PER_CARD + " 次" : "最多选 " + MAX_TOTAL_SELECTED + " 张卡片";
+        }
 
         if (count > 0){
           var dots = document.createElement("span");
@@ -1024,6 +1050,8 @@
   }
 
   function addCard(cardId){
+    if (state.selected.length >= MAX_TOTAL_SELECTED) return;
+    if ((state.counts[cardId] || 0) >= MAX_PER_CARD) return;
     var uid = state.nextUid++;
     state.selected.push({ uid: uid, cardId: cardId });
     state.counts[cardId] = (state.counts[cardId] || 0) + 1;
@@ -1153,6 +1181,7 @@
   }
 
   function renderSelectedList(){
+    selectedCountEl.textContent = state.selected.length + " / " + MAX_TOTAL_SELECTED;
     if (state.selected.length === 0){
       emptyStateEl.hidden = false;
       selectedListEl.hidden = true;
