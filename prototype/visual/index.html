@@ -82,6 +82,8 @@
   }
   .col-left{ flex:0 0 60%; min-width:0; }
   .col-right{ flex:0 0 calc(40% - 24px); min-width:0; }
+  .layout.practice-mode .col-left{ display:none; }
+  .layout.practice-mode .col-right{ flex:1 1 100%; }
 
   .panel{
     background:var(--surface);
@@ -507,7 +509,7 @@
 </header>
 
 <div class="app">
-  <div class="layout">
+  <div class="layout" id="layout">
     <div class="col-left">
       <div class="topic-bar">
         <div id="topicInput" class="topic-input placeholder">点击右侧按钮，随机抽一个话题</div>
@@ -627,6 +629,7 @@
     justAddedUid: null        // 触发一次已选列表的 enter 动画
   };
 
+  var layoutEl = document.getElementById("layout");
   var topicInputEl = document.getElementById("topicInput");
   var randomTopicBtn = document.getElementById("randomTopicBtn");
   var cardWallEl = document.getElementById("cardWall");
@@ -916,6 +919,7 @@
 
     renderCountdownOrder();
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
+    layoutEl.classList.add("practice-mode");
     switchPanel(selectionPanelEl, countdownPanelEl);
 
     state.timer.handle = window.setInterval(function(){
@@ -935,6 +939,7 @@
     }
     state.timer.status = "idle";
     if (backToSelection){
+      layoutEl.classList.remove("practice-mode");
       switchPanel(countdownPanelEl, selectionPanelEl);
     }
   }
