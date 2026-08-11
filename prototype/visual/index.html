@@ -95,6 +95,9 @@
   .col-left{ flex:0 0 60%; min-width:0; }
   .col-right{ flex:0 0 calc(40% - 24px); min-width:0; }
   .app.practice-mode .topic-bar{ display:none; }
+  /* 练习时把宽度比例反过来：倒计时模块（右栏）变宽，发言记录输入框（左栏）变窄 */
+  .app.practice-mode .col-left{ flex:0 0 calc(40% - 24px); }
+  .app.practice-mode .col-right{ flex:0 0 60%; }
 
   .panel{
     background:var(--surface);
