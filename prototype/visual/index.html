@@ -85,8 +85,9 @@
   }
   .col-left{ flex:0 0 60%; min-width:0; }
   .col-right{ flex:0 0 calc(40% - 24px); min-width:0; }
-  .layout.practice-mode .col-left{ display:none; }
-  .layout.practice-mode .col-right{ flex:1 1 100%; }
+  .app.practice-mode .topic-bar{ display:none; }
+  .app.practice-mode .col-left{ display:none; }
+  .app.practice-mode .col-right{ flex:1 1 100%; }
 
   .panel{
     background:var(--surface);
@@ -204,6 +205,37 @@
   }
   .btn-ghost-dark:hover{ background:rgba(255,255,255,0.08); }
   .btn-ghost-dark:focus-visible{ outline:2px solid var(--on-accent); outline-offset:2px; }
+
+  /* 随机生成 —— 圆形游戏按钮，按下去有实体按键的下沉感 */
+  .spin-btn{
+    flex-shrink:0;
+    width:72px;
+    height:72px;
+    border-radius:50%;
+    border:none;
+    background:var(--accent);
+    color:var(--on-accent);
+    font-size:30px;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    box-shadow:0 5px 0 var(--accent-hover), 0 8px 14px rgba(0,0,0,0.25);
+    transition:transform .1s ease, box-shadow .1s ease, background .1s ease;
+  }
+  .spin-btn:hover{ background:var(--accent-hover); }
+  .spin-btn:active{
+    transform:translateY(4px);
+    box-shadow:0 1px 0 var(--accent-hover), 0 2px 6px rgba(0,0,0,0.25);
+  }
+  .spin-btn:disabled{
+    background:var(--border-soft);
+    color:var(--text-disabled);
+    box-shadow:0 5px 0 var(--border), 0 8px 14px rgba(0,0,0,0.08);
+    cursor:not-allowed;
+  }
+  .spin-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
 
   /* 卡片墙 */
   .family-row{
@@ -557,17 +589,17 @@
   </div>
 </header>
 
-<div class="app">
+<div class="app" id="appRoot">
+  <div class="topic-bar">
+    <div class="topic-window" id="topicWindow">
+      <div class="topic-reel" id="topicReel"></div>
+      <div class="topic-center-line" aria-hidden="true"></div>
+    </div>
+    <button id="randomTopicBtn" class="spin-btn" type="button">🎲</button>
+  </div>
+
   <div class="layout" id="layout">
     <div class="col-left">
-      <div class="topic-bar">
-        <div class="topic-window" id="topicWindow">
-          <div class="topic-reel" id="topicReel"></div>
-          <div class="topic-center-line" aria-hidden="true"></div>
-        </div>
-        <button id="randomTopicBtn" class="btn btn-primary" type="button">随机生成</button>
-      </div>
-
       <div class="panel" id="cardWall"></div>
     </div>
 
@@ -737,7 +769,7 @@
     justAddedUid: null        // 触发一次已选列表的 enter 动画
   };
 
-  var layoutEl = document.getElementById("layout");
+  var appEl = document.getElementById("appRoot");
   var headerTitleEl = document.getElementById("headerTitle");
   var langToggleBtn = document.getElementById("langToggle");
   var topicWindowEl = document.getElementById("topicWindow");
@@ -769,7 +801,8 @@
     document.documentElement.lang = tx.htmlLang;
     headerTitleEl.textContent = tx.headerTitle;
     langToggleBtn.textContent = tx.langToggle;
-    randomTopicBtn.textContent = tx.randomBtn;
+    randomTopicBtn.setAttribute("aria-label", tx.randomBtn);
+    randomTopicBtn.title = tx.randomBtn;
     panelTitleEl.textContent = tx.selectedTitle;
     emptyStateEl.innerHTML = tx.emptyState;
     durationLabelEl.textContent = tx.durationLabel;
@@ -1186,7 +1219,7 @@
 
     renderCountdownOrder();
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
-    layoutEl.classList.add("practice-mode");
+    appEl.classList.add("practice-mode");
     switchPanel(selectionPanelEl, countdownPanelEl);
 
     state.timer.handle = window.setInterval(function(){
@@ -1206,7 +1239,7 @@
     }
     state.timer.status = "idle";
     if (backToSelection){
-      layoutEl.classList.remove("practice-mode");
+      appEl.classList.remove("practice-mode");
       switchPanel(countdownPanelEl, selectionPanelEl);
     }
   }
