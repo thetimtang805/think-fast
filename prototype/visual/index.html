@@ -54,18 +54,21 @@
     text-align:center;
     white-space:nowrap;
   }
-  .header-nav-placeholder{
-    width:200px;
+  .lang-toggle{
     height:32px;
-    border:1px dashed var(--text-disabled);
+    padding:0 14px;
     border-radius:var(--radius);
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text);
     font-size:12px;
-    line-height:18px;
-    color:var(--text-muted);
+    font-weight:600;
+    letter-spacing:0.02em;
+    cursor:pointer;
   }
+  .lang-toggle:hover{ background:var(--hover); }
+  .lang-toggle:active{ background:var(--border-soft); }
+  .lang-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 
   .app{
     max-width:1440px;
@@ -502,9 +505,9 @@
 
 <header class="app-header">
   <div class="header-side"></div>
-  <div class="header-title">即兴演讲</div>
+  <div class="header-title" id="headerTitle">即兴演讲</div>
   <div class="header-side right">
-    <div class="header-nav-placeholder">导航占位</div>
+    <button id="langToggle" class="lang-toggle" type="button">EN</button>
   </div>
 </header>
 
@@ -522,12 +525,12 @@
     <div class="col-right">
       <!-- 选卡 + 设置倒计时 面板 -->
       <div class="panel" id="selectionPanel">
-        <div class="panel-title">已选卡片</div>
+        <div class="panel-title" id="panelTitle">已选卡片</div>
         <div id="emptyState" class="empty-state">还没有选择卡片<br/>点击左侧卡片，开始组织你的思路</div>
         <div id="selectedList" class="selected-list" hidden></div>
         <hr class="divider" />
         <div class="timer-row">
-          <span class="timer-label">练习时长</span>
+          <span class="timer-label" id="durationLabel">练习时长</span>
           <div class="segment" id="durationSegment">
             <button class="segment-item active" type="button" data-duration="1">1 分钟</button>
             <button class="segment-item" type="button" data-duration="2">2 分钟</button>
@@ -540,7 +543,7 @@
       <!-- 倒计时进行中 面板：时间到会自动返回上面的选卡面板，不展示单独的结束画面 -->
       <div class="panel countdown-stage" id="countdownPanel" hidden>
         <div class="countdown-number" id="countdownNumber">01:00</div>
-        <div class="countdown-caption">倒计时进行中 · 按下面的顺序即兴讲述</div>
+        <div class="countdown-caption" id="countdownCaption">倒计时进行中 · 按下面的顺序即兴讲述</div>
         <div class="countdown-order" id="countdownOrder"></div>
         <div class="countdown-actions">
           <button id="stopBtn" class="btn btn-sm btn-ghost-dark" type="button">提前结束</button>
@@ -559,49 +562,104 @@
 (function(){
   "use strict";
 
-  var TOPICS = [
-    "甜汤圆比咸汤圆好吃",
-    "猫比狗更适合当宠物",
-    "上班摸鱼应该被允许",
-    "点外卖比自己做饭更划算",
-    "早起的人不一定更自律",
-    "内向的人更适合当领导",
-    "手写笔记比电子笔记更有效",
-    "短视频正在毁掉专注力",
-    "加班多不等于贡献大",
-    "完美主义本质是一种拖延"
-  ];
+  var TEXT = {
+    zh: {
+      htmlLang: "zh-CN",
+      headerTitle: "即兴演讲",
+      langToggle: "EN",
+      topicPlaceholder: "点击右侧按钮，随机抽一个话题",
+      randomBtn: "随机生成",
+      selectedTitle: "已选卡片",
+      emptyState: "还没有选择卡片<br/>点击左侧卡片，开始组织你的思路",
+      durationLabel: "练习时长",
+      durations: ["1 分钟", "2 分钟", "3 分钟"],
+      startBtn: "开始练习",
+      startDisabledTitle: "先从左侧选至少一张卡片",
+      countdownCaption: "倒计时进行中 · 按下面的顺序即兴讲述",
+      stopBtn: "提前结束",
+      toastDeleted: "已删除卡片",
+      toastUndo: "撤销",
+      deletePrefix: "删除「",
+      deleteSuffix: "」这张卡片"
+    },
+    en: {
+      htmlLang: "en",
+      headerTitle: "Impromptu Speech",
+      langToggle: "中文",
+      topicPlaceholder: "Click the button for a random topic",
+      randomBtn: "Randomize",
+      selectedTitle: "Selected Cards",
+      emptyState: "No cards selected yet<br/>Click a card on the left to start organizing your thoughts",
+      durationLabel: "Practice length",
+      durations: ["1 min", "2 min", "3 min"],
+      startBtn: "Start Practice",
+      startDisabledTitle: "Select at least one card on the left first",
+      countdownCaption: "Timer running · Speak through the order below",
+      stopBtn: "End Early",
+      toastDeleted: "Card deleted",
+      toastUndo: "Undo",
+      deletePrefix: "Delete card: ",
+      deleteSuffix: ""
+    }
+  };
+
+  var TOPICS = {
+    zh: [
+      "甜汤圆比咸汤圆好吃",
+      "猫比狗更适合当宠物",
+      "上班摸鱼应该被允许",
+      "点外卖比自己做饭更划算",
+      "早起的人不一定更自律",
+      "内向的人更适合当领导",
+      "手写笔记比电子笔记更有效",
+      "短视频正在毁掉专注力",
+      "加班多不等于贡献大",
+      "完美主义本质是一种拖延"
+    ],
+    en: [
+      "Sweet tangyuan is better than savory tangyuan",
+      "Cats make better pets than dogs",
+      "Slacking off at work should be allowed",
+      "Ordering delivery is more worth it than cooking",
+      "Early risers aren't necessarily more disciplined",
+      "Introverts make better leaders",
+      "Handwritten notes are more effective than digital ones",
+      "Short videos are ruining our attention spans",
+      "Working more overtime doesn't mean contributing more",
+      "Perfectionism is really just procrastination"
+    ]
+  };
 
   var FAMILIES = [
-    { name:"溯因", sub:"Why → Abstract", cards:[
-      { id:"f1c1", method:"直接追问法", question:"为什么？只留一个理由，是什么？" },
-      { id:"f1c2", method:"连续追问法", question:"有人继续追问“为什么”，你还能往下说吗？" },
-      { id:"f1c3", method:"本质提炼法", question:"归根到底，最本质的原因是什么？" }
+    { sub:"Why → Abstract", name:{zh:"溯因", en:"Root Cause"}, cards:[
+      { id:"f1c1", method:{zh:"直接追问法", en:"Direct Ask"}, question:{zh:"为什么？只留一个理由，是什么？", en:"Why? Give just one reason."} },
+      { id:"f1c2", method:{zh:"连续追问法", en:"Keep Asking Why"}, question:{zh:"有人继续追问“为什么”，你还能往下说吗？", en:"If someone keeps asking “why,” can you keep going?"} },
+      { id:"f1c3", method:{zh:"本质提炼法", en:"Get to the Essence"}, question:{zh:"归根到底，最本质的原因是什么？", en:"At its core, what's the real reason?"} }
     ]},
-    { name:"推果", sub:"Why → Concrete, So What", cards:[
-      { id:"f2c1", method:"直接推导法", question:"所以呢，会发生什么？" },
-      { id:"f2c2", method:"连锁反应法", question:"这之后，还会引发什么连锁反应？" },
-      { id:"f2c3", method:"最坏情况法", question:"不做，或者搞砸了，最坏会怎样？" }
+    { sub:"Why → Concrete, So What", name:{zh:"推果", en:"Consequence"}, cards:[
+      { id:"f2c1", method:{zh:"直接推导法", en:"Direct Consequence"}, question:{zh:"所以呢，会发生什么？", en:"So what happens next?"} },
+      { id:"f2c2", method:{zh:"连锁反应法", en:"Chain Reaction"}, question:{zh:"这之后，还会引发什么连锁反应？", en:"What chain reaction does this trigger?"} },
+      { id:"f2c3", method:{zh:"最坏情况法", en:"Worst Case"}, question:{zh:"不做，或者搞砸了，最坏会怎样？", en:"If you don't do it, or it goes wrong, what's the worst that happens?"} }
     ]},
-    { name:"提炼", sub:"How → Abstract", cards:[
-      { id:"f3c1", method:"一句话概括法", question:"一句话概括你的策略是什么？" },
-      { id:"f3c2", method:"可迁移性检验法", question:"能不能提炼成一条反复能用的方法？" },
-      { id:"f3c3", method:"边界测试法", question:"这个方法在什么情况下会失效？" }
+    { sub:"How → Abstract", name:{zh:"提炼", en:"Distill"}, cards:[
+      { id:"f3c1", method:{zh:"一句话概括法", en:"One-Line Summary"}, question:{zh:"一句话概括你的策略是什么？", en:"Sum up your strategy in one sentence."} },
+      { id:"f3c2", method:{zh:"可迁移性检验法", en:"Test for Transfer"}, question:{zh:"能不能提炼成一条反复能用的方法？", en:"Can this become a method you can reuse?"} },
+      { id:"f3c3", method:{zh:"边界测试法", en:"Test the Limits"}, question:{zh:"这个方法在什么情况下会失效？", en:"When would this method stop working?"} }
     ]},
-    { name:"拆步", sub:"How → Concrete", cards:[
-      { id:"f4c1", method:"起点法", question:"迈出的最小一步是什么？" },
-      { id:"f4c2", method:"全流程列举法", question:"完整的方法是怎么样的？一点一点说。" },
-      { id:"f4c3", method:"新手风险法", question:"换个新手来做，哪一步最需要提醒？" }
+    { sub:"How → Concrete", name:{zh:"拆步", en:"Break It Down"}, cards:[
+      { id:"f4c1", method:{zh:"起点法", en:"Starting Point"}, question:{zh:"迈出的最小一步是什么？", en:"What's the smallest first step?"} },
+      { id:"f4c2", method:{zh:"全流程列举法", en:"Full Walkthrough"}, question:{zh:"完整的方法是怎么样的？一点一点说。", en:"Walk through the whole process, step by step."} },
+      { id:"f4c3", method:{zh:"新手风险法", en:"Beginner's Risk"}, question:{zh:"换个新手来做，哪一步最需要提醒？", en:"If a beginner did this, which step needs the most warning?"} }
     ]},
-    { name:"复现", sub:"What → Concrete", cards:[
-      { id:"f5c1", method:"场景还原法（5W1H）", question:"当时具体发生了什么？谁、在哪、什么时候、做了什么？" },
-      { id:"f5c2", method:"高光时刻法", question:"有没有哪个场景画面，特别让人印象深刻？" },
-      { id:"f5c3", method:"对话/动作还原法", question:"有谁说了什么、做了什么，让你现在还记得？" }
+    { sub:"What → Concrete", name:{zh:"复现", en:"Recreate the Scene"}, cards:[
+      { id:"f5c1", method:{zh:"场景还原法（5W1H）", en:"Scene Replay (5W1H)"}, question:{zh:"当时具体发生了什么？谁、在哪、什么时候、做了什么？", en:"What exactly happened? Who, where, when, and what did they do?"} },
+      { id:"f5c2", method:{zh:"高光时刻法", en:"Highlight Moment"}, question:{zh:"有没有哪个场景画面，特别让人印象深刻？", en:"Is there a scene that stands out most vividly?"} },
+      { id:"f5c3", method:{zh:"对话/动作还原法", en:"Dialogue/Action Replay"}, question:{zh:"有谁说了什么、做了什么，让你现在还记得？", en:"What did someone say or do that you still remember?"} }
     ]},
-    { name:"定性", sub:"What → Abstract", cards:[
-      { id:"f6c1", method:"归类法", question:"说白了，这就是什么？" },
-      { id:"f6c2", method:"对比法", question:"最容易被拿来比较的是什么？差别在哪？" },
-      { id:"f6c3", method:"类比法", question:"换成大白话，你会怎么形容？" }
+    { sub:"What → Abstract", name:{zh:"定性", en:"Define It"}, cards:[
+      { id:"f6c1", method:{zh:"归类法", en:"Categorize"}, question:{zh:"说白了，这就是什么？", en:"Put simply, what is this?"} },
+      { id:"f6c2", method:{zh:"对比法", en:"Compare"}, question:{zh:"最容易被拿来比较的是什么？差别在哪？", en:"What's it most often compared to? What's the difference?"} },
+      { id:"f6c3", method:{zh:"类比法", en:"Analogy"}, question:{zh:"换成大白话，你会怎么形容？", en:"In plain words, how would you describe it?"} }
     ]}
   ];
 
@@ -613,7 +671,8 @@
   });
 
   var state = {
-    topic: "",
+    lang: "zh",
+    topicIndex: null,
     selected: [],       // [{ uid, cardId }]
     counts: {},          // cardId -> selected count
     duration: 1,         // minutes
@@ -630,15 +689,20 @@
   };
 
   var layoutEl = document.getElementById("layout");
+  var headerTitleEl = document.getElementById("headerTitle");
+  var langToggleBtn = document.getElementById("langToggle");
   var topicInputEl = document.getElementById("topicInput");
   var randomTopicBtn = document.getElementById("randomTopicBtn");
   var cardWallEl = document.getElementById("cardWall");
+  var panelTitleEl = document.getElementById("panelTitle");
   var emptyStateEl = document.getElementById("emptyState");
   var selectedListEl = document.getElementById("selectedList");
+  var durationLabelEl = document.getElementById("durationLabel");
   var durationSegmentEl = document.getElementById("durationSegment");
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
   var countdownPanelEl = document.getElementById("countdownPanel");
+  var countdownCaptionEl = document.getElementById("countdownCaption");
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownOrderEl = document.getElementById("countdownOrder");
   var stopBtn = document.getElementById("stopBtn");
@@ -648,20 +712,59 @@
 
   var dragUid = null;
 
+  function t(){ return TEXT[state.lang]; }
+
+  function applyStaticText(){
+    var tx = t();
+    document.documentElement.lang = tx.htmlLang;
+    headerTitleEl.textContent = tx.headerTitle;
+    langToggleBtn.textContent = tx.langToggle;
+    randomTopicBtn.textContent = tx.randomBtn;
+    panelTitleEl.textContent = tx.selectedTitle;
+    emptyStateEl.innerHTML = tx.emptyState;
+    durationLabelEl.textContent = tx.durationLabel;
+    Array.prototype.forEach.call(durationSegmentEl.children, function(child, i){
+      child.textContent = tx.durations[i];
+    });
+    startBtn.textContent = tx.startBtn;
+    countdownCaptionEl.textContent = tx.countdownCaption;
+    stopBtn.textContent = tx.stopBtn;
+    toastUndoBtn.textContent = tx.toastUndo;
+  }
+
+  function toggleLanguage(){
+    state.lang = state.lang === "zh" ? "en" : "zh";
+    applyStaticText();
+    renderTopic();
+    renderCardWall();
+    renderSelectedList();
+    renderStartButton();
+    renderCountdownOrder();
+  }
+
+  langToggleBtn.addEventListener("click", toggleLanguage);
+
   function renderTopic(){
-    if (!state.topic){
-      topicInputEl.textContent = "点击右侧按钮，随机抽一个话题";
+    if (state.topicIndex === null){
+      topicInputEl.textContent = t().topicPlaceholder;
       topicInputEl.classList.add("placeholder");
     } else {
-      topicInputEl.textContent = state.topic;
+      topicInputEl.textContent = TOPICS[state.lang][state.topicIndex];
       topicInputEl.classList.remove("placeholder");
     }
   }
 
   function pickTopic(){
-    var pool = TOPICS.filter(function(t){ return t !== state.topic; });
-    var next = pool[Math.floor(Math.random() * pool.length)];
-    state.topic = next || TOPICS[0];
+    var pool = TOPICS[state.lang];
+    var nextIndex = state.topicIndex;
+    if (pool.length > 1){
+      while (nextIndex === state.topicIndex){
+        nextIndex = Math.floor(Math.random() * pool.length);
+      }
+    } else {
+      nextIndex = 0;
+    }
+    state.topicIndex = nextIndex;
     renderTopic();
   }
 
@@ -673,7 +776,7 @@
 
       var label = document.createElement("div");
       label.className = "family-label";
-      label.innerHTML = '<div class="family-name">' + family.name + '</div><div class="family-sub">' + family.sub + '</div>';
+      label.innerHTML = '<div class="family-name">' + family.name[state.lang] + '</div><div class="family-sub">' + family.sub + '</div>';
       row.appendChild(label);
 
       var cardsWrap = document.createElement("div");
@@ -699,7 +802,7 @@
           btn.appendChild(dots);
         }
         var q = document.createElement("span");
-        q.textContent = card.question;
+        q.textContent = card.question[state.lang];
         btn.appendChild(q);
 
         var plus = document.createElement("span");
@@ -762,7 +865,7 @@
 
   function showUndoToast(item, index){
     state.lastDeleted = { item: item, index: index };
-    toastMessageEl.textContent = "已删除卡片";
+    toastMessageEl.textContent = t().toastDeleted;
     toastEl.hidden = false;
     toastEl.classList.remove("toast-hide");
     // 强制重排，确保重复触发时动画能重新播放
@@ -801,7 +904,7 @@
 
   function buildSelectedItemEl(item, index, container){
     var meta = CARD_BY_ID[item.cardId];
-    var label = meta.family + ' · ' + meta.method;
+    var label = meta.family[state.lang] + ' · ' + meta.method[state.lang];
     var row = document.createElement("div");
     row.className = "selected-item" + (item.uid === state.justAddedUid ? " item-enter" : "");
     row.draggable = true;
@@ -811,13 +914,13 @@
       '<div class="drag-handle" aria-hidden="true">⠿</div>' +
       '<div class="seq-badge">' + (index + 1) + '</div>' +
       '<div class="selected-item-body">' +
-        '<div class="selected-item-question">' + meta.question + '</div>' +
+        '<div class="selected-item-question">' + meta.question[state.lang] + '</div>' +
       '</div>';
 
     var delBtn = document.createElement("button");
     delBtn.type = "button";
     delBtn.className = "delete-btn";
-    delBtn.setAttribute("aria-label", "删除「" + label + "」这张卡片");
+    delBtn.setAttribute("aria-label", t().deletePrefix + label + t().deleteSuffix);
     delBtn.textContent = "✕";
     delBtn.addEventListener("click", function(){ requestRemoveCard(item.uid); });
     row.appendChild(delBtn);
@@ -866,7 +969,7 @@
   function renderStartButton(){
     var empty = state.selected.length === 0;
     startBtn.disabled = empty;
-    startBtn.title = empty ? "先从左侧选至少一张卡片" : "";
+    startBtn.title = empty ? t().startDisabledTitle : "";
   }
 
   durationSegmentEl.addEventListener("click", function(e){
@@ -895,7 +998,7 @@
       row.innerHTML =
         '<div class="seq-badge">' + (index + 1) + '</div>' +
         '<div class="selected-item-body">' +
-          '<div class="selected-item-question">' + meta.question + '</div>' +
+          '<div class="selected-item-question">' + meta.question[state.lang] + '</div>' +
         '</div>';
       countdownOrderEl.appendChild(row);
     });
@@ -954,6 +1057,7 @@
     }
   });
 
+  applyStaticText();
   renderTopic();
   renderCardWall();
   renderSelectedList();
