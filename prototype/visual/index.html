@@ -300,11 +300,11 @@
     padding-bottom:0;
     border-width:0;
     overflow:hidden;
-    transition:opacity .5s cubic-bezier(.4,0,1,1), transform .5s cubic-bezier(.4,0,1,1),
-               max-height .5s cubic-bezier(.4,0,1,1),
-               margin-bottom .5s cubic-bezier(.4,0,1,1),
-               padding .5s cubic-bezier(.4,0,1,1),
-               border-width .5s cubic-bezier(.4,0,1,1);
+    transition:opacity .3s cubic-bezier(0,0,.2,1), transform .3s cubic-bezier(0,0,.2,1),
+               max-height .3s cubic-bezier(0,0,.2,1),
+               margin-bottom .3s cubic-bezier(0,0,.2,1),
+               padding .3s cubic-bezier(0,0,.2,1),
+               border-width .3s cubic-bezier(0,0,.2,1);
   }
   .drag-handle{
     flex:0 0 16px;
@@ -743,7 +743,7 @@
     var row = selectedListEl.querySelector('[data-uid="' + uid + '"]');
     if (!row){ removeCard(uid); return; }
     row.classList.add("item-leaving");
-    window.setTimeout(function(){ removeCard(uid); }, 500);
+    window.setTimeout(function(){ removeCard(uid); }, 300);
   }
 
   function undoDelete(){
