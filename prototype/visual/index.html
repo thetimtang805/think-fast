@@ -805,7 +805,7 @@
 
   function toggleTopicMode(){
     state.topicMode = state.topicMode === "daily" ? "interview" : "daily";
-    state.topicIndex = null;
+    state.topicIndex = pickRandomTopicIndex(null, TOPICS[state.topicMode][state.lang].length);
     updateToggleLabels();
     renderTopicSettled();
   }
@@ -1270,6 +1270,7 @@
   renderHeaderScene();
   window.setInterval(rotateHeaderScene, 3000);
 
+  state.topicIndex = pickRandomTopicIndex(null, TOPICS[state.topicMode][state.lang].length);
   updateToggleLabels();
   renderTopicSettled();
   renderCardWall();
