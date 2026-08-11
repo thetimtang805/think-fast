@@ -95,29 +95,75 @@
     padding:16px;
   }
 
-  /* 话题生成器 */
+  /* 话题生成器 —— 老虎机式滚动，机制仿照 speechtopicgen.com */
   .topic-bar{
     display:flex;
+    align-items:center;
     gap:8px;
     margin-bottom:16px;
   }
-  .topic-input{
+  .topic-window{
     flex:1;
-    height:40px;
+    height:168px;
+    position:relative;
+    overflow:hidden;
     border:1px solid var(--border);
     border-radius:var(--radius);
     background:var(--surface);
+    -webkit-mask-image:linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%);
+    mask-image:linear-gradient(to bottom, transparent 0%, black 22%, black 78%, transparent 100%);
+  }
+  .topic-reel{
+    position:absolute;
+    width:100%;
+    left:0;
+    top:0;
+    will-change:transform;
+  }
+  .topic-reel-item{
+    box-sizing:border-box;
+    width:100%;
+    height:56px;
     display:flex;
     align-items:center;
-    padding:0 12px;
-    font-size:14px;
-    line-height:22px;
+    justify-content:center;
+    text-align:center;
+    padding:0 16px;
+    font-size:13px;
+    line-height:1.35;
     color:var(--text);
-    overflow:hidden;
-    white-space:nowrap;
-    text-overflow:ellipsis;
+    user-select:none;
+    overflow-wrap:break-word;
   }
-  .topic-input.placeholder{ color:var(--text-disabled); }
+  .topic-reel.settled .topic-reel-item{
+    opacity:0.35;
+    transform:scale(1);
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .topic-reel.settled .topic-reel-item.landed{
+    opacity:1;
+    transform:scale(1.15);
+    font-weight:600;
+    transition:transform .45s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+    position:relative;
+    z-index:1;
+  }
+  .topic-reel.settled .topic-reel-item.placeholder{
+    color:var(--text-disabled);
+    font-weight:400;
+    transform:scale(1);
+  }
+  .topic-center-line{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%);
+    width:88%;
+    height:56px;
+    border-top:1px solid var(--border-soft);
+    border-bottom:1px solid var(--border-soft);
+    pointer-events:none;
+  }
 
   button{ font-family:inherit; }
   .btn{
@@ -515,7 +561,10 @@
   <div class="layout" id="layout">
     <div class="col-left">
       <div class="topic-bar">
-        <div id="topicInput" class="topic-input placeholder">点击右侧按钮，随机抽一个话题</div>
+        <div class="topic-window" id="topicWindow">
+          <div class="topic-reel" id="topicReel"></div>
+          <div class="topic-center-line" aria-hidden="true"></div>
+        </div>
         <button id="randomTopicBtn" class="btn btn-primary" type="button">随机生成</button>
       </div>
 
@@ -691,7 +740,8 @@
   var layoutEl = document.getElementById("layout");
   var headerTitleEl = document.getElementById("headerTitle");
   var langToggleBtn = document.getElementById("langToggle");
-  var topicInputEl = document.getElementById("topicInput");
+  var topicWindowEl = document.getElementById("topicWindow");
+  var topicReelEl = document.getElementById("topicReel");
   var randomTopicBtn = document.getElementById("randomTopicBtn");
   var cardWallEl = document.getElementById("cardWall");
   var panelTitleEl = document.getElementById("panelTitle");
@@ -735,7 +785,7 @@
   function toggleLanguage(){
     state.lang = state.lang === "zh" ? "en" : "zh";
     applyStaticText();
-    renderTopic();
+    renderTopicSettled();
     renderCardWall();
     renderSelectedList();
     renderStartButton();
@@ -744,28 +794,142 @@
 
   langToggleBtn.addEventListener("click", toggleLanguage);
 
-  function renderTopic(){
-    if (state.topicIndex === null){
-      topicInputEl.textContent = t().topicPlaceholder;
-      topicInputEl.classList.add("placeholder");
-    } else {
-      topicInputEl.textContent = TOPICS[state.lang][state.topicIndex];
-      topicInputEl.classList.remove("placeholder");
-    }
+  /* 话题老虎机：机制仿照 speechtopicgen.com —— 初速度 + 摩擦力衰减到停止阈值后，
+     用弹簧公式精确回正到目标行，最后换成一个干净的三行"静止态"（前一条/当前/后一条）。 */
+  var TOPIC_ITEM_H = 56;
+  var isTopicSpinning = false;
+  var topicSpinFrame = null;
+
+  function buildTopicItem(text, landed){
+    var div = document.createElement("div");
+    div.className = "topic-reel-item" + (landed ? " landed" : "");
+    div.textContent = text;
+    return div;
   }
 
-  function pickTopic(){
+  function renderTopicSettled(){
+    if (topicSpinFrame){ window.cancelAnimationFrame(topicSpinFrame); topicSpinFrame = null; }
+    topicReelEl.classList.remove("settled");
+    topicReelEl.style.transition = "none";
+    topicReelEl.style.transform = "translateY(0px)";
+    topicReelEl.innerHTML = "";
+
     var pool = TOPICS[state.lang];
-    var nextIndex = state.topicIndex;
-    if (pool.length > 1){
-      while (nextIndex === state.topicIndex){
-        nextIndex = Math.floor(Math.random() * pool.length);
-      }
+    if (state.topicIndex === null){
+      topicReelEl.appendChild(buildTopicItem("", false));
+      var placeholder = buildTopicItem(t().topicPlaceholder, false);
+      placeholder.classList.add("placeholder");
+      topicReelEl.appendChild(placeholder);
+      topicReelEl.appendChild(buildTopicItem("", false));
     } else {
-      nextIndex = 0;
+      var prevIdx = (state.topicIndex - 1 + pool.length) % pool.length;
+      var nextIdx = (state.topicIndex + 1) % pool.length;
+      topicReelEl.appendChild(buildTopicItem(pool[prevIdx], false));
+      topicReelEl.appendChild(buildTopicItem(pool[state.topicIndex], true));
+      topicReelEl.appendChild(buildTopicItem(pool[nextIdx], false));
     }
-    state.topicIndex = nextIndex;
-    renderTopic();
+    void topicReelEl.offsetHeight; // 强制重排，让 settled 的最终态样式立即生效
+    topicReelEl.classList.add("settled");
+  }
+
+  function pickRandomTopicIndex(exclude, poolLength){
+    if (poolLength <= 1) return 0;
+    var idx;
+    do { idx = Math.floor(Math.random() * poolLength); } while (idx === exclude);
+    return idx;
+  }
+
+  function spinTopic(){
+    if (isTopicSpinning) return;
+    var pool = TOPICS[state.lang];
+    if (!pool.length) return;
+    isTopicSpinning = true;
+    randomTopicBtn.disabled = true;
+
+    var windowHeight = topicWindowEl.offsetHeight || TOPIC_ITEM_H * 3;
+    var INITIAL_VELOCITY = 40;   // px/帧（60fps 基准）
+    var FRICTION = 0.985;
+    var STOP_THRESHOLD = 1.5;
+
+    var simVelocity = INITIAL_VELOCITY, simDistance = 0;
+    while (simVelocity >= STOP_THRESHOLD){ simDistance += simVelocity; simVelocity *= FRICTION; }
+
+    var centerAtStop = simDistance + windowHeight / 2;
+    var naturalIndex = Math.round((centerAtStop - TOPIC_ITEM_H / 2) / TOPIC_ITEM_H);
+    var landingIndex = naturalIndex + 1;
+    var reelCount = landingIndex + 3;
+
+    var finalIndex = pickRandomTopicIndex(state.topicIndex, pool.length);
+
+    var reelIdx = [];
+    for (var i = 0; i < reelCount; i++){ reelIdx.push(Math.floor(Math.random() * pool.length)); }
+    reelIdx[landingIndex] = finalIndex;
+
+    var targetY = -(landingIndex * TOPIC_ITEM_H + TOPIC_ITEM_H / 2 - windowHeight / 2);
+
+    topicReelEl.classList.remove("settled");
+    topicReelEl.style.transition = "none";
+    topicReelEl.style.transform = "translateY(0px)";
+    topicReelEl.innerHTML = "";
+    reelIdx.forEach(function(idx){ topicReelEl.appendChild(buildTopicItem(pool[idx], false)); });
+
+    function styleByPosition(currentY){
+      var viewportCenter = windowHeight / 2;
+      var items = topicReelEl.children;
+      for (var j = 0; j < items.length; j++){
+        var itemCenter = j * TOPIC_ITEM_H + TOPIC_ITEM_H / 2 + currentY;
+        var dist = Math.abs(itemCenter - viewportCenter);
+        var norm = Math.min(dist / TOPIC_ITEM_H, 1);
+        items[j].style.transform = "scale(" + (1.15 - norm * 0.15) + ")";
+        items[j].style.opacity = 1 - norm * 0.65;
+      }
+    }
+
+    var position = 0;
+    var velocity = INITIAL_VELOCITY;
+    var lastFrameTime = null;
+
+    function tick(timestamp){
+      if (lastFrameTime === null) lastFrameTime = timestamp;
+      var dt = Math.min((timestamp - lastFrameTime) / 16.667, 3);
+      lastFrameTime = timestamp;
+      if (dt === 0){ topicSpinFrame = window.requestAnimationFrame(tick); return; }
+
+      position += velocity * dt;
+      velocity *= Math.pow(FRICTION, dt);
+
+      topicReelEl.style.transform = "translateY(" + (-position) + "px)";
+      styleByPosition(-position);
+
+      if (velocity < STOP_THRESHOLD){ settle(); return; }
+      topicSpinFrame = window.requestAnimationFrame(tick);
+    }
+
+    function settle(){
+      var startY = -position;
+      var distance = targetY - startY;
+      var startTime = performance.now();
+      var duration = 650;
+
+      function spring(now){
+        var elapsed = Math.min((now - startTime) / duration, 1);
+        var eased = 1 - Math.exp(-7 * elapsed) * Math.cos(5 * elapsed);
+        var y = startY + distance * eased;
+        topicReelEl.style.transform = "translateY(" + y + "px)";
+        styleByPosition(y);
+        if (elapsed < 1){
+          topicSpinFrame = window.requestAnimationFrame(spring);
+        } else {
+          state.topicIndex = finalIndex;
+          renderTopicSettled();
+          isTopicSpinning = false;
+          randomTopicBtn.disabled = false;
+        }
+      }
+      topicSpinFrame = window.requestAnimationFrame(spring);
+    }
+
+    topicSpinFrame = window.requestAnimationFrame(tick);
   }
 
   function renderCardWall(){
@@ -981,7 +1145,7 @@
     });
   });
 
-  randomTopicBtn.addEventListener("click", pickTopic);
+  randomTopicBtn.addEventListener("click", spinTopic);
 
   function formatTime(totalSeconds){
     var m = Math.floor(totalSeconds / 60);
@@ -1058,7 +1222,7 @@
   });
 
   applyStaticText();
-  renderTopic();
+  renderTopicSettled();
   renderCardWall();
   renderSelectedList();
   renderStartButton();
