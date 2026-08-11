@@ -348,12 +348,29 @@
     line-height:24px;
     font-weight:600;
   }
+  .panel-title-right{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+  }
   .selected-count{
     font-size:12px;
     line-height:20px;
     color:var(--text-muted);
     font-variant-numeric:tabular-nums;
   }
+  .clear-link{
+    background:none;
+    border:none;
+    padding:0;
+    font-size:12px;
+    line-height:20px;
+    color:var(--text-muted);
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  .clear-link:hover{ color:var(--text); }
+  .clear-link:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .empty-state{
     border:1px dashed var(--text-disabled);
     border-radius:var(--radius);
@@ -670,7 +687,10 @@
         </select>
         <div class="panel-title-row">
           <div class="panel-title" id="panelTitle">已选卡片</div>
-          <div class="selected-count" id="selectedCount">0 / 10</div>
+          <div class="panel-title-right">
+            <span class="selected-count" id="selectedCount">0 / 10</span>
+            <button id="clearSelectedBtn" class="clear-link" type="button" hidden>清除</button>
+          </div>
         </div>
         <div id="emptyState" class="empty-state">还没有选择卡片<br/>点击左侧卡片，开始组织你的思路</div>
         <div id="selectedList" class="selected-list" hidden></div>
@@ -718,6 +738,7 @@
     topicPlaceholder: "点击下方按钮，随机抽一个话题",
     startDisabledTitle: "先从左侧选至少一张卡片",
     toastDeleted: "已删除卡片",
+    toastCleared: "已清空已选卡片",
     deletePrefix: "删除「",
     deleteSuffix: "」这张卡片"
   };
@@ -844,7 +865,7 @@
       remaining: 0,
       handle: null
     },
-    lastDeleted: null,   // { item, index } for undo
+    lastAction: null,    // { type:"single", item, index } | { type:"clear", items } for undo
     toastHandle: null,
     justClickedCardId: null,  // 触发一次卡片墙的 pop 反馈
     justAddedUid: null        // 触发一次已选列表的 enter 动画
@@ -864,6 +885,7 @@
   var emptyStateEl = document.getElementById("emptyState");
   var selectedListEl = document.getElementById("selectedList");
   var selectedCountEl = document.getElementById("selectedCount");
+  var clearSelectedBtn = document.getElementById("clearSelectedBtn");
   var expertSelectEl = document.getElementById("expertSelect");
   var durationSegmentEl = document.getElementById("durationSegment");
   var startBtn = document.getElementById("startBtn");
@@ -1135,7 +1157,8 @@
     renderCardWall();
     renderSelectedList();
     renderStartButton();
-    showUndoToast(removed, idx);
+    state.lastAction = { type:"single", item: removed, index: idx };
+    showUndoToast(TEXT.toastDeleted);
   }
 
   function requestRemoveCard(uid){
@@ -1145,21 +1168,40 @@
     window.setTimeout(function(){ removeCard(uid); }, 200);
   }
 
-  function undoDelete(){
-    if (!state.lastDeleted) return;
+  function clearSelected(){
+    if (state.selected.length === 0) return;
+    state.lastAction = { type:"clear", items: state.selected.slice() };
+    state.selected = [];
+    state.counts = {};
     expertSelectEl.value = "custom";
-    var insertAt = Math.min(state.lastDeleted.index, state.selected.length);
-    state.selected.splice(insertAt, 0, state.lastDeleted.item);
-    state.counts[state.lastDeleted.item.cardId] = (state.counts[state.lastDeleted.item.cardId] || 0) + 1;
+    renderCardWall();
+    renderSelectedList();
+    renderStartButton();
+    showUndoToast(TEXT.toastCleared);
+  }
+
+  function undoLastAction(){
+    if (!state.lastAction) return;
+    expertSelectEl.value = "custom";
+    if (state.lastAction.type === "single"){
+      var insertAt = Math.min(state.lastAction.index, state.selected.length);
+      state.selected.splice(insertAt, 0, state.lastAction.item);
+      state.counts[state.lastAction.item.cardId] = (state.counts[state.lastAction.item.cardId] || 0) + 1;
+    } else if (state.lastAction.type === "clear"){
+      state.selected = state.lastAction.items;
+      state.counts = {};
+      state.selected.forEach(function(item){
+        state.counts[item.cardId] = (state.counts[item.cardId] || 0) + 1;
+      });
+    }
     hideToast();
     renderCardWall();
     renderSelectedList();
     renderStartButton();
   }
 
-  function showUndoToast(item, index){
-    state.lastDeleted = { item: item, index: index };
-    toastMessageEl.textContent = TEXT.toastDeleted;
+  function showUndoToast(message){
+    toastMessageEl.textContent = message;
     toastEl.hidden = false;
     toastEl.classList.remove("toast-hide");
     // 强制重排，确保重复触发时动画能重新播放
@@ -1170,21 +1212,21 @@
   }
 
   function hideToast(){
-    if (toastEl.hidden) { state.lastDeleted = null; return; }
+    if (toastEl.hidden) { state.lastAction = null; return; }
     toastEl.classList.remove("toast-show");
     toastEl.classList.add("toast-hide");
     window.setTimeout(function(){
       toastEl.hidden = true;
       toastEl.classList.remove("toast-hide");
     }, 140);
-    state.lastDeleted = null;
+    state.lastAction = null;
     if (state.toastHandle){
       window.clearTimeout(state.toastHandle);
       state.toastHandle = null;
     }
   }
 
-  toastUndoBtn.addEventListener("click", undoDelete);
+  toastUndoBtn.addEventListener("click", undoLastAction);
 
   function reorder(fromUid, toUid){
     if (fromUid === toUid) return;
@@ -1214,9 +1256,11 @@
 
   expertSelectEl.addEventListener("change", function(){
     var val = expertSelectEl.value;
-    if (val === "custom") return;
+    if (val === "custom"){ clearSelected(); return; }
     applyExpertPreset(Number(val));
   });
+
+  clearSelectedBtn.addEventListener("click", clearSelected);
 
   function buildSelectedItemEl(item, index, container){
     var meta = CARD_BY_ID[item.cardId];
@@ -1268,6 +1312,7 @@
 
   function renderSelectedList(){
     selectedCountEl.textContent = state.selected.length + " / " + MAX_TOTAL_SELECTED;
+    clearSelectedBtn.hidden = state.selected.length === 0;
     if (state.selected.length === 0){
       emptyStateEl.hidden = false;
       selectedListEl.hidden = true;
