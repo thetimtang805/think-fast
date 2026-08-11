@@ -500,6 +500,17 @@
     justify-content:center;
   }
   [hidden]{ display:none !important; }
+  .sr-only{
+    position:absolute;
+    width:1px;
+    height:1px;
+    padding:0;
+    margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+  }
 
   /* 选卡面板 ↔ 倒计时舞台 切换 */
   @keyframes panelFadeOut{
@@ -587,10 +598,11 @@
 
 <div class="app" id="appRoot">
   <div class="topic-bar">
-    <div class="topic-window" id="topicWindow">
+    <div class="topic-window" id="topicWindow" aria-hidden="true">
       <div class="topic-reel" id="topicReel"></div>
       <div class="topic-center-line" aria-hidden="true"></div>
     </div>
+    <div id="topicAnnounce" class="sr-only" role="status" aria-live="polite"></div>
     <div class="topic-controls">
       <button id="langToggleBtn" class="btn" type="button">EN</button>
       <button id="topicModeToggleBtn" class="btn" type="button">面试准备</button>
@@ -772,6 +784,7 @@
   var taglineIconEl = document.getElementById("taglineIcon");
   var topicWindowEl = document.getElementById("topicWindow");
   var topicReelEl = document.getElementById("topicReel");
+  var topicAnnounceEl = document.getElementById("topicAnnounce");
   var langToggleBtn = document.getElementById("langToggleBtn");
   var topicModeToggleBtn = document.getElementById("topicModeToggleBtn");
   var randomTopicBtn = document.getElementById("randomTopicBtn");
@@ -841,12 +854,14 @@
       placeholder.classList.add("placeholder");
       topicReelEl.appendChild(placeholder);
       topicReelEl.appendChild(buildTopicItem("", false));
+      topicAnnounceEl.textContent = TEXT.topicPlaceholder;
     } else {
       var prevIdx = (state.topicIndex - 1 + pool.length) % pool.length;
       var nextIdx = (state.topicIndex + 1) % pool.length;
       topicReelEl.appendChild(buildTopicItem(pool[prevIdx], false));
       topicReelEl.appendChild(buildTopicItem(pool[state.topicIndex], true));
       topicReelEl.appendChild(buildTopicItem(pool[nextIdx], false));
+      topicAnnounceEl.textContent = pool[state.topicIndex];
     }
     void topicReelEl.offsetHeight; // 强制重排，让 settled 的最终态样式立即生效
     topicReelEl.classList.add("settled");
@@ -952,6 +967,8 @@
     topicSpinFrame = window.requestAnimationFrame(tick);
   }
 
+  var CARD_DOT_CAP = 8; // 重复选卡次数很多时，圆点最多显示这么多个，避免溢出卡片边界
+
   function renderCardWall(){
     cardWallEl.innerHTML = "";
     FAMILIES.forEach(function(family){
@@ -978,7 +995,8 @@
         if (count > 0){
           var dots = document.createElement("span");
           dots.className = "card-dots";
-          for (var i = 0; i < count; i++){
+          var dotCount = Math.min(count, CARD_DOT_CAP);
+          for (var i = 0; i < dotCount; i++){
             var dot = document.createElement("span");
             dot.className = "card-dot";
             dots.appendChild(dot);
