@@ -322,6 +322,21 @@
   .card-pop{ animation:cardPop .18s ease; }
 
   /* 已选面板 */
+  .expert-select{
+    width:100%;
+    height:36px;
+    padding:0 12px;
+    margin-bottom:12px;
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+    background:var(--surface);
+    color:var(--text);
+    font-size:14px;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .expert-select:hover{ background:var(--hover); }
+  .expert-select:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
   .panel-title-row{
     display:flex;
     align-items:baseline;
@@ -640,6 +655,19 @@
     <div class="col-right">
       <!-- 选卡 + 设置倒计时 面板 -->
       <div class="panel" id="selectionPanel">
+        <select id="expertSelect" class="expert-select">
+          <option value="custom">自定义</option>
+          <option value="0">Steve Jobs</option>
+          <option value="1">Simon Sinek</option>
+          <option value="2">Don Draper</option>
+          <option value="3">Feynman</option>
+          <option value="4">Obama</option>
+          <option value="5">Seth Godin</option>
+          <option value="6">Naval Ravikant</option>
+          <option value="7">Brené Brown</option>
+          <option value="8">Chris Voss</option>
+          <option value="9">Harari</option>
+        </select>
         <div class="panel-title-row">
           <div class="panel-title" id="panelTitle">已选卡片</div>
           <div class="selected-count" id="selectedCount">0 / 10</div>
@@ -789,6 +817,20 @@
     });
   });
 
+  // 十位专家的预设卡片顺序，见 reference/思维训练卡/思维训练卡_十位专家预设顺序.md
+  var EXPERT_PRESETS = [
+    { name:"Steve Jobs", cardIds:["f5c1","f1c3","f5c1","f1c3","f5c1","f1c3","f6c1","f1c3"] },
+    { name:"Simon Sinek", cardIds:["f1c1","f5c1","f5c1","f3c2","f1c3"] },
+    { name:"Don Draper", cardIds:["f6c2","f5c3","f6c3","f2c1","f1c3"] },
+    { name:"Feynman", cardIds:["f1c1","f1c2","f5c2","f3c3","f4c1","f5c1"] },
+    { name:"Obama", cardIds:["f5c1","f1c3","f5c1","f1c3","f5c1","f1c3","f2c1"] },
+    { name:"Seth Godin", cardIds:["f5c1","f6c2","f5c2","f3c2","f3c1"] },
+    { name:"Naval Ravikant", cardIds:["f6c2","f1c2","f3c1","f3c2","f1c3"] },
+    { name:"Brené Brown", cardIds:["f5c1","f2c1","f5c2","f6c2","f5c3"] },
+    { name:"Chris Voss", cardIds:["f4c1","f2c2","f4c2","f2c3","f4c3","f2c1"] },
+    { name:"Harari", cardIds:["f6c2","f5c2","f5c1","f6c3","f2c3"] }
+  ];
+
   var state = {
     lang: "zh",
     topicMode: "daily",
@@ -822,6 +864,7 @@
   var emptyStateEl = document.getElementById("emptyState");
   var selectedListEl = document.getElementById("selectedList");
   var selectedCountEl = document.getElementById("selectedCount");
+  var expertSelectEl = document.getElementById("expertSelect");
   var durationSegmentEl = document.getElementById("durationSegment");
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
@@ -1070,6 +1113,7 @@
   function addCard(cardId){
     if (state.selected.length >= MAX_TOTAL_SELECTED) return;
     if ((state.counts[cardId] || 0) >= MAX_PER_CARD) return;
+    expertSelectEl.value = "custom";
     var uid = state.nextUid++;
     state.selected.push({ uid: uid, cardId: cardId });
     state.counts[cardId] = (state.counts[cardId] || 0) + 1;
@@ -1083,6 +1127,7 @@
   function removeCard(uid){
     var idx = state.selected.findIndex(function(item){ return item.uid === uid; });
     if (idx === -1) return;
+    expertSelectEl.value = "custom";
     var removed = state.selected[idx];
     var cardId = removed.cardId;
     state.selected.splice(idx, 1);
@@ -1102,6 +1147,7 @@
 
   function undoDelete(){
     if (!state.lastDeleted) return;
+    expertSelectEl.value = "custom";
     var insertAt = Math.min(state.lastDeleted.index, state.selected.length);
     state.selected.splice(insertAt, 0, state.lastDeleted.item);
     state.counts[state.lastDeleted.item.cardId] = (state.counts[state.lastDeleted.item.cardId] || 0) + 1;
@@ -1145,10 +1191,32 @@
     var fromIdx = state.selected.findIndex(function(item){ return item.uid === fromUid; });
     var toIdx = state.selected.findIndex(function(item){ return item.uid === toUid; });
     if (fromIdx === -1 || toIdx === -1) return;
+    expertSelectEl.value = "custom";
     var moved = state.selected.splice(fromIdx, 1)[0];
     state.selected.splice(toIdx, 0, moved);
     renderSelectedList();
   }
+
+  function applyExpertPreset(presetIndex){
+    var preset = EXPERT_PRESETS[presetIndex];
+    if (!preset) return;
+    state.selected = [];
+    state.counts = {};
+    preset.cardIds.forEach(function(cardId){
+      var uid = state.nextUid++;
+      state.selected.push({ uid: uid, cardId: cardId });
+      state.counts[cardId] = (state.counts[cardId] || 0) + 1;
+    });
+    renderCardWall();
+    renderSelectedList();
+    renderStartButton();
+  }
+
+  expertSelectEl.addEventListener("change", function(){
+    var val = expertSelectEl.value;
+    if (val === "custom") return;
+    applyExpertPreset(Number(val));
+  });
 
   function buildSelectedItemEl(item, index, container){
     var meta = CARD_BY_ID[item.cardId];
