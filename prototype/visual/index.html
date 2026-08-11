@@ -108,12 +108,18 @@
   /* 话题生成器 —— 老虎机式滚动，机制仿照 speechtopicgen.com */
   .topic-bar{
     display:flex;
-    align-items:center;
-    gap:8px;
+    flex-direction:column;
+    gap:12px;
     margin-bottom:16px;
   }
+  .topic-controls{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .topic-controls .btn{ flex:1; }
   .topic-window{
-    flex:1;
+    width:100%;
     height:168px;
     position:relative;
     overflow:hidden;
@@ -214,37 +220,6 @@
   }
   .btn-ghost-dark:hover{ background:rgba(255,255,255,0.08); }
   .btn-ghost-dark:focus-visible{ outline:2px solid var(--on-accent); outline-offset:2px; }
-
-  /* 随机生成 —— 圆形游戏按钮，按下去有实体按键的下沉感 */
-  .spin-btn{
-    flex-shrink:0;
-    width:72px;
-    height:72px;
-    border-radius:50%;
-    border:none;
-    background:var(--accent);
-    color:var(--on-accent);
-    font-size:30px;
-    line-height:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    box-shadow:0 5px 0 var(--accent-hover), 0 8px 14px rgba(0,0,0,0.25);
-    transition:transform .1s ease, box-shadow .1s ease, background .1s ease;
-  }
-  .spin-btn:hover{ background:var(--accent-hover); }
-  .spin-btn:active{
-    transform:translateY(4px);
-    box-shadow:0 1px 0 var(--accent-hover), 0 2px 6px rgba(0,0,0,0.25);
-  }
-  .spin-btn:disabled{
-    background:var(--border-soft);
-    color:var(--text-disabled);
-    box-shadow:0 5px 0 var(--border), 0 8px 14px rgba(0,0,0,0.08);
-    cursor:not-allowed;
-  }
-  .spin-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:3px; }
 
   /* 卡片墙 */
   .family-row{
@@ -616,7 +591,11 @@
       <div class="topic-reel" id="topicReel"></div>
       <div class="topic-center-line" aria-hidden="true"></div>
     </div>
-    <button id="randomTopicBtn" class="spin-btn" type="button">🎲</button>
+    <div class="topic-controls">
+      <button id="langToggleBtn" class="btn" type="button">EN</button>
+      <button id="topicModeToggleBtn" class="btn" type="button">面试准备</button>
+      <button id="randomTopicBtn" class="btn btn-primary" type="button">🎲 随机生成</button>
+    </div>
   </div>
 
   <div class="layout" id="layout">
@@ -665,57 +644,131 @@
   "use strict";
 
   var TEXT = {
-    topicPlaceholder: "点击右侧按钮，随机抽一个话题",
-    randomBtn: "随机生成",
-    startDisabledTitle: "先从左侧选至少一张卡片",
-    toastDeleted: "已删除卡片",
-    deletePrefix: "删除「",
-    deleteSuffix: "」这张卡片"
+    zh: {
+      htmlLang: "zh-CN",
+      langToggle: "EN",
+      topicModeNames: { daily: "日常话题", interview: "面试准备" },
+      topicPlaceholder: "点击下方按钮，随机抽一个话题",
+      randomBtn: "随机生成",
+      selectedTitle: "已选卡片",
+      emptyState: "还没有选择卡片<br/>点击左侧卡片，开始组织你的思路",
+      durationLabel: "练习时长",
+      durations: ["1 分钟", "2 分钟", "3 分钟"],
+      startBtn: "开始练习",
+      startDisabledTitle: "先从左侧选至少一张卡片",
+      countdownCaption: "倒计时进行中 · 按下面的顺序即兴讲述",
+      stopBtn: "提前结束",
+      toastDeleted: "已删除卡片",
+      toastUndo: "撤销",
+      deletePrefix: "删除「",
+      deleteSuffix: "」这张卡片"
+    },
+    en: {
+      htmlLang: "en",
+      langToggle: "中文",
+      topicModeNames: { daily: "Daily Topics", interview: "Interview Prep" },
+      topicPlaceholder: "Click the button below for a random topic",
+      randomBtn: "Randomize",
+      selectedTitle: "Selected Cards",
+      emptyState: "No cards selected yet<br/>Click a card on the left to start organizing your thoughts",
+      durationLabel: "Practice length",
+      durations: ["1 min", "2 min", "3 min"],
+      startBtn: "Start Practice",
+      startDisabledTitle: "Select at least one card on the left first",
+      countdownCaption: "Timer running · Speak through the order below",
+      stopBtn: "End Early",
+      toastDeleted: "Card deleted",
+      toastUndo: "Undo",
+      deletePrefix: "Delete card: ",
+      deleteSuffix: ""
+    }
   };
 
-  var TOPICS = [
-    "甜汤圆比咸汤圆好吃",
-    "猫比狗更适合当宠物",
-    "上班摸鱼应该被允许",
-    "点外卖比自己做饭更划算",
-    "早起的人不一定更自律",
-    "内向的人更适合当领导",
-    "手写笔记比电子笔记更有效",
-    "短视频正在毁掉专注力",
-    "加班多不等于贡献大",
-    "完美主义本质是一种拖延"
-  ];
+  var TOPICS = {
+    daily: {
+      zh: [
+        "甜汤圆比咸汤圆好吃",
+        "猫比狗更适合当宠物",
+        "上班摸鱼应该被允许",
+        "点外卖比自己做饭更划算",
+        "早起的人不一定更自律",
+        "内向的人更适合当领导",
+        "手写笔记比电子笔记更有效",
+        "短视频正在毁掉专注力",
+        "加班多不等于贡献大",
+        "完美主义本质是一种拖延"
+      ],
+      en: [
+        "Sweet tangyuan is better than savory tangyuan",
+        "Cats make better pets than dogs",
+        "Slacking off at work should be allowed",
+        "Ordering delivery is more worth it than cooking",
+        "Early risers aren't necessarily more disciplined",
+        "Introverts make better leaders",
+        "Handwritten notes are more effective than digital ones",
+        "Short videos are ruining our attention spans",
+        "Working more overtime doesn't mean contributing more",
+        "Perfectionism is really just procrastination"
+      ]
+    },
+    interview: {
+      zh: [
+        "用一分钟做一个自我介绍",
+        "说说你做过最有成就感的一个项目",
+        "描述一次你和同事意见不合，你是怎么处理的",
+        "你怎么向非设计背景的人解释你的工作",
+        "说说一次你的设计被否决了，你是怎么应对的",
+        "你为什么想加入这家公司",
+        "描述一次你在压力很大的情况下按时交付的经历",
+        "你怎么衡量一个设计是不是成功的",
+        "说说你最大的一个职业弱点，以及你怎么应对它",
+        "五年后你希望自己在做什么"
+      ],
+      en: [
+        "Give a one-minute introduction of yourself",
+        "Talk about the project you're most proud of",
+        "Describe a time you disagreed with a colleague and how you handled it",
+        "How would you explain your job to someone outside design",
+        "Talk about a time your design got rejected and how you responded",
+        "Why do you want to join this company",
+        "Describe a time you delivered under a tight deadline and high pressure",
+        "How do you measure whether a design is successful",
+        "Talk about your biggest professional weakness and how you handle it",
+        "Where do you see yourself in five years"
+      ]
+    }
+  };
 
   var FAMILIES = [
-    { sub:"Why → Abstract", name:"溯因", cards:[
-      { id:"f1c1", method:"直接追问法", question:"为什么？只留一个理由，是什么？" },
-      { id:"f1c2", method:"连续追问法", question:"有人继续追问“为什么”，你还能往下说吗？" },
-      { id:"f1c3", method:"本质提炼法", question:"归根到底，最本质的原因是什么？" }
+    { sub:"Why → Abstract", name:{zh:"溯因", en:"Root Cause"}, cards:[
+      { id:"f1c1", method:{zh:"直接追问法", en:"Direct Ask"}, question:{zh:"为什么？只留一个理由，是什么？", en:"Why? Give just one reason."} },
+      { id:"f1c2", method:{zh:"连续追问法", en:"Keep Asking Why"}, question:{zh:"有人继续追问“为什么”，你还能往下说吗？", en:"If someone keeps asking “why,” can you keep going?"} },
+      { id:"f1c3", method:{zh:"本质提炼法", en:"Get to the Essence"}, question:{zh:"归根到底，最本质的原因是什么？", en:"At its core, what's the real reason?"} }
     ]},
-    { sub:"Why → Concrete, So What", name:"推果", cards:[
-      { id:"f2c1", method:"直接推导法", question:"所以呢，会发生什么？" },
-      { id:"f2c2", method:"连锁反应法", question:"这之后，还会引发什么连锁反应？" },
-      { id:"f2c3", method:"最坏情况法", question:"不做，或者搞砸了，最坏会怎样？" }
+    { sub:"Why → Concrete, So What", name:{zh:"推果", en:"Consequence"}, cards:[
+      { id:"f2c1", method:{zh:"直接推导法", en:"Direct Consequence"}, question:{zh:"所以呢，会发生什么？", en:"So what happens next?"} },
+      { id:"f2c2", method:{zh:"连锁反应法", en:"Chain Reaction"}, question:{zh:"这之后，还会引发什么连锁反应？", en:"What chain reaction does this trigger?"} },
+      { id:"f2c3", method:{zh:"最坏情况法", en:"Worst Case"}, question:{zh:"不做，或者搞砸了，最坏会怎样？", en:"If you don't do it, or it goes wrong, what's the worst that happens?"} }
     ]},
-    { sub:"How → Abstract", name:"提炼", cards:[
-      { id:"f3c1", method:"一句话概括法", question:"一句话概括你的策略是什么？" },
-      { id:"f3c2", method:"可迁移性检验法", question:"能不能提炼成一条反复能用的方法？" },
-      { id:"f3c3", method:"边界测试法", question:"这个方法在什么情况下会失效？" }
+    { sub:"How → Abstract", name:{zh:"提炼", en:"Distill"}, cards:[
+      { id:"f3c1", method:{zh:"一句话概括法", en:"One-Line Summary"}, question:{zh:"一句话概括你的策略是什么？", en:"Sum up your strategy in one sentence."} },
+      { id:"f3c2", method:{zh:"可迁移性检验法", en:"Test for Transfer"}, question:{zh:"能不能提炼成一条反复能用的方法？", en:"Can this become a method you can reuse?"} },
+      { id:"f3c3", method:{zh:"边界测试法", en:"Test the Limits"}, question:{zh:"这个方法在什么情况下会失效？", en:"When would this method stop working?"} }
     ]},
-    { sub:"How → Concrete", name:"拆步", cards:[
-      { id:"f4c1", method:"起点法", question:"迈出的最小一步是什么？" },
-      { id:"f4c2", method:"全流程列举法", question:"完整的方法是怎么样的？一点一点说。" },
-      { id:"f4c3", method:"新手风险法", question:"换个新手来做，哪一步最需要提醒？" }
+    { sub:"How → Concrete", name:{zh:"拆步", en:"Break It Down"}, cards:[
+      { id:"f4c1", method:{zh:"起点法", en:"Starting Point"}, question:{zh:"迈出的最小一步是什么？", en:"What's the smallest first step?"} },
+      { id:"f4c2", method:{zh:"全流程列举法", en:"Full Walkthrough"}, question:{zh:"完整的方法是怎么样的？一点一点说。", en:"Walk through the whole process, step by step."} },
+      { id:"f4c3", method:{zh:"新手风险法", en:"Beginner's Risk"}, question:{zh:"换个新手来做，哪一步最需要提醒？", en:"If a beginner did this, which step needs the most warning?"} }
     ]},
-    { sub:"What → Concrete", name:"复现", cards:[
-      { id:"f5c1", method:"场景还原法（5W1H）", question:"当时具体发生了什么？谁、在哪、什么时候、做了什么？" },
-      { id:"f5c2", method:"高光时刻法", question:"有没有哪个场景画面，特别让人印象深刻？" },
-      { id:"f5c3", method:"对话/动作还原法", question:"有谁说了什么、做了什么，让你现在还记得？" }
+    { sub:"What → Concrete", name:{zh:"复现", en:"Recreate the Scene"}, cards:[
+      { id:"f5c1", method:{zh:"场景还原法（5W1H）", en:"Scene Replay (5W1H)"}, question:{zh:"当时具体发生了什么？谁、在哪、什么时候、做了什么？", en:"What exactly happened? Who, where, when, and what did they do?"} },
+      { id:"f5c2", method:{zh:"高光时刻法", en:"Highlight Moment"}, question:{zh:"有没有哪个场景画面，特别让人印象深刻？", en:"Is there a scene that stands out most vividly?"} },
+      { id:"f5c3", method:{zh:"对话/动作还原法", en:"Dialogue/Action Replay"}, question:{zh:"有谁说了什么、做了什么，让你现在还记得？", en:"What did someone say or do that you still remember?"} }
     ]},
-    { sub:"What → Abstract", name:"定性", cards:[
-      { id:"f6c1", method:"归类法", question:"说白了，这就是什么？" },
-      { id:"f6c2", method:"对比法", question:"最容易被拿来比较的是什么？差别在哪？" },
-      { id:"f6c3", method:"类比法", question:"换成大白话，你会怎么形容？" }
+    { sub:"What → Abstract", name:{zh:"定性", en:"Define It"}, cards:[
+      { id:"f6c1", method:{zh:"归类法", en:"Categorize"}, question:{zh:"说白了，这就是什么？", en:"Put simply, what is this?"} },
+      { id:"f6c2", method:{zh:"对比法", en:"Compare"}, question:{zh:"最容易被拿来比较的是什么？差别在哪？", en:"What's it most often compared to? What's the difference?"} },
+      { id:"f6c3", method:{zh:"类比法", en:"Analogy"}, question:{zh:"换成大白话，你会怎么形容？", en:"In plain words, how would you describe it?"} }
     ]}
   ];
 
@@ -727,6 +780,8 @@
   });
 
   var state = {
+    lang: "zh",
+    topicMode: "daily",
     topicIndex: null,
     selected: [],       // [{ uid, cardId }]
     counts: {},          // cardId -> selected count
@@ -749,14 +804,19 @@
   var taglineIconEl = document.getElementById("taglineIcon");
   var topicWindowEl = document.getElementById("topicWindow");
   var topicReelEl = document.getElementById("topicReel");
+  var langToggleBtn = document.getElementById("langToggleBtn");
+  var topicModeToggleBtn = document.getElementById("topicModeToggleBtn");
   var randomTopicBtn = document.getElementById("randomTopicBtn");
   var cardWallEl = document.getElementById("cardWall");
+  var panelTitleEl = document.getElementById("panelTitle");
   var emptyStateEl = document.getElementById("emptyState");
   var selectedListEl = document.getElementById("selectedList");
+  var durationLabelEl = document.getElementById("durationLabel");
   var durationSegmentEl = document.getElementById("durationSegment");
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
   var countdownPanelEl = document.getElementById("countdownPanel");
+  var countdownCaptionEl = document.getElementById("countdownCaption");
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownOrderEl = document.getElementById("countdownOrder");
   var stopBtn = document.getElementById("stopBtn");
@@ -766,8 +826,46 @@
 
   var dragUid = null;
 
-  randomTopicBtn.setAttribute("aria-label", TEXT.randomBtn);
-  randomTopicBtn.title = TEXT.randomBtn;
+  function t(){ return TEXT[state.lang]; }
+
+  function applyStaticText(){
+    var tx = t();
+    document.documentElement.lang = tx.htmlLang;
+    langToggleBtn.textContent = tx.langToggle;
+    var targetMode = state.topicMode === "daily" ? "interview" : "daily";
+    topicModeToggleBtn.textContent = tx.topicModeNames[targetMode];
+    randomTopicBtn.textContent = "🎲 " + tx.randomBtn;
+    panelTitleEl.textContent = tx.selectedTitle;
+    emptyStateEl.innerHTML = tx.emptyState;
+    durationLabelEl.textContent = tx.durationLabel;
+    Array.prototype.forEach.call(durationSegmentEl.children, function(child, i){
+      child.textContent = tx.durations[i];
+    });
+    startBtn.textContent = tx.startBtn;
+    countdownCaptionEl.textContent = tx.countdownCaption;
+    stopBtn.textContent = tx.stopBtn;
+    toastUndoBtn.textContent = tx.toastUndo;
+  }
+
+  function toggleLanguage(){
+    state.lang = state.lang === "zh" ? "en" : "zh";
+    applyStaticText();
+    renderTopicSettled();
+    renderCardWall();
+    renderSelectedList();
+    renderStartButton();
+    renderCountdownOrder();
+  }
+
+  function toggleTopicMode(){
+    state.topicMode = state.topicMode === "daily" ? "interview" : "daily";
+    state.topicIndex = null;
+    applyStaticText();
+    renderTopicSettled();
+  }
+
+  langToggleBtn.addEventListener("click", toggleLanguage);
+  topicModeToggleBtn.addEventListener("click", toggleTopicMode);
 
   /* 话题老虎机：机制仿照 speechtopicgen.com —— 初速度 + 摩擦力衰减到停止阈值后，
      用弹簧公式精确回正到目标行，最后换成一个干净的三行"静止态"（前一条/当前/后一条）。 */
@@ -789,10 +887,10 @@
     topicReelEl.style.transform = "translateY(0px)";
     topicReelEl.innerHTML = "";
 
-    var pool = TOPICS;
+    var pool = TOPICS[state.topicMode][state.lang];
     if (state.topicIndex === null){
       topicReelEl.appendChild(buildTopicItem("", false));
-      var placeholder = buildTopicItem(TEXT.topicPlaceholder, false);
+      var placeholder = buildTopicItem(t().topicPlaceholder, false);
       placeholder.classList.add("placeholder");
       topicReelEl.appendChild(placeholder);
       topicReelEl.appendChild(buildTopicItem("", false));
@@ -816,7 +914,7 @@
 
   function spinTopic(){
     if (isTopicSpinning) return;
-    var pool = TOPICS;
+    var pool = TOPICS[state.topicMode][state.lang];
     if (!pool.length) return;
     isTopicSpinning = true;
     randomTopicBtn.disabled = true;
@@ -915,7 +1013,7 @@
 
       var label = document.createElement("div");
       label.className = "family-label";
-      label.innerHTML = '<div class="family-name">' + family.name + '</div><div class="family-sub">' + family.sub + '</div>';
+      label.innerHTML = '<div class="family-name">' + family.name[state.lang] + '</div><div class="family-sub">' + family.sub + '</div>';
       row.appendChild(label);
 
       var cardsWrap = document.createElement("div");
@@ -941,7 +1039,7 @@
           btn.appendChild(dots);
         }
         var q = document.createElement("span");
-        q.textContent = card.question;
+        q.textContent = card.question[state.lang];
         btn.appendChild(q);
 
         var plus = document.createElement("span");
@@ -1004,7 +1102,7 @@
 
   function showUndoToast(item, index){
     state.lastDeleted = { item: item, index: index };
-    toastMessageEl.textContent = TEXT.toastDeleted;
+    toastMessageEl.textContent = t().toastDeleted;
     toastEl.hidden = false;
     toastEl.classList.remove("toast-hide");
     // 强制重排，确保重复触发时动画能重新播放
@@ -1043,7 +1141,7 @@
 
   function buildSelectedItemEl(item, index, container){
     var meta = CARD_BY_ID[item.cardId];
-    var label = meta.family + ' · ' + meta.method;
+    var label = meta.family[state.lang] + ' · ' + meta.method[state.lang];
     var row = document.createElement("div");
     row.className = "selected-item" + (item.uid === state.justAddedUid ? " item-enter" : "");
     row.draggable = true;
@@ -1053,13 +1151,13 @@
       '<div class="drag-handle" aria-hidden="true">⠿</div>' +
       '<div class="seq-badge">' + (index + 1) + '</div>' +
       '<div class="selected-item-body">' +
-        '<div class="selected-item-question">' + meta.question + '</div>' +
+        '<div class="selected-item-question">' + meta.question[state.lang] + '</div>' +
       '</div>';
 
     var delBtn = document.createElement("button");
     delBtn.type = "button";
     delBtn.className = "delete-btn";
-    delBtn.setAttribute("aria-label", TEXT.deletePrefix + label + TEXT.deleteSuffix);
+    delBtn.setAttribute("aria-label", t().deletePrefix + label + t().deleteSuffix);
     delBtn.textContent = "✕";
     delBtn.addEventListener("click", function(){ requestRemoveCard(item.uid); });
     row.appendChild(delBtn);
@@ -1108,7 +1206,7 @@
   function renderStartButton(){
     var empty = state.selected.length === 0;
     startBtn.disabled = empty;
-    startBtn.title = empty ? TEXT.startDisabledTitle : "";
+    startBtn.title = empty ? t().startDisabledTitle : "";
   }
 
   durationSegmentEl.addEventListener("click", function(e){
@@ -1137,7 +1235,7 @@
       row.innerHTML =
         '<div class="seq-badge">' + (index + 1) + '</div>' +
         '<div class="selected-item-body">' +
-          '<div class="selected-item-question">' + meta.question + '</div>' +
+          '<div class="selected-item-question">' + meta.question[state.lang] + '</div>' +
         '</div>';
       countdownOrderEl.appendChild(row);
     });
@@ -1226,6 +1324,7 @@
   renderHeaderScene();
   window.setInterval(rotateHeaderScene, 3000);
 
+  applyStaticText();
   renderTopicSettled();
   renderCardWall();
   renderSelectedList();

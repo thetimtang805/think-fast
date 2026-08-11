@@ -18,7 +18,7 @@ MVP 定义（全新项目，尚未上线任何版本）—— **MVP 范围已确
 | 功能 | 随机话题生成器（Hot Takes） | 点击「随机生成」从 Hot Takes 话题库里随机抽一个话题 | P0 | MVP 本期 | 现有唯一话题分类 |
 | 功能 | 话题库扩展分类 | 科技、Finance、Roast a popular thing、One Minute Pitch、Defend the worst take、ELI5、Conspiracy Corner、Millennial/Gen Z 等 | P1 | Later | 分类清单已明确，先不做 |
 | 功能 | 话题难度分级 | 话题区分简单/中等/困难 | P1 | Later | 依赖话题库扩展后才有意义 |
-| 功能 | Interview Prep 话题类 | Behavioral questions、Design professional questions、Technical questions、Introduce yourself、Career questions | P1 | Later | 面试场景的独立话题分支 |
+| 功能 | Interview Prep 话题类 | Behavioral questions、Design professional questions、Technical questions、Introduce yourself、Career questions | P1 | 部分完成 | 2026-08-11 先做了最小版本：话题生成器新增"日常话题/面试准备"切换按钮，面试准备用 10 条不分类的通用面试问题打底；原 backlog 里按 Behavioral/Design/Technical 等细分类拆分话题池仍未做，推到 Later |
 | 内容+功能 | 18 张预设思路卡片 | 六个家族（溯因/推果/提炼/拆步/复现/定性）×3 张审问方法，每张卡带 Prompt 提示文案 | P0 | MVP 本期 | 文案已定稿，见 `reference/思维训练卡/思维训练卡_18张卡片内容_MVP.md` |
 | 交互流程 | 点击卡片加入右侧已选面板 | 用户从 18 张卡片里挑选，组织自己的演讲思路顺序 | P0 | MVP 本期 | |
 | 交互流程 | 已选卡片可删除 | | P0 | MVP 本期 | |
@@ -29,7 +29,7 @@ MVP 定义（全新项目，尚未上线任何版本）—— **MVP 范围已确
 | 功能 | 倒计时练习（1/2/3 分钟可选） | 卡片顺序确定后，选定时长开始计时，按顺序即兴演讲 | P0 | MVP 本期 | 倒计时中/结束后的具体交互未描述，见待确认问题 |
 | 功能 | 自定义模式 | 用户自由选卡、排序，MVP 唯一支持的模式 | P0 | MVP 本期 | |
 | 内容+功能 | 十位演讲高手的预设卡片顺序 | Steve Jobs、Simon Sinek、Don Draper、Feynman、Obama、Seth Godin、Naval Ravikant、Brené Brown、Chris Voss、Harari，用户可直接套用名人的思路顺序练习 | P1 | Later | 内容已完全产出，见 `reference/思维训练卡/思维训练卡_十位专家预设顺序.md`，只等功能开发 |
-| 视觉体验 | Header 语言切换按钮 | 右侧原"导航占位"换成中/英文语言切换按钮，点击后整站文案、18 张卡片、话题库都切语言 | P0 | 已移除 | 视觉方向阶段直接实现的，原始 MVP 范围确认时没包含，属于后补条目；2026-08-11 用户明确要求去掉，全站改回纯中文 |
+| 视觉体验 | 语言切换按钮 | 点击后整站文案、18 张卡片、话题库都切语言 | P0 | 已完成 | 视觉方向阶段直接实现的，原始 MVP 范围确认时没包含，属于后补条目；2026-08-11 一度移除又重新加回，现位置在话题生成器滚轮下方的按钮行（不再是 Header 右侧） |
 | 内容+视觉 | Header 动态标语"Think fast in ___" | 固定文案"Think fast in"+ 轮播场景词 + 对应插画图标，四个场景：interviews / small talks / meetings / classrooms，3 秒自动循环 | P0 | 已完成 | 取代了原来居中的"即兴演讲"产品名 |
 
 ## 待确认问题（MECE 检查发现的缺口，不影响 MVP 范围确认，但会影响后续 PRD/低保真设计）
@@ -48,3 +48,4 @@ MVP 定义（全新项目，尚未上线任何版本）—— **MVP 范围已确
 - 2026-08-11：补记视觉方向阶段已实现但没同步进 idea pool 的两项：Header 语言切换按钮（已完成）、Header 动态标语"Think fast in ___"（场景词已定为 interview/small talks/meetings/classrooms，待开发）。
 - 2026-08-11：Header 标语开发完成——3 秒自动轮播、固定顺序循环、每个场景配插画图标，取代了原来居中的"即兴演讲"产品名文字。
 - 2026-08-11：移除 Header 语言切换按钮及相关功能，全站改回纯中文（用户明确要求）。
+- 2026-08-11：话题生成器改版——滚轮下方新增语言切换、日常话题/面试准备切换、随机生成 3 个按钮，删除滚轮右侧的圆形随机生成按钮；语言切换按钮重新加回（新位置）；Interview Prep 话题类做了最小版本（10 条通用面试问题，不分细类）。
