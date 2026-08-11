@@ -1206,7 +1206,7 @@
 
     renderCountdownOrder();
     var currentTopic = TOPICS[state.topicMode][state.lang][state.topicIndex];
-    countdownCaptionEl.textContent = "抽中的问题：" + currentTopic;
+    countdownCaptionEl.textContent = currentTopic;
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
     appEl.classList.add("practice-mode");
     switchPanel(selectionPanelEl, countdownPanelEl);
