@@ -35,7 +35,7 @@
   .app-header{
     max-width:1440px;
     margin:0 auto 16px;
-    height:64px;
+    height:172px;
     padding:0 24px;
     display:grid;
     grid-template-columns:1fr auto 1fr;
@@ -45,14 +45,31 @@
     background:var(--surface);
   }
   .header-side{ display:flex; align-items:center; }
-  .header-side.right{ justify-content:flex-end; }
-  .header-title{
-    font-size:16px;
-    line-height:24px;
-    font-weight:600;
-    color:var(--text);
-    text-align:center;
+  .header-side.right{ align-items:flex-start; justify-content:flex-end; align-self:flex-start; padding-top:20px; }
+  .header-tagline{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    font-family:Georgia,"Noto Serif SC","DM Serif Display",serif;
+    font-size:32px;
+    line-height:1.2;
     white-space:nowrap;
+  }
+  .tagline-fixed{ font-weight:700; color:var(--text); }
+  .tagline-scene-wrap{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    transition:opacity .25s ease;
+    opacity:1;
+  }
+  .tagline-scene-wrap.fade-out{ opacity:0; }
+  .tagline-scene{ font-weight:400; color:var(--text-secondary); }
+  .tagline-icon{
+    width:44px;
+    height:44px;
+    object-fit:contain;
   }
   .lang-toggle{
     height:32px;
@@ -583,7 +600,13 @@
 
 <header class="app-header">
   <div class="header-side"></div>
-  <div class="header-title" id="headerTitle">即兴演讲</div>
+  <div class="header-tagline">
+    <span class="tagline-fixed">Think fast in</span>
+    <span class="tagline-scene-wrap" id="taglineSceneWrap">
+      <span class="tagline-scene" id="taglineScene"></span>
+      <img class="tagline-icon" id="taglineIcon" src="" alt="" aria-hidden="true" />
+    </span>
+  </div>
   <div class="header-side right">
     <button id="langToggle" class="lang-toggle" type="button">EN</button>
   </div>
@@ -646,7 +669,6 @@
   var TEXT = {
     zh: {
       htmlLang: "zh-CN",
-      headerTitle: "即兴演讲",
       langToggle: "EN",
       topicPlaceholder: "点击右侧按钮，随机抽一个话题",
       randomBtn: "随机生成",
@@ -665,7 +687,6 @@
     },
     en: {
       htmlLang: "en",
-      headerTitle: "Impromptu Speech",
       langToggle: "中文",
       topicPlaceholder: "Click the button for a random topic",
       randomBtn: "Randomize",
@@ -770,8 +791,10 @@
   };
 
   var appEl = document.getElementById("appRoot");
-  var headerTitleEl = document.getElementById("headerTitle");
   var langToggleBtn = document.getElementById("langToggle");
+  var taglineSceneWrapEl = document.getElementById("taglineSceneWrap");
+  var taglineSceneEl = document.getElementById("taglineScene");
+  var taglineIconEl = document.getElementById("taglineIcon");
   var topicWindowEl = document.getElementById("topicWindow");
   var topicReelEl = document.getElementById("topicReel");
   var randomTopicBtn = document.getElementById("randomTopicBtn");
@@ -799,7 +822,6 @@
   function applyStaticText(){
     var tx = t();
     document.documentElement.lang = tx.htmlLang;
-    headerTitleEl.textContent = tx.headerTitle;
     langToggleBtn.textContent = tx.langToggle;
     randomTopicBtn.setAttribute("aria-label", tx.randomBtn);
     randomTopicBtn.title = tx.randomBtn;
@@ -1253,6 +1275,36 @@
       e.returnValue = "";
     }
   });
+
+  /* Header 动态标语："Think fast in ___"，固定英文，不跟随语言切换（品牌元素）。
+     每 3 秒切换一个场景，循环播放，切换时做一次淡出淡入。 */
+  var ILLUSTRATION_BASE = "../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/";
+  var HEADER_SCENES = [
+    { word: "interviews", img: ILLUSTRATION_BASE + "business-briefcase-work-portfolio_sm.png" },
+    { word: "small talks", img: ILLUSTRATION_BASE + "communication-chat-bubbles_sm.png" },
+    { word: "meetings", img: ILLUSTRATION_BASE + "customer-support-headset-agent_sm.png" },
+    { word: "classrooms", img: ILLUSTRATION_BASE + "paper-document-file-report_sm.png" }
+  ];
+  var headerSceneIndex = 0;
+
+  function renderHeaderScene(){
+    var scene = HEADER_SCENES[headerSceneIndex];
+    taglineSceneEl.textContent = scene.word;
+    taglineIconEl.src = scene.img;
+    taglineIconEl.alt = scene.word;
+  }
+
+  function rotateHeaderScene(){
+    taglineSceneWrapEl.classList.add("fade-out");
+    window.setTimeout(function(){
+      headerSceneIndex = (headerSceneIndex + 1) % HEADER_SCENES.length;
+      renderHeaderScene();
+      taglineSceneWrapEl.classList.remove("fade-out");
+    }, 250);
+  }
+
+  renderHeaderScene();
+  window.setInterval(rotateHeaderScene, 3000);
 
   applyStaticText();
   renderTopicSettled();
