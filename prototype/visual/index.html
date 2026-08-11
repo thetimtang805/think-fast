@@ -95,8 +95,6 @@
   .col-left{ flex:0 0 60%; min-width:0; }
   .col-right{ flex:0 0 calc(40% - 24px); min-width:0; }
   .app.practice-mode .topic-bar{ display:none; }
-  .app.practice-mode .col-left{ display:none; }
-  .app.practice-mode .col-right{ flex:1 1 100%; }
 
   .panel{
     background:var(--surface);
@@ -104,6 +102,35 @@
     border-radius:var(--radius-lg);
     padding:16px;
   }
+
+  /* 倒计时时的发言记录（语音输入法可以边讲边打进这个框） */
+  .transcript-panel{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+  }
+  .transcript-title{
+    font-size:16px;
+    line-height:24px;
+    font-weight:600;
+    margin:0 0 12px;
+  }
+  .transcript-textarea{
+    flex:1;
+    width:100%;
+    min-height:480px;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:var(--surface);
+    color:var(--text);
+    font-family:inherit;
+    font-size:14px;
+    line-height:22px;
+    resize:vertical;
+  }
+  .transcript-textarea::placeholder{ color:var(--text-disabled); }
+  .transcript-textarea:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 
   /* 话题生成器 —— 老虎机式滚动，机制仿照 speechtopicgen.com */
   .topic-bar{
@@ -667,6 +694,10 @@
   <div class="layout" id="layout">
     <div class="col-left">
       <div class="panel" id="cardWall"></div>
+      <div class="panel transcript-panel" id="transcriptPanel" hidden>
+        <div class="transcript-title">你的发言记录</div>
+        <textarea id="transcriptInput" class="transcript-textarea" placeholder="可以打开手机自带的语音输入法，边讲边把内容打在这里…" aria-label="发言记录"></textarea>
+      </div>
     </div>
 
     <div class="col-right">
@@ -1248,6 +1279,8 @@
   var topicModeToggleBtn = document.getElementById("topicModeToggleBtn");
   var randomTopicBtn = document.getElementById("randomTopicBtn");
   var cardWallEl = document.getElementById("cardWall");
+  var transcriptPanelEl = document.getElementById("transcriptPanel");
+  var transcriptInputEl = document.getElementById("transcriptInput");
   var emptyStateEl = document.getElementById("emptyState");
   var selectedListEl = document.getElementById("selectedList");
   var selectedCountEl = document.getElementById("selectedCount");
@@ -1747,6 +1780,7 @@
 
   function beginCountdownRun(){
     // 假设倒计时面板已经可见、话题/卡片顺序已经渲染好，只负责重置计时器状态并开始跑表。
+    transcriptInputEl.value = "";
     state.timer.status = "prep";
     state.timer.remaining = PREP_SECONDS;
     countdownActionsDoneEl.hidden = true;
@@ -1789,6 +1823,8 @@
     var currentTopic = TOPICS[state.topicMode][state.lang][state.topicIndex];
     countdownCaptionEl.textContent = currentTopic;
     appEl.classList.add("practice-mode");
+    cardWallEl.hidden = true;
+    transcriptPanelEl.hidden = false;
     switchPanel(selectionPanelEl, countdownPanelEl);
     beginCountdownRun();
   }
@@ -1809,6 +1845,8 @@
     state.timer.status = "idle";
     if (backToSelection){
       appEl.classList.remove("practice-mode");
+      cardWallEl.hidden = false;
+      transcriptPanelEl.hidden = true;
       switchPanel(countdownPanelEl, selectionPanelEl);
     }
   }
