@@ -300,8 +300,11 @@
     padding-bottom:0;
     border-width:0;
     overflow:hidden;
-    transition:opacity .12s ease, transform .12s ease, max-height .16s ease .04s,
-               margin-bottom .16s ease .04s, padding .16s ease .04s, border-width .16s ease .04s;
+    transition:opacity .12s cubic-bezier(.4,0,1,1), transform .12s cubic-bezier(.4,0,1,1),
+               max-height .16s cubic-bezier(.4,0,1,1) .04s,
+               margin-bottom .16s cubic-bezier(.4,0,1,1) .04s,
+               padding .16s cubic-bezier(.4,0,1,1) .04s,
+               border-width .16s cubic-bezier(.4,0,1,1) .04s;
   }
   .drag-handle{
     flex:0 0 16px;
