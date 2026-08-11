@@ -782,6 +782,7 @@
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
   var countdownPanelEl = document.getElementById("countdownPanel");
+  var countdownCaptionEl = document.getElementById("countdownCaption");
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownOrderEl = document.getElementById("countdownOrder");
   var stopBtn = document.getElementById("stopBtn");
@@ -1204,6 +1205,8 @@
     state.timer.remaining = state.duration * 60;
 
     renderCountdownOrder();
+    var currentTopic = TOPICS[state.topicMode][state.lang][state.topicIndex];
+    countdownCaptionEl.textContent = "抽中的问题：" + currentTopic;
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
     appEl.classList.add("practice-mode");
     switchPanel(selectionPanelEl, countdownPanelEl);
