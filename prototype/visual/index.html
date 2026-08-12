@@ -456,6 +456,11 @@
     object-fit:contain;
     flex:0 0 20px;
   }
+  .btn-icon-sm{
+    width:14px;
+    height:14px;
+    flex-basis:14px;
+  }
   /* <img> 引入的外部 SVG 不会继承按钮的文字色，主按钮上手动转白 */
   .btn-primary .btn-icon{ filter:brightness(0) invert(1); }
   .btn:not(:disabled):active{ background:var(--border-soft); transform:scale(0.96); }
@@ -476,6 +481,11 @@
     color:var(--on-accent);
     border:1px solid rgba(255,255,255,0.4);
     box-shadow:none;
+  }
+  .btn-ghost-dark:disabled{
+    color:rgba(255,255,255,0.48);
+    border-color:rgba(255,255,255,0.2);
+    cursor:not-allowed;
   }
   .btn-ghost-dark:focus-visible{ outline:2px solid var(--on-accent); outline-offset:2px; }
 
@@ -857,13 +867,36 @@
     margin-bottom:8px;
     font-variant-numeric:tabular-nums;
   }
-  .countdown-caption{
-    font-size:var(--fs-sm);
-    line-height:22px;
-    text-wrap:pretty;
-    color:rgba(255,255,255,0.6);
-    margin-bottom:24px;
+  .countdown-number.is-complete{
+    font-size:18px;
+    margin-bottom:16px;
   }
+  @keyframes countdownCompleteIn{
+    from{ opacity:0; transform:translateY(8px) scale(0.96); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+  @keyframes countdownActionOut{
+    from{ opacity:1; transform:translateY(0); }
+    to{ opacity:0; transform:translateY(-6px); }
+  }
+  @keyframes countdownActionIn{
+    from{ opacity:0; transform:translateY(8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  @keyframes countdownStartIn{
+    from{ opacity:0; transform:translateY(8px) scale(0.96); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+  @keyframes countdownPhaseOut{
+    from{ opacity:1; transform:translateY(0); }
+    to{ opacity:0; transform:translateY(-6px); }
+  }
+  .countdown-number.complete-enter{ animation:countdownCompleteIn .3s cubic-bezier(.22,1,.36,1); }
+  .countdown-number.running-enter{ animation:countdownStartIn .28s cubic-bezier(.22,1,.36,1); }
+  .countdown-phase-label.is-leaving{ animation:countdownPhaseOut .16s ease-out forwards; }
+  .countdown-actions.is-leaving{ animation:countdownActionOut .14s ease-out forwards; }
+  .countdown-actions.complete-enter,
+  .countdown-result-hint.complete-enter{ animation:countdownActionIn .24s cubic-bezier(.22,1,.36,1) both; }
   .countdown-order{
     display:flex;
     flex-direction:column;
@@ -871,6 +904,12 @@
     max-width:420px;
     margin:0 auto 32px;
     text-align:left;
+  }
+  .countdown-stage.is-complete{
+    padding:24px;
+  }
+  .countdown-stage.is-complete .countdown-order{
+    margin-bottom:24px;
   }
   .countdown-order .selected-item{
     background:rgba(255,255,255,0.06);
@@ -884,6 +923,13 @@
     display:flex;
     gap:8px;
     justify-content:center;
+  }
+  .countdown-result-hint{
+    margin:12px 0 0;
+    color:rgba(255,255,255,0.64);
+    font-size:var(--fs-xs);
+    line-height:20px;
+    text-align:center;
   }
   [hidden]{ display:none !important; }
   .sr-only{
@@ -1273,15 +1319,19 @@
       <div class="panel countdown-stage" id="countdownPanel" hidden>
         <div class="countdown-phase-label" id="countdownPhaseLabel" hidden>准备开始</div>
         <div class="countdown-number" id="countdownNumber">01:00</div>
-        <div class="countdown-caption" id="countdownCaption">倒计时进行中 · 按下面的顺序即兴讲述</div>
         <div class="countdown-order" id="countdownOrder"></div>
         <div class="countdown-actions" id="countdownActionsRunning">
           <button id="stopBtn" class="btn btn-sm btn-ghost-dark" type="button">提前结束</button>
         </div>
         <div class="countdown-actions" id="countdownActionsDone" hidden>
-          <button id="restartBtn" class="btn btn-sm btn-ghost-dark" type="button">重新练一次</button>
-          <button id="backBtn" class="btn btn-sm btn-ghost-dark" type="button">返回</button>
+          <button id="copyResultBtn" class="btn btn-sm btn-ghost-dark" type="button">
+            <img class="btn-icon btn-icon-sm" src="../../reference/icon/clipboard3-outline%201.svg" alt="" aria-hidden="true" />
+            <span id="copyResultLabel" aria-live="polite" aria-atomic="true">复制结果</span>
+          </button>
+          <button id="restartBtn" class="btn btn-sm btn-ghost-dark" type="button">再练一次</button>
+          <button id="backBtn" class="btn btn-sm btn-ghost-dark" type="button">返回上一页</button>
         </div>
+        <p class="countdown-result-hint" id="countdownResultHint" hidden>点击“复制结果”，发送到任意 AI，即可复盘这次发言。</p>
       </div>
     </div>
   </div>
@@ -2304,7 +2354,6 @@
   var selectionPanelEl = document.getElementById("selectionPanel");
   var countdownPanelEl = document.getElementById("countdownPanel");
   var countdownPhaseLabelEl = document.getElementById("countdownPhaseLabel");
-  var countdownCaptionEl = document.getElementById("countdownCaption");
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownOrderEl = document.getElementById("countdownOrder");
   var countdownActionsRunningEl = document.getElementById("countdownActionsRunning");
@@ -2312,6 +2361,9 @@
   var stopBtn = document.getElementById("stopBtn");
   var restartBtn = document.getElementById("restartBtn");
   var backBtn = document.getElementById("backBtn");
+  var copyResultBtn = document.getElementById("copyResultBtn");
+  var copyResultLabel = document.getElementById("copyResultLabel");
+  var countdownResultHintEl = document.getElementById("countdownResultHint");
   var toastEl = document.getElementById("toast");
   var toastMessageEl = document.getElementById("toastMessage");
   var toastUndoBtn = document.getElementById("toastUndoBtn");
@@ -3054,16 +3106,30 @@
   }
 
   var PREP_SECONDS = 5;
+  var COUNTDOWN_COMPLETE_MESSAGES = [
+    "时间刚刚好，给自己一点掌声",
+    "时间到，这一轮很棒",
+    "继续保持，表达越来越好了",
+    "时间到，这就是进步",
+    "比刚才的自己更进一步啦"
+  ];
 
   function beginCountdownRun(){
     // 假设倒计时面板已经可见、话题/卡片顺序已经渲染好，只负责重置计时器状态并开始跑表。
     transcriptInputEl.value = "";
     state.timer.status = "prep";
     state.timer.remaining = PREP_SECONDS;
+    countdownPanelEl.classList.remove("is-complete");
     countdownActionsDoneEl.hidden = true;
+    countdownActionsDoneEl.classList.remove("complete-enter");
+    countdownResultHintEl.hidden = true;
+    countdownResultHintEl.classList.remove("complete-enter");
     countdownActionsRunningEl.hidden = false;
+    countdownActionsRunningEl.classList.remove("is-leaving");
     countdownPhaseLabelEl.hidden = false;
+    countdownPhaseLabelEl.classList.remove("is-leaving");
     countdownPhaseLabelEl.textContent = "准备开始";
+    countdownNumberEl.classList.remove("is-complete", "complete-enter", "running-enter");
     countdownNumberEl.textContent = String(state.timer.remaining);
 
     state.timer.handle = window.setInterval(function(){
@@ -3073,8 +3139,31 @@
         if (state.timer.remaining <= 0){
           state.timer.status = "running";
           state.timer.remaining = state.duration * 60;
-          countdownPhaseLabelEl.hidden = true;
+          var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          var movingElements = [countdownNumberEl, countdownOrderEl, countdownActionsRunningEl];
+          var previousPositions = movingElements.map(function(element){ return element.getBoundingClientRect().top; });
           countdownNumberEl.textContent = formatTime(state.timer.remaining);
+          if (!reduceMotion){
+            countdownNumberEl.classList.add("running-enter");
+            countdownPhaseLabelEl.classList.add("is-leaving");
+            window.setTimeout(function(){ countdownNumberEl.classList.remove("running-enter"); }, 300);
+          }
+          window.setTimeout(function(){
+            countdownPhaseLabelEl.hidden = true;
+            countdownPhaseLabelEl.classList.remove("is-leaving");
+            movingElements.forEach(function(element, index){
+              if (reduceMotion) return;
+              var offset = previousPositions[index] - element.getBoundingClientRect().top;
+              if (!offset) return;
+              element.style.transition = "none";
+              element.style.transform = "translateY(" + offset + "px)";
+              window.requestAnimationFrame(function(){
+                element.style.transition = "transform .28s cubic-bezier(.22,1,.36,1)";
+                element.style.transform = "";
+                window.setTimeout(function(){ element.style.transition = ""; }, 300);
+              });
+            });
+          }, reduceMotion ? 0 : 160);
         } else {
           countdownNumberEl.textContent = String(state.timer.remaining);
         }
@@ -3085,9 +3174,35 @@
         window.clearInterval(state.timer.handle);
         state.timer.handle = null;
         state.timer.status = "done";
-        countdownNumberEl.textContent = "时间到了";
-        countdownActionsRunningEl.hidden = true;
-        countdownActionsDoneEl.hidden = false;
+        var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        var movingElements = [countdownOrderEl];
+        var previousPositions = movingElements.map(function(element){ return element.getBoundingClientRect().top; });
+        countdownNumberEl.classList.remove("running-enter");
+        countdownPanelEl.classList.add("is-complete");
+        countdownNumberEl.classList.add("is-complete");
+        countdownNumberEl.textContent = COUNTDOWN_COMPLETE_MESSAGES[Math.floor(Math.random() * COUNTDOWN_COMPLETE_MESSAGES.length)];
+        countdownNumberEl.classList.add("complete-enter");
+        movingElements.forEach(function(element, index){
+          if (reduceMotion) return;
+          var offset = previousPositions[index] - element.getBoundingClientRect().top;
+          if (!offset) return;
+          element.style.transition = "none";
+          element.style.transform = "translateY(" + offset + "px)";
+          window.requestAnimationFrame(function(){
+            element.style.transition = "transform .3s cubic-bezier(.22,1,.36,1)";
+            element.style.transform = "";
+            window.setTimeout(function(){ element.style.transition = ""; }, 320);
+          });
+        });
+        if (!reduceMotion) countdownActionsRunningEl.classList.add("is-leaving");
+        window.setTimeout(function(){
+          countdownActionsRunningEl.hidden = true;
+          countdownActionsRunningEl.classList.remove("is-leaving");
+          countdownActionsDoneEl.hidden = false;
+          countdownResultHintEl.hidden = false;
+          if (!reduceMotion) countdownActionsDoneEl.classList.add("complete-enter");
+          if (!reduceMotion) countdownResultHintEl.classList.add("complete-enter");
+        }, reduceMotion ? 0 : 140);
         return;
       }
       countdownNumberEl.textContent = formatTime(state.timer.remaining);
@@ -3097,7 +3212,6 @@
   function startPractice(){
     if (state.selected.length === 0) return;
     renderCountdownOrder();
-    countdownCaptionEl.textContent = "按下面的顺序即兴讲述";
     appEl.classList.add("practice-mode");
     renderStickyTopic();
     cardWallEl.hidden = true;
@@ -3113,6 +3227,83 @@
       state.timer.handle = null;
     }
     beginCountdownRun();
+  }
+
+  function getCurrentTopic(){
+    return state.topicIndex === null ? "未选择话题" : TOPICS[state.topicMode][state.lang][state.topicIndex];
+  }
+
+  function getSpeechTranscriptMarkdown(){
+    var transcript = transcriptInputEl.value.trim();
+    if (!transcript) return ">（本次没有记录发言内容）";
+    return transcript.split("\n").map(function(line){ return "> " + line; }).join("\n");
+  }
+
+  function buildResultMarkdown(){
+    var selectedThinking = state.selected.map(function(item, index){
+      return (index + 1) + ". " + CARD_BY_ID[item.cardId].question;
+    }).join("\n") || "1. （未选择思路卡）";
+
+    return [
+      "# 即兴演讲复盘材料",
+      "",
+      "## 演讲话题",
+      getCurrentTopic(),
+      "",
+      "## 我选择的思路",
+      selectedThinking,
+      "",
+      "## 我的发言记录",
+      getSpeechTranscriptMarkdown(),
+      "",
+      "## 给 AI 的分析与优化指令",
+      "请你作为一位温和、专业的即兴表达教练，基于以上演讲话题、我选择的思路和发言记录进行复盘。请严格依据我提供的内容，不要虚构我没有表达过的经历、事实或观点。",
+      "",
+      "请按以下结构输出：",
+      "1. **整体反馈**：先肯定表达中已经做得好的部分，再指出 3 个最值得改进的地方。",
+      "2. **思路使用情况**：逐条说明我是否有效使用了所选思路；若没有用上，说明可以怎样自然地融入。",
+      "3. **表达优化建议**：从结构、逻辑衔接、具体性、口语自然度和节奏五个角度给出可执行建议。",
+      "4. **更自然流畅的表达**：在保留我原有核心观点、个人语气与事实边界的前提下，重写一版更清晰、自然、适合口头表达的完整发言。不要写得像书面范文，使用真实、顺口的中文。",
+      "5. **下一次练习重点**：用不超过 3 条简短建议，告诉我下一轮最该练什么。"
+    ].join("\n");
+  }
+
+  function copyText(text){
+    if (navigator.clipboard && window.isSecureContext){
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function(resolve, reject){
+      var textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy") ? resolve() : reject(new Error("Copy failed"));
+      } catch (error) {
+        reject(error);
+      }
+      document.body.removeChild(textarea);
+    });
+  }
+
+  function copyPracticeResult(){
+    copyResultBtn.disabled = true;
+    copyText(buildResultMarkdown()).then(function(){
+      copyResultLabel.textContent = "已复制";
+      window.setTimeout(function(){
+        copyResultLabel.textContent = "复制结果";
+        copyResultBtn.disabled = false;
+      }, 1800);
+    }).catch(function(){
+      copyResultLabel.textContent = "复制失败";
+      window.setTimeout(function(){
+        copyResultLabel.textContent = "复制结果";
+        copyResultBtn.disabled = false;
+      }, 1800);
+    });
   }
 
   function stopPractice(backToSelection){
@@ -3135,6 +3326,7 @@
   stopBtn.addEventListener("click", function(){ stopPractice(true); });
   restartBtn.addEventListener("click", restartPractice);
   backBtn.addEventListener("click", function(){ stopPractice(true); });
+  copyResultBtn.addEventListener("click", copyPracticeResult);
 
   window.addEventListener("beforeunload", function(e){
     if (state.selected.length > 0){
