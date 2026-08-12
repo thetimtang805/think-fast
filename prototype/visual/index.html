@@ -38,6 +38,10 @@
     --radius:6px;
     --radius-lg:8px;
 
+    /* focus 环只用中性色，不用品牌色，避免和界面撞色（emil-ui-polish） */
+    --focus-ring:var(--text);
+    --z-toast:400;
+
     /* 层叠阴影代替实色边框，做出可信的深度（emil-surfaces） */
     --shadow-raised:
       0 0 0 1px rgba(0,0,0,0.05),
@@ -192,7 +196,7 @@
     resize:vertical;
   }
   .transcript-textarea::placeholder{ color:var(--text-disabled); }
-  .transcript-textarea:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .transcript-textarea:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
 
   /* 话题生成器 —— 老虎机式滚动，机制仿照 speechtopicgen.com */
   .topic-bar{
@@ -284,7 +288,7 @@
     white-space:nowrap;
     cursor:pointer;
     gap:8px;
-    transition:box-shadow 150ms ease-out;
+    transition:box-shadow 150ms ease-out, transform 100ms ease-out;
   }
   .btn-icon{
     width:20px;
@@ -295,8 +299,8 @@
   /* <img> 引入的外部 SVG 不会继承按钮的文字色，主按钮上手动转白 */
   .btn-primary .btn-icon{ filter:brightness(0) invert(1); }
   .btn:hover{ background:var(--hover); box-shadow:var(--shadow-raised-hover); }
-  .btn:active{ background:var(--border-soft); }
-  .btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .btn:active{ background:var(--border-soft); transform:scale(0.96); }
+  .btn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
   .btn-primary{
     background:var(--accent);
     color:var(--on-accent);
@@ -375,7 +379,7 @@
   }
   .card:hover{ box-shadow:var(--shadow-raised-hover); }
   .card:active{ background:var(--hover); }
-  .card:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .card:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
   .card:disabled{ cursor:not-allowed; background:var(--page-bg); color:var(--text-disabled); box-shadow:var(--shadow-raised); }
   .card:disabled:hover{ box-shadow:var(--shadow-raised); }
   .card:disabled .card-plus{ display:none; }
@@ -442,7 +446,7 @@
     cursor:pointer;
   }
   .expert-select:hover{ background:var(--hover); }
-  .expert-select:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .expert-select:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
   .panel-title-row{
     display:flex;
     align-items:baseline;
@@ -476,7 +480,7 @@
     cursor:pointer;
   }
   .clear-link:hover{ color:var(--text); }
-  .clear-link:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .clear-link:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
   .empty-state{
     border:1px dashed var(--text-disabled);
     border-radius:var(--radius);
@@ -551,6 +555,7 @@
     color:var(--text);
   }
   .delete-btn{
+    position:relative;
     flex:0 0 20px;
     height:20px;
     color:var(--text-disabled);
@@ -562,8 +567,14 @@
     cursor:pointer;
     padding:0;
   }
+  /* 20px 图标视觉不变，点击区域用伪元素扩到约 36px（emil-ui-polish 命中区域规则） */
+  .delete-btn::before{
+    content:"";
+    position:absolute;
+    inset:-8px;
+  }
   .delete-btn:hover{ color:var(--text); }
-  .delete-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .delete-btn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
 
   .divider{
     border:none;
@@ -604,7 +615,7 @@
   }
   .segment-item:last-child{ border-right:none; }
   .segment-item:hover{ background:var(--hover); }
-  .segment-item:focus-visible{ outline:2px solid var(--accent); outline-offset:-2px; }
+  .segment-item:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:-2px; }
   .segment-item.active{
     background:var(--accent);
     color:var(--on-accent);
@@ -710,7 +721,7 @@
     font-size:var(--fs-sm);
     line-height:22px;
     box-shadow:var(--shadow-toast);
-    z-index:10;
+    z-index:var(--z-toast);
   }
   .toast.toast-show{ animation:toastIn .16s ease; }
   .toast.toast-hide{ animation:toastOut .14s ease forwards; }
