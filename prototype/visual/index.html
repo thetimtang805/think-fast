@@ -172,10 +172,11 @@
     line-height:1.1;
     letter-spacing:-0.012em;
     white-space:nowrap;
+    transition:transform 360ms cubic-bezier(0.22,1,0.36,1);
   }
   .tagline-fixed{
     font-family:"Vampiro One",var(--font-display);
-    font-size:42px;
+    font-size:44px;
     font-weight:400;
     letter-spacing:-0.012em;
     color:var(--text);
@@ -194,17 +195,46 @@
     font-size:38px;
   }
   .tagline-scene-wrap{
-    display:inline-flex;
-    align-items:center;
-    gap:10px;
-    transition:opacity .25s ease;
-    opacity:1;
+    position:relative;
+    display:inline-block;
+    height:1.1em;
+    overflow:hidden;
   }
-  .tagline-scene-wrap.fade-out{ opacity:0; }
   .tagline-scene{
+    display:block;
+    position:absolute;
+    top:0;
+    left:0;
+    height:1.1em;
     font-family:var(--font-sans);
     font-weight:400;
     color:var(--text-secondary);
+    line-height:1.1;
+    white-space:nowrap;
+  }
+  .header-tagline.is-moving,
+  .tagline-scene.is-entering,
+  .tagline-scene.is-leaving{ will-change:transform,opacity,filter; }
+  .tagline-scene.is-entering{
+    transform:translateY(70%);
+    opacity:0;
+    filter:blur(1.5px);
+    transition:transform 360ms cubic-bezier(0.22,1,0.36,1), opacity 240ms cubic-bezier(0.22,1,0.36,1), filter 240ms cubic-bezier(0.22,1,0.36,1);
+  }
+  .tagline-scene.is-entering.is-active{
+    transform:translateY(0);
+    opacity:1;
+    filter:blur(0);
+  }
+  .tagline-scene.is-leaving{
+    transform:translateY(-55%);
+    opacity:0;
+    filter:blur(1px);
+    transition:transform 300ms cubic-bezier(0.4,0,1,1), opacity 180ms cubic-bezier(0.4,0,1,1), filter 180ms cubic-bezier(0.4,0,1,1);
+  }
+  @media (prefers-reduced-motion:reduce){
+    .header-tagline,
+    .tagline-scene{ transition:none; }
   }
   .app{
     max-width:1440px;
@@ -234,6 +264,8 @@
     top:24px;
   }
   .app.practice-mode .workspace-section-topic{ display:none; }
+  .app.practice-mode{ padding-top:0; }
+  .app.practice-mode .workspace-section-cards{ margin-top:0; }
   /* 练习时把宽度比例反过来：倒计时模块（右栏）变宽，发言记录输入框（左栏）变窄 */
   .app.practice-mode .col-left{ flex:0 0 calc(40% - 24px); }
   .app.practice-mode .col-right{ flex:0 0 60%; }
@@ -1064,8 +1096,8 @@
   <div class="header-side">
     <img class="header-tim-art" src="assets/header-tim-prepares.png" alt="" aria-hidden="true" />
   </div>
-  <div class="header-tagline">
-    <span class="tagline-fixed">Think fast</span>
+  <div class="header-tagline" id="headerTagline">
+    <span class="tagline-fixed" id="taglineFixed">Think fast</span>
     <span class="tagline-dynamic" id="taglineDynamic">
       <span class="tagline-fixed tagline-connector">in</span>
       <span class="tagline-scene-wrap" id="taglineSceneWrap">
@@ -1659,32 +1691,32 @@
   };
 
   var FAMILIES = [
-    { sub:"Why → Abstract", name:"溯因", icon:"assets/causal-onion-green-v2.png", cards:[
+    { sub:"Why → Abstract", name:"溯因", icon:"assets/causal-roots-green-tim.png", cards:[
       { id:"f1c1", method:"直接追问法", question:"问自己“为什么”？" },
       { id:"f1c2", method:"连续追问法", question:"继续追问“为什么”？" },
       { id:"f1c3", method:"本质提炼法", question:"归根打底，最本质的原因是什么？" }
     ]},
-    { sub:"Why → Concrete", name:"推果", icon:"assets/effect-ripples-green.png", cards:[
+    { sub:"Why → Concrete", name:"推果", icon:"assets/effect-ripples-green-tim.png", cards:[
       { id:"f2c1", method:"直接推导法", question:"So what，所以会怎么样？" },
       { id:"f2c2", method:"连锁反应法", question:"这之后，还会引发什么连锁反应？" },
       { id:"f2c3", method:"最坏情况法", question:"否认这件事/这个观点，最坏会怎么样？" }
     ]},
-    { sub:"How → Abstract", name:"提炼", icon:"assets/distill-funnel-orange.png", cards:[
+    { sub:"How → Abstract", name:"提炼", icon:"assets/distill-funnel-yellow-tim.png", cards:[
       { id:"f3c1", method:"一句话概括法", question:"一句话概括你的策略是什么？" },
       { id:"f3c2", method:"可迁移性检验法", question:"能不能提炼成一条反复能用的方法？" },
       { id:"f3c3", method:"边界测试法", question:"这个方法在什么情况下会失效？" }
     ]},
-    { sub:"How → Concrete", name:"拆步", icon:"assets/steps-checklist-orange.png", cards:[
+    { sub:"How → Concrete", name:"拆步", icon:"assets/steps-checklist-yellow-tim.png", cards:[
       { id:"f4c1", method:"起点法", question:"迈出的最小一步是什么？" },
       { id:"f4c2", method:"全流程列举法", question:"完整的方法是怎么样的？一点一点说。" },
       { id:"f4c3", method:"新手风险法", question:"换个新手来做，哪一步最需要提醒？" }
     ]},
-    { sub:"What → Concrete", name:"复现", icon:"assets/scene-viewfinder-red.png", cards:[
+    { sub:"What → Concrete", name:"复现", icon:"assets/scene-viewfinder-red-tim.png", cards:[
       { id:"f5c1", method:"场景还原法（5W1H）", question:"当时具体发生了什么？谁、在哪、什么时候、做了什么？" },
       { id:"f5c2", method:"高光时刻法", question:"有没有哪个场景画面，特别让人印象深刻？" },
       { id:"f5c3", method:"对话/动作还原法", question:"有谁说了什么、做了什么，让你现在还记得？" }
     ]},
-    { sub:"What → Abstract", name:"定性", icon:"assets/define-tag-red.png", cards:[
+    { sub:"What → Abstract", name:"定性", icon:"assets/define-tag-red-tim.png", cards:[
       { id:"f6c1", method:"归类法", question:"定义“这是什么”？" },
       { id:"f6c2", method:"对比法", question:"其实就像和什么一样（相似和差别的点是什么）？" },
       { id:"f6c3", method:"类比法", question:"说白了，这就是什么？" }
@@ -1732,6 +1764,8 @@
   };
 
   var appEl = document.getElementById("appRoot");
+  var headerTaglineEl = document.getElementById("headerTagline");
+  var taglineFixedEl = document.getElementById("taglineFixed");
   var taglineDynamicEl = document.getElementById("taglineDynamic");
   var taglineSceneWrapEl = document.getElementById("taglineSceneWrap");
   var taglineSceneEl = document.getElementById("taglineScene");
@@ -2434,8 +2468,7 @@
     }
   });
 
-  /* Header 动态标语："Think fast in ___"，固定英文，不跟随语言切换（品牌元素）。
-     每 5 秒切换一个场景，循环播放，切换时做一次淡出淡入。 */
+  /* Header 动态标语：场景上下滚动，标题通过 FLIP 补偿平滑移动。 */
 var HEADER_SCENES = [
   { word: "interviews" },
   { word: "small talks" },
@@ -2449,16 +2482,56 @@ var HEADER_SCENES = [
     taglineSceneEl.textContent = scene.word;
   }
 
+  function setSceneWrapWidth(sceneEl){
+    taglineSceneWrapEl.style.width = Math.ceil(sceneEl.getBoundingClientRect().width) + "px";
+  }
+
+  function moveHeaderTaglineFrom(previousLeft){
+    var offset = previousLeft - taglineFixedEl.getBoundingClientRect().left;
+    if (Math.abs(offset) < 0.5) return;
+    headerTaglineEl.classList.add("is-moving");
+    headerTaglineEl.style.transition = "none";
+    headerTaglineEl.style.transform = "translateX(" + offset + "px)";
+    window.requestAnimationFrame(function(){
+      headerTaglineEl.style.transition = "";
+      headerTaglineEl.style.transform = "";
+    });
+    window.setTimeout(function(){ headerTaglineEl.classList.remove("is-moving"); }, 380);
+  }
+
   function rotateHeaderScene(){
-    taglineSceneWrapEl.classList.add("fade-out");
-    window.setTimeout(function(){
-      headerSceneIndex = (headerSceneIndex + 1) % HEADER_SCENES.length;
+    var nextIndex = (headerSceneIndex + 1) % HEADER_SCENES.length;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches){
+      headerSceneIndex = nextIndex;
       renderHeaderScene();
-      taglineSceneWrapEl.classList.remove("fade-out");
-    }, 250);
+      setSceneWrapWidth(taglineSceneEl);
+      return;
+    }
+
+    var previousTitleLeft = taglineFixedEl.getBoundingClientRect().left;
+    var outgoingSceneEl = taglineSceneEl;
+    var incomingSceneEl = document.createElement("span");
+    incomingSceneEl.className = "tagline-scene is-entering";
+    incomingSceneEl.textContent = HEADER_SCENES[nextIndex].word;
+    taglineSceneWrapEl.appendChild(incomingSceneEl);
+    setSceneWrapWidth(incomingSceneEl);
+    moveHeaderTaglineFrom(previousTitleLeft);
+
+    window.requestAnimationFrame(function(){
+      outgoingSceneEl.classList.add("is-leaving");
+      incomingSceneEl.classList.add("is-active");
+    });
+
+    window.setTimeout(function(){
+      outgoingSceneEl.remove();
+      incomingSceneEl.className = "tagline-scene";
+      taglineSceneEl = incomingSceneEl;
+      headerSceneIndex = nextIndex;
+    }, 380);
   }
 
   renderHeaderScene();
+  setSceneWrapWidth(taglineSceneEl);
   window.setInterval(rotateHeaderScene, 5000);
 
   state.topicIndex = pickRandomTopicIndex(null, TOPICS[state.topicMode][state.lang].length);
