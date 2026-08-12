@@ -280,7 +280,7 @@
   .topic-bar{
     display:flex;
     flex-direction:column;
-    gap:12px;
+    gap:16px;
     margin-bottom:0;
   }
   .topic-controls{
@@ -460,6 +460,7 @@
     overflow:hidden;
   }
   .card-question{
+    font-size:var(--fs-sm);
     display:-webkit-box;
     -webkit-box-orient:vertical;
     -webkit-line-clamp:3;
@@ -637,8 +638,8 @@
     display:flex;
     align-items:flex-start;
     gap:8px;
-    border:none;
-    box-shadow:var(--shadow-raised);
+    border:var(--border-hairline) solid var(--border-soft);
+    box-shadow:none;
     border-radius:var(--radius);
     padding:8px 10px;
     background:var(--surface);
@@ -684,7 +685,7 @@
   }
   .selected-item-body{ flex:1; min-width:0; }
   .selected-item-question{
-    font-size:var(--fs-md);
+    font-size:var(--fs-sm);
     line-height:1.4;
     color:var(--text);
   }
@@ -796,6 +797,7 @@
   }
   .countdown-order .selected-item{
     background:rgba(255,255,255,0.06);
+    border:none;
     box-shadow:0 0 0 1px rgba(255,255,255,0.16);
   }
   .countdown-order .selected-item-question{ color:var(--on-accent); }
@@ -866,6 +868,7 @@
     .btn-primary:not(:disabled):hover{ background:var(--accent-hover); }
     .btn-ghost-dark:not(:disabled):hover{ background:rgba(255,255,255,0.08); }
     .card:not(:disabled):hover{ box-shadow:var(--shadow-raised-hover); }
+    .card.selected:not(:disabled):hover{ box-shadow:var(--shadow-selected); }
     .card:not(:disabled):hover .card-plus{ opacity:1; transform:scale(1); }
     .expert-select:hover{ background:var(--hover); }
     .select-option:hover{ background:var(--hover); }
@@ -938,16 +941,20 @@
   }
   .topic-window{ background:#f6fbf3; border-radius:18px; box-shadow:var(--shadow-raised); }
   .panel{ padding:20px; }
+  #selectionPanel{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  #selectionPanel .select-wrap,
+  #selectionPanel .panel-title-row,
+  #selectionPanel .empty-state,
+  #selectionPanel .selected-list,
+  #selectionPanel .divider,
+  #selectionPanel .timer-row{ margin:0; }
   .card{ background:#f8fbf6; border-radius:var(--radius); }
   @media (hover:hover) and (pointer:fine){ .card:not(:disabled):hover{ background:#edf6e8; } }
   .card.selected{ background:#ddedcf; }
-  .family-label{ border-left:3px solid #6e9c54; padding-left:10px; }
-  .family-row:nth-child(1) .family-label,
-  .family-row:nth-child(2) .family-label{ border-left-color:#6e9c54; } /* 溯因 / 推果 */
-  .family-row:nth-child(3) .family-label,
-  .family-row:nth-child(4) .family-label{ border-left-color:#d59a57; } /* 提炼 / 拆步 */
-  .family-row:nth-child(5) .family-label,
-  .family-row:nth-child(6) .family-label{ border-left-color:#bd7460; } /* 复现 / 定性 */
   .seq-badge{ background:#6e9c54; }
   .btn-primary, .start-btn{ background:var(--accent); }
   @media (hover:hover) and (pointer:fine){ .btn-primary:not(:disabled):hover, .start-btn:not(:disabled):hover{ background:var(--accent-hover); } }
@@ -1651,34 +1658,33 @@
     }
   };
 
-  var FAMILY_ICON_BASE = "../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/";
   var FAMILIES = [
-    { sub:"Why → Abstract", name:"溯因", icon:FAMILY_ICON_BASE + "bold-magnifying-glass-icon_sm.png", cards:[
+    { sub:"Why → Abstract", name:"溯因", icon:"assets/causal-onion-green-v2.png", cards:[
       { id:"f1c1", method:"直接追问法", question:"问自己“为什么”？" },
       { id:"f1c2", method:"连续追问法", question:"继续追问“为什么”？" },
       { id:"f1c3", method:"本质提炼法", question:"归根打底，最本质的原因是什么？" }
     ]},
-    { sub:"Why → Concrete", name:"推果", icon:FAMILY_ICON_BASE + "notification-bell-alert-reminder_sm.png", cards:[
+    { sub:"Why → Concrete", name:"推果", icon:"assets/effect-ripples-green.png", cards:[
       { id:"f2c1", method:"直接推导法", question:"So what，所以会怎么样？" },
       { id:"f2c2", method:"连锁反应法", question:"这之后，还会引发什么连锁反应？" },
       { id:"f2c3", method:"最坏情况法", question:"否认这件事/这个观点，最坏会怎么样？" }
     ]},
-    { sub:"How → Abstract", name:"提炼", icon:FAMILY_ICON_BASE + "sketched-present-box_sm.png", cards:[
+    { sub:"How → Abstract", name:"提炼", icon:"assets/distill-funnel-orange.png", cards:[
       { id:"f3c1", method:"一句话概括法", question:"一句话概括你的策略是什么？" },
       { id:"f3c2", method:"可迁移性检验法", question:"能不能提炼成一条反复能用的方法？" },
       { id:"f3c3", method:"边界测试法", question:"这个方法在什么情况下会失效？" }
     ]},
-    { sub:"How → Concrete", name:"拆步", icon:FAMILY_ICON_BASE + "idea-lightbulb-innovation-creativity_sm.png", cards:[
+    { sub:"How → Concrete", name:"拆步", icon:"assets/steps-checklist-orange.png", cards:[
       { id:"f4c1", method:"起点法", question:"迈出的最小一步是什么？" },
       { id:"f4c2", method:"全流程列举法", question:"完整的方法是怎么样的？一点一点说。" },
       { id:"f4c3", method:"新手风险法", question:"换个新手来做，哪一步最需要提醒？" }
     ]},
-    { sub:"What → Concrete", name:"复现", icon:FAMILY_ICON_BASE + "paper-document-file-report_sm.png", cards:[
+    { sub:"What → Concrete", name:"复现", icon:"assets/scene-viewfinder-red.png", cards:[
       { id:"f5c1", method:"场景还原法（5W1H）", question:"当时具体发生了什么？谁、在哪、什么时候、做了什么？" },
       { id:"f5c2", method:"高光时刻法", question:"有没有哪个场景画面，特别让人印象深刻？" },
       { id:"f5c3", method:"对话/动作还原法", question:"有谁说了什么、做了什么，让你现在还记得？" }
     ]},
-    { sub:"What → Abstract", name:"定性", icon:FAMILY_ICON_BASE + "unlocked-padlock-access_sm.png", cards:[
+    { sub:"What → Abstract", name:"定性", icon:"assets/define-tag-red.png", cards:[
       { id:"f6c1", method:"归类法", question:"定义“这是什么”？" },
       { id:"f6c2", method:"对比法", question:"其实就像和什么一样（相似和差别的点是什么）？" },
       { id:"f6c3", method:"类比法", question:"说白了，这就是什么？" }
