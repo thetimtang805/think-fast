@@ -72,6 +72,7 @@
 - 每 3 秒自动切换一次，无需用户交互触发；切换时场景词+图标一起做一次淡出淡入（约 250ms），不是硬切。
 - 标语固定用英文（当作品牌元素处理，类似"Hot Takes"这类不翻译的专有名词），不跟随语言切换按钮变化。
 - 素材来源：`reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/` 里挑的四张手绘小图标，跟卡片墙、其余 UI 的极简黑白灰风格是两套视觉语言，只用在这一处做点缀。
+- **倒计时时收起动态部分**：进入倒计时面板后，Header 只保留"Think fast"这个固定文案，"in ___"和轮播场景词/图标全部隐藏，不再切换；返回选卡面板后恢复正常轮播。场景轮播的定时器不暂停（继续在后台切换隐藏的内容），只是视觉上不显示，逻辑更简单。
 
 **话题生成器**
 - 上方是话题滚轮，展示当前话题（老虎机式滚动效果，机制仿照 speechtopicgen.com）；下方一排 3 个按钮，从左到右依次是：中/英文语言切换、日常话题/面试准备切换、"🎲 随机生成"。
@@ -236,6 +237,11 @@
 改了什么：练习时左右栏的宽度比例从"和平时一样左 60% / 右 40%"改成"左 40% / 右 60%"——发言记录输入框变窄，倒计时模块变宽。`prototype/visual/index.html` 里新增 `.app.practice-mode .col-left{ flex:0 0 calc(40% - 24px); }` / `.app.practice-mode .col-right{ flex:0 0 60%; }`，只在练习模式下生效，不影响平时选卡片面的 60/40 比例。
 为什么改：用户直接给出这个需求。
 影响的部分：`prototype/visual/index.html`。
+
+### 2026-08-11（倒计时时 Header 收起动态标语）
+改了什么：进入倒计时面板后，Header 只显示"Think fast"固定文案，"in ___"和轮播场景词/图标都隐藏，不再切换；返回选卡面板时恢复。`prototype/visual/index.html` 里把原来"Think fast in"整段拆成 `.tagline-fixed`（"Think fast"，一直显示）+ 新增的 `#taglineDynamic`（包着"in" + 场景轮播部分），`startPractice()`/`stopPractice()` 里对 `taglineDynamicEl.hidden` 成对切换；轮播定时器本身不暂停，只是隐藏时看不见。
+为什么改：用户直接给出这个需求。
+影响的部分：二、怎么做 - 交互细节；`prototype/visual/index.html`。
 
 ## 六、名词解释
 

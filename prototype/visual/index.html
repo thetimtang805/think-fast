@@ -65,6 +65,11 @@
     white-space:nowrap;
   }
   .tagline-fixed{ font-weight:700; color:var(--text); }
+  .tagline-dynamic{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+  }
   .tagline-scene-wrap{
     display:inline-flex;
     align-items:center;
@@ -667,10 +672,13 @@
     <img class="header-deco" style="top:100px; left:230px; width:64px; transform:rotate(6deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/retro-computer-monitor-technology_sm.png" alt="" aria-hidden="true" />
   </div>
   <div class="header-tagline">
-    <span class="tagline-fixed">Think fast in</span>
-    <span class="tagline-scene-wrap" id="taglineSceneWrap">
-      <span class="tagline-scene" id="taglineScene"></span>
-      <img class="tagline-icon" id="taglineIcon" src="" alt="" aria-hidden="true" />
+    <span class="tagline-fixed">Think fast</span>
+    <span class="tagline-dynamic" id="taglineDynamic">
+      <span class="tagline-fixed">in</span>
+      <span class="tagline-scene-wrap" id="taglineSceneWrap">
+        <span class="tagline-scene" id="taglineScene"></span>
+        <img class="tagline-icon" id="taglineIcon" src="" alt="" aria-hidden="true" />
+      </span>
     </span>
   </div>
   <div class="header-side right">
@@ -1272,6 +1280,7 @@
   };
 
   var appEl = document.getElementById("appRoot");
+  var taglineDynamicEl = document.getElementById("taglineDynamic");
   var taglineSceneWrapEl = document.getElementById("taglineSceneWrap");
   var taglineSceneEl = document.getElementById("taglineScene");
   var taglineIconEl = document.getElementById("taglineIcon");
@@ -1828,6 +1837,7 @@
     appEl.classList.add("practice-mode");
     cardWallEl.hidden = true;
     transcriptPanelEl.hidden = false;
+    taglineDynamicEl.hidden = true;
     switchPanel(selectionPanelEl, countdownPanelEl);
     beginCountdownRun();
   }
@@ -1850,6 +1860,7 @@
       appEl.classList.remove("practice-mode");
       cardWallEl.hidden = false;
       transcriptPanelEl.hidden = true;
+      taglineDynamicEl.hidden = false;
       switchPanel(countdownPanelEl, selectionPanelEl);
     }
   }
