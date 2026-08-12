@@ -2553,6 +2553,7 @@
   var countdownCompleteAudio = new Audio("../../reference/sound-effect/vadim_makes_sound-modern-success-confirmation-notification-566072.mp3");
   countdownCompleteAudio.preload = "auto";
   countdownCompleteAudio.volume = 0.5;
+  var countdownCompleteAudioUnlocked = false;
 
   function startTopicSpinAudio(){
     topicSpinAudio.currentTime = 0;
@@ -2574,7 +2575,35 @@
   function playCountdownCompleteAudio(){
     countdownCompleteAudio.currentTime = 0;
     var playAttempt = countdownCompleteAudio.play();
-    if (playAttempt){ playAttempt.catch(function(){}); }
+    if (playAttempt){
+      playAttempt.catch(function(){
+        // 下次“开始练习”时重新尝试在用户手势中预热音频。
+        countdownCompleteAudioUnlocked = false;
+      });
+    }
+  }
+
+  function unlockCountdownCompleteAudio(){
+    if (countdownCompleteAudioUnlocked) return;
+
+    // 在“开始练习”的用户手势中静音预热，避免倒计时结束时被浏览器的自动播放策略拦截。
+    countdownCompleteAudio.muted = true;
+    countdownCompleteAudio.currentTime = 0;
+    var playAttempt = countdownCompleteAudio.play();
+    function resetAudio(){
+      countdownCompleteAudio.pause();
+      countdownCompleteAudio.currentTime = 0;
+      countdownCompleteAudio.muted = false;
+    }
+    if (playAttempt && typeof playAttempt.then === "function"){
+      playAttempt.then(function(){
+        countdownCompleteAudioUnlocked = true;
+        resetAudio();
+      }).catch(resetAudio);
+    } else {
+      countdownCompleteAudioUnlocked = true;
+      window.setTimeout(resetAudio, 0);
+    }
   }
 
   function buildTopicItem(text, landed){
@@ -3318,6 +3347,7 @@
 
   function startPractice(){
     if (state.selected.length === 0) return;
+    unlockCountdownCompleteAudio();
     renderCountdownOrder();
     appEl.classList.add("practice-mode");
     renderStickyTopic();
@@ -3333,6 +3363,7 @@
       window.clearInterval(state.timer.handle);
       state.timer.handle = null;
     }
+    unlockCountdownCompleteAudio();
     beginCountdownRun();
   }
 
