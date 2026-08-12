@@ -1,0 +1,52 @@
+# Western Culture Keywords
+
+- Individual freedom
+- Personal boundaries
+- Privacy
+- Small talk
+- First names
+- Eye contact
+- Personal space
+- Work-life balance
+- Weekend plans
+- Family dinner
+- Road trip
+- Summer camp
+- Prom night
+- Graduation ceremony
+- Student loans
+- Gap year
+- Dorm life
+- Fraternity and sorority
+- Part-time job
+- Internship
+- Career fair
+- Networking
+- Resume
+- Cover letter
+- Job interview
+- Nine-to-five
+- Office politics
+- Remote work
+- Side hustle
+- Home ownership
+- Mortgage
+- Credit score
+- Health insurance
+- Retirement plan
+- Thanksgiving
+- Christmas shopping
+- New Year's resolutions
+- Super Bowl Sunday
+- Barbecue
+- Potluck
+- Happy hour
+- Dating apps
+- Splitting the bill
+- Personal growth
+- Self-care
+- Therapy
+- The American Dream
+- Time is money
+- Pull yourself up by your bootstraps
+- When life gives you lemons
