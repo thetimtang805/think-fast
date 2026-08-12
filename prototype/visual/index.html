@@ -8,6 +8,13 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
 <style>
+  @font-face{
+    font-family:"Vampiro One";
+    src:url("../../reference/font/Vampiro_One/VampiroOne-Regular.ttf") format("truetype");
+    font-weight:400;
+    font-style:normal;
+    font-display:swap;
+  }
   :root{
     /* 采纳的高保真视觉方向：方向 A · 克制工具 + 墨石蓝主题色（H=240，低彩度，见 emil-color 推导） */
     --accent-50:  oklch(0.970 0.006 240);
@@ -91,11 +98,12 @@
     -moz-osx-font-smoothing:grayscale;
     color:var(--text);
     background:var(--canvas-bg);
-    padding:0 0 64px;
+    min-height:100vh;
+    padding:0;
   }
   .app-header{
     width:100%;
-    margin:0 0 16px;
+    margin:0;
     height:172px;
     padding:0 24px;
     display:grid;
@@ -127,8 +135,9 @@
   .header-path-art{
     position:absolute;
     right:0;
-    bottom:-6px;
-    width:360px;
+    /* 补偿 PNG 自带的底部透明留白，使可见路径与左侧桌面同基线。 */
+    bottom:-86px;
+    width:468px;
     max-width:100%;
     height:auto;
     pointer-events:none;
@@ -147,11 +156,25 @@
     letter-spacing:-0.01em;
     white-space:nowrap;
   }
-  .tagline-fixed{ font-weight:700; color:var(--text); }
+  .tagline-fixed{
+    font-family:"Vampiro One",var(--font-display);
+    font-size:42px;
+    font-weight:400;
+    letter-spacing:0;
+    color:var(--text);
+  }
+  .tagline-connector{
+    font-family:var(--font-sans);
+    font-size:inherit;
+    font-weight:400;
+    letter-spacing:inherit;
+    color:var(--text-secondary);
+  }
   .tagline-dynamic{
     display:inline-flex;
     align-items:center;
     gap:10px;
+    font-size:38px;
   }
   .tagline-scene-wrap{
     display:inline-flex;
@@ -161,7 +184,11 @@
     opacity:1;
   }
   .tagline-scene-wrap.fade-out{ opacity:0; }
-  .tagline-scene{ font-weight:400; color:var(--text-secondary); }
+  .tagline-scene{
+    font-family:var(--font-sans);
+    font-weight:400;
+    color:var(--text-secondary);
+  }
   .tagline-icon{
     width:44px;
     height:44px;
@@ -169,7 +196,7 @@
   }
   @media (max-width:960px){
     .header-tim-art{ width:260px; bottom:-8px; }
-    .header-path-art{ width:260px; bottom:0; }
+    .header-path-art{ width:338px; bottom:-57px; }
   }
   .app{
     max-width:1440px;
@@ -823,7 +850,7 @@
   :root{
     --surface:#fbfdf9;
     --app-surface:rgb(251 253 249 / 0.86);
-    --canvas-bg:#ffffff;
+    --canvas-bg:#BEDDEA;
     --page-bg:#eff5eb;
     --border:#d6e2d2;
     --border-soft:#e8f0e4;
@@ -840,7 +867,14 @@
   }
   .app-header{ background:#beddea; border-bottom:none; }
   .header-tagline{ color:#163d31; }
-  .app{ max-width:1360px; margin:0 auto 28px; border-radius:28px; box-shadow:0 22px 52px -34px rgb(18 63 45 / 0.42); }
+  .app{
+    width:100%;
+    max-width:none;
+    min-height:calc(100vh - 172px);
+    margin:0;
+    border-radius:0;
+    box-shadow:none;
+  }
   .topic-window{ background:#f6fbf3; border-radius:18px; box-shadow:var(--shadow-raised); }
   .panel{ padding:20px; }
   .card{ background:#f8fbf6; border-radius:16px; }
@@ -867,7 +901,7 @@
   <div class="header-tagline">
     <span class="tagline-fixed">Think fast</span>
     <span class="tagline-dynamic" id="taglineDynamic">
-      <span class="tagline-fixed">in</span>
+      <span class="tagline-fixed tagline-connector">in</span>
       <span class="tagline-scene-wrap" id="taglineSceneWrap">
         <span class="tagline-scene" id="taglineScene"></span>
         <img class="tagline-icon" id="taglineIcon" src="" alt="" aria-hidden="true" />
@@ -2170,14 +2204,13 @@
   });
 
   /* Header 动态标语："Think fast in ___"，固定英文，不跟随语言切换（品牌元素）。
-     每 3 秒切换一个场景，循环播放，切换时做一次淡出淡入。 */
-  var ILLUSTRATION_BASE = "../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/";
-  var HEADER_SCENES = [
-    { word: "interviews", img: ILLUSTRATION_BASE + "business-briefcase-work-portfolio_sm.png" },
-    { word: "small talks", img: ILLUSTRATION_BASE + "communication-chat-bubbles_sm.png" },
-    { word: "meetings", img: ILLUSTRATION_BASE + "customer-support-headset-agent_sm.png" },
-    { word: "classrooms", img: ILLUSTRATION_BASE + "paper-document-file-report_sm.png" }
-  ];
+     每 5 秒切换一个场景，循环播放，切换时做一次淡出淡入。 */
+var HEADER_SCENES = [
+  { word: "interviews", img: "assets/header-scene-interviews.png" },
+  { word: "small talks", img: "assets/header-scene-small-talks.png" },
+  { word: "meetings", img: "assets/header-scene-meetings.png" },
+  { word: "classrooms", img: "assets/header-scene-classrooms.png" }
+];
   var headerSceneIndex = 0;
 
   function renderHeaderScene(){
@@ -2197,7 +2230,7 @@
   }
 
   renderHeaderScene();
-  window.setInterval(rotateHeaderScene, 3000);
+  window.setInterval(rotateHeaderScene, 5000);
 
   state.topicIndex = pickRandomTopicIndex(null, TOPICS[state.topicMode][state.lang].length);
   updateToggleLabels();
