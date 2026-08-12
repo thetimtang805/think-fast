@@ -250,12 +250,50 @@
     border-radius:24px;
   }
   .workspace-section + .workspace-section{ margin-top:24px; }
+  .sticky-topic-summary{
+    position:sticky;
+    top:0;
+    z-index:20;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:52px;
+    margin:-24px -24px 20px;
+    padding:8px 24px;
+    background:var(--app-surface);
+    border-bottom:var(--border-hairline) solid var(--border-soft);
+    border-radius:24px 24px 0 0;
+    box-shadow:0 12px 22px -24px rgba(18,63,45,0.42);
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(-8px);
+    transition:transform 240ms cubic-bezier(0.22,1,0.36,1), opacity 180ms cubic-bezier(0.22,1,0.36,1);
+    will-change:transform,opacity;
+  }
+  .sticky-topic-summary.is-visible{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0);
+  }
+  .sticky-topic-value{
+    max-width:min(900px, 100%);
+    overflow:hidden;
+    color:var(--text);
+    font-size:var(--fs-md);
+    font-weight:600;
+    line-height:24px;
+    text-align:center;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
 
   .layout{
     display:flex;
     gap:24px;
     align-items:flex-start;
   }
+  .layout.is-topic-shifting > .col-left,
+  .layout.is-topic-shifting > .col-right{ will-change:transform; }
   .col-left{ flex:0 0 60%; min-width:0; }
   .col-right{
     flex:0 0 calc(40% - 24px);
@@ -266,6 +304,8 @@
   .app.practice-mode .workspace-section-topic{ display:none; }
   .app.practice-mode{ padding-top:0; }
   .app.practice-mode .workspace-section-cards{ margin-top:0; }
+  .workspace-section-cards.has-sticky-topic .col-right{ top:76px; }
+  .app.practice-mode .workspace-section-cards.has-sticky-topic .col-right{ top:24px; }
   /* 练习时把宽度比例反过来：倒计时模块（右栏）变宽，发言记录输入框（左栏）变窄 */
   .app.practice-mode .col-left{ flex:0 0 calc(40% - 24px); }
   .app.practice-mode .col-right{ flex:0 0 60%; }
@@ -1015,6 +1055,14 @@
       padding:16px;
       border-radius:18px;
     }
+    .sticky-topic-summary{
+      min-height:48px;
+      margin:-16px -16px 16px;
+      padding:8px 16px;
+      border-radius:18px 18px 0 0;
+    }
+    .sticky-topic-value{ font-size:var(--fs-sm); }
+    .workspace-section-cards.has-sticky-topic .col-right{ top:64px; }
     .layout{
       flex-direction:column;
       gap:16px;
@@ -1138,6 +1186,9 @@
   </section>
 
   <section class="workspace-section workspace-section-cards">
+  <div id="stickyTopicSummary" class="sticky-topic-summary" hidden aria-label="当前话题">
+    <span id="stickyTopicValue" class="sticky-topic-value"></span>
+  </div>
   <div class="layout" id="layout">
     <div class="col-left">
       <div class="panel" id="cardWall"></div>
@@ -1152,11 +1203,11 @@
       <div class="panel" id="selectionPanel">
         <div class="select-wrap" id="expertSelectWrap">
           <button type="button" id="expertSelectBtn" class="expert-select" aria-haspopup="listbox" aria-expanded="false">
-            <span id="expertSelectLabel">自定义</span>
+            <span id="expertSelectLabel">我的思路</span>
             <svg class="select-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <ul id="expertSelectMenu" class="select-menu" role="listbox" tabindex="-1" hidden>
-            <li role="option" class="select-option selected" aria-selected="true" data-value="custom">自定义</li>
+            <li role="option" class="select-option selected" aria-selected="true" data-value="custom">我的思路</li>
             <li role="option" class="select-option" aria-selected="false" data-value="0">Steve Jobs</li>
             <li role="option" class="select-option" aria-selected="false" data-value="1">Simon Sinek</li>
             <li role="option" class="select-option" aria-selected="false" data-value="2">Don Draper</li>
@@ -1772,11 +1823,15 @@
   var topicWindowEl = document.getElementById("topicWindow");
   var topicReelEl = document.getElementById("topicReel");
   var topicAnnounceEl = document.getElementById("topicAnnounce");
+  var stickyTopicSummaryEl = document.getElementById("stickyTopicSummary");
+  var stickyTopicValueEl = document.getElementById("stickyTopicValue");
+  var layoutEl = document.getElementById("layout");
   var langToggleBtn = document.getElementById("langToggleBtn");
   var langToggleLabelEl = document.getElementById("langToggleLabel");
   var topicModeToggleBtn = document.getElementById("topicModeToggleBtn");
   var topicModeToggleLabelEl = document.getElementById("topicModeToggleLabel");
   var randomTopicBtn = document.getElementById("randomTopicBtn");
+  var cardsSectionEl = document.querySelector(".workspace-section-cards");
   var cardWallEl = document.getElementById("cardWall");
   var transcriptPanelEl = document.getElementById("transcriptPanel");
   var transcriptInputEl = document.getElementById("transcriptInput");
@@ -1807,6 +1862,9 @@
   var toastUndoBtn = document.getElementById("toastUndoBtn");
 
   var dragUid = null;
+  var isSelectedTopicVisible = true;
+  var topicVisibilityObserver = null;
+  var stickyTopicHideHandle = null;
 
   function updateToggleLabels(){
     langToggleLabelEl.textContent = state.lang === "zh" ? "EN" : "中文";
@@ -1900,6 +1958,118 @@
     }
     void topicReelEl.offsetHeight; // 强制重排，让 settled 的最终态样式立即生效
     topicReelEl.classList.add("settled");
+    observeSelectedTopicVisibility();
+  }
+
+  function renderStickyTopic(){
+    var shouldShow = state.topicIndex !== null && (appEl.classList.contains("practice-mode") || !isSelectedTopicVisible);
+    if (state.topicIndex === null){
+      stickyTopicValueEl.textContent = "";
+    } else {
+      stickyTopicValueEl.textContent = TOPICS[state.topicMode][state.lang][state.topicIndex];
+    }
+    setStickyTopicVisibility(shouldShow);
+  }
+
+  function setStickyTopicVisibility(shouldShow){
+    var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (stickyTopicHideHandle){
+      window.clearTimeout(stickyTopicHideHandle);
+      stickyTopicHideHandle = null;
+    }
+    if (shouldShow){
+      setStickyTopicLayoutState(true, reducedMotion);
+      if (reducedMotion){
+        stickyTopicSummaryEl.classList.add("is-visible");
+      } else {
+        window.requestAnimationFrame(function(){
+          stickyTopicSummaryEl.classList.add("is-visible");
+        });
+      }
+      return;
+    }
+
+    stickyTopicSummaryEl.classList.remove("is-visible");
+    if (reducedMotion){
+      setStickyTopicLayoutState(false, true);
+      return;
+    }
+    stickyTopicHideHandle = window.setTimeout(function(){
+      if (!stickyTopicSummaryEl.classList.contains("is-visible")){
+        setStickyTopicLayoutState(false, false);
+      }
+    }, 240);
+  }
+
+  function setStickyTopicLayoutState(isShown, reducedMotion){
+    var columns = Array.prototype.slice.call(layoutEl.children);
+    var before = columns.map(function(column){
+      return { element:column, top:column.getBoundingClientRect().top };
+    });
+
+    stickyTopicSummaryEl.hidden = !isShown;
+    cardsSectionEl.classList.toggle("has-sticky-topic", isShown);
+    animateTopicLayoutShift(before, reducedMotion);
+  }
+
+  function animateTopicLayoutShift(before, reducedMotion){
+    if (reducedMotion) return;
+    var moved = before.map(function(entry){
+      return { element:entry.element, offset:entry.top - entry.element.getBoundingClientRect().top };
+    }).filter(function(entry){ return Math.abs(entry.offset) > 0.5; });
+    if (!moved.length) return;
+
+    layoutEl.classList.add("is-topic-shifting");
+    moved.forEach(function(entry){
+      entry.element.style.transition = "none";
+      entry.element.style.transform = "translateY(" + entry.offset + "px)";
+    });
+    void layoutEl.offsetHeight;
+    window.requestAnimationFrame(function(){
+      moved.forEach(function(entry){
+        entry.element.style.transition = "transform 280ms cubic-bezier(0.22,1,0.36,1)";
+        entry.element.style.transform = "";
+      });
+      window.setTimeout(function(){
+        moved.forEach(function(entry){ entry.element.style.transition = ""; });
+        layoutEl.classList.remove("is-topic-shifting");
+      }, 300);
+    });
+  }
+
+  function syncSelectedTopicVisibility(){
+    var landedTopicEl = topicReelEl.querySelector(".topic-reel-item.landed");
+    if (!landedTopicEl){
+      isSelectedTopicVisible = true;
+    } else {
+      var rect = landedTopicEl.getBoundingClientRect();
+      isSelectedTopicVisible = rect.bottom > 0 && rect.top < window.innerHeight;
+    }
+    renderStickyTopic();
+  }
+
+  function observeSelectedTopicVisibility(){
+    if (topicVisibilityObserver){ topicVisibilityObserver.disconnect(); }
+    var landedTopicEl = topicReelEl.querySelector(".topic-reel-item.landed");
+    if (!landedTopicEl){
+      isSelectedTopicVisible = true;
+      renderStickyTopic();
+      return;
+    }
+    if (!("IntersectionObserver" in window)){
+      syncSelectedTopicVisibility();
+      return;
+    }
+    topicVisibilityObserver = new IntersectionObserver(function(entries){
+      isSelectedTopicVisible = entries[0].isIntersecting && entries[0].intersectionRatio > 0;
+      renderStickyTopic();
+    }, { threshold:0 });
+    topicVisibilityObserver.observe(landedTopicEl);
+  }
+
+  if (!("IntersectionObserver" in window)){
+    window.addEventListener("scroll", syncSelectedTopicVisibility, { passive:true });
+    window.addEventListener("resize", syncSelectedTopicVisibility);
   }
 
   function pickRandomTopicIndex(exclude, poolLength){
@@ -1913,6 +2083,9 @@
     if (isTopicSpinning) return;
     var pool = TOPICS[state.topicMode][state.lang];
     if (!pool.length) return;
+    if (topicVisibilityObserver){ topicVisibilityObserver.disconnect(); }
+    isSelectedTopicVisible = true;
+    renderStickyTopic();
     isTopicSpinning = true;
     randomTopicBtn.disabled = true;
     startTopicSpinAudio();
@@ -2226,7 +2399,7 @@
 
   function setExpertValue(val){
     var opt = expertSelectOptions.filter(function(o){ return o.getAttribute("data-value") === val; })[0];
-    expertSelectLabelEl.textContent = opt ? opt.textContent : "自定义";
+    expertSelectLabelEl.textContent = opt ? opt.textContent : "我的思路";
     expertSelectOptions.forEach(function(o){
       var isSelected = o === opt;
       o.classList.toggle("selected", isSelected);
@@ -2423,9 +2596,9 @@
   function startPractice(){
     if (state.selected.length === 0) return;
     renderCountdownOrder();
-    var currentTopic = TOPICS[state.topicMode][state.lang][state.topicIndex];
-    countdownCaptionEl.textContent = currentTopic;
+    countdownCaptionEl.textContent = "按下面的顺序即兴讲述";
     appEl.classList.add("practice-mode");
+    renderStickyTopic();
     cardWallEl.hidden = true;
     transcriptPanelEl.hidden = false;
     taglineDynamicEl.hidden = true;
@@ -2449,6 +2622,7 @@
     state.timer.status = "idle";
     if (backToSelection){
       appEl.classList.remove("practice-mode");
+      renderStickyTopic();
       cardWallEl.hidden = false;
       transcriptPanelEl.hidden = true;
       taglineDynamicEl.hidden = false;
