@@ -204,6 +204,11 @@
     padding:24px;
     background:var(--app-surface);
   }
+  .workspace-section{
+    width:min(100%, 1200px);
+    margin:0 auto;
+  }
+  .workspace-section + .workspace-section{ margin-top:24px; }
 
   .layout{
     display:flex;
@@ -212,7 +217,7 @@
   }
   .col-left{ flex:0 0 60%; min-width:0; }
   .col-right{ flex:0 0 calc(40% - 24px); min-width:0; }
-  .app.practice-mode .topic-bar{ display:none; }
+  .app.practice-mode .workspace-section-topic{ display:none; }
   /* 练习时把宽度比例反过来：倒计时模块（右栏）变宽，发言记录输入框（左栏）变窄 */
   .app.practice-mode .col-left{ flex:0 0 calc(40% - 24px); }
   .app.practice-mode .col-right{ flex:0 0 60%; }
@@ -258,7 +263,7 @@
     display:flex;
     flex-direction:column;
     gap:12px;
-    margin-bottom:16px;
+    margin-bottom:0;
   }
   .topic-controls{
     display:flex;
@@ -872,6 +877,8 @@
     max-width:none;
     min-height:calc(100vh - 172px);
     margin:0;
+    padding:24px;
+    background:transparent;
     border-radius:0;
     box-shadow:none;
   }
@@ -914,6 +921,7 @@
 </header>
 
 <div class="app" id="appRoot">
+  <section class="workspace-section workspace-section-topic">
   <div class="topic-bar">
     <div class="topic-window" id="topicWindow" aria-hidden="true">
       <div class="topic-reel" id="topicReel"></div>
@@ -935,7 +943,9 @@
       </button>
     </div>
   </div>
+  </section>
 
+  <section class="workspace-section workspace-section-cards">
   <div class="layout" id="layout">
     <div class="col-left">
       <div class="panel" id="cardWall"></div>
@@ -1004,6 +1014,7 @@
       </div>
     </div>
   </div>
+  </section>
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite" hidden>
