@@ -30,18 +30,19 @@
                 "SF Pro","Segoe UI",Arial,sans-serif;
     color:var(--text);
     background:var(--canvas-bg);
-    padding:24px 0 64px;
+    padding:0 0 64px;
   }
   .app-header{
-    max-width:1440px;
-    margin:0 auto 16px;
+    width:100%;
+    margin:0 0 16px;
     height:172px;
     padding:0 24px;
     display:grid;
     grid-template-columns:1fr auto 1fr;
     align-items:center;
-    border:1px solid var(--border);
-    border-radius:var(--radius);
+    border:none;
+    border-bottom:1px solid var(--border);
+    border-radius:0;
     background:var(--surface);
     overflow:hidden;
   }
@@ -231,6 +232,13 @@
     color:var(--text);
     white-space:nowrap;
     cursor:pointer;
+    gap:8px;
+  }
+  .btn-icon{
+    width:28px;
+    height:28px;
+    object-fit:contain;
+    flex:0 0 28px;
   }
   .btn:hover{ background:var(--hover); }
   .btn:active{ background:var(--border-soft); }
@@ -267,6 +275,13 @@
   .family-label{
     flex:0 0 96px;
     padding-top:8px;
+  }
+  .family-icon{
+    width:32px;
+    height:32px;
+    display:block;
+    margin-bottom:6px;
+    object-fit:contain;
   }
   .family-name{
     font-size:14px;
@@ -696,8 +711,14 @@
     </div>
     <div id="topicAnnounce" class="sr-only" role="status" aria-live="polite"></div>
     <div class="topic-controls">
-      <button id="langToggleBtn" class="btn" type="button">EN</button>
-      <button id="topicModeToggleBtn" class="btn" type="button">面试准备</button>
+      <button id="langToggleBtn" class="btn" type="button">
+        <img class="btn-icon" src="../../reference/icon/language-outline.svg" alt="" aria-hidden="true" />
+        <span id="langToggleLabel">EN</span>
+      </button>
+      <button id="topicModeToggleBtn" class="btn" type="button">
+        <img class="btn-icon" src="../../reference/icon/arrow-swap-horizontal-outline.svg" alt="" aria-hidden="true" />
+        <span id="topicModeToggleLabel">面试准备</span>
+      </button>
       <button id="randomTopicBtn" class="btn btn-primary" type="button">🎲 随机生成</button>
     </div>
   </div>
@@ -1206,33 +1227,34 @@
     }
   };
 
+  var FAMILY_ICON_BASE = "../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/";
   var FAMILIES = [
-    { sub:"Why → Abstract", name:"溯因", cards:[
+    { sub:"Why → Abstract", name:"溯因", icon:FAMILY_ICON_BASE + "bold-magnifying-glass-icon_sm.png", cards:[
       { id:"f1c1", method:"直接追问法", question:"问自己“为什么”？" },
       { id:"f1c2", method:"连续追问法", question:"继续追问“为什么”？" },
       { id:"f1c3", method:"本质提炼法", question:"归根打底，最本质的原因是什么？" }
     ]},
-    { sub:"Why → Concrete, So What", name:"推果", cards:[
+    { sub:"Why → Concrete, So What", name:"推果", icon:FAMILY_ICON_BASE + "open-box-product-package_sm.png", cards:[
       { id:"f2c1", method:"直接推导法", question:"So what，所以会怎么样？" },
       { id:"f2c2", method:"连锁反应法", question:"这之后，还会引发什么连锁反应？" },
       { id:"f2c3", method:"最坏情况法", question:"否认这件事/这个观点，最坏会怎么样？" }
     ]},
-    { sub:"How → Abstract", name:"提炼", cards:[
+    { sub:"How → Abstract", name:"提炼", icon:FAMILY_ICON_BASE + "sketched-present-box_sm.png", cards:[
       { id:"f3c1", method:"一句话概括法", question:"一句话概括你的策略是什么？" },
       { id:"f3c2", method:"可迁移性检验法", question:"能不能提炼成一条反复能用的方法？" },
       { id:"f3c3", method:"边界测试法", question:"这个方法在什么情况下会失效？" }
     ]},
-    { sub:"How → Concrete", name:"拆步", cards:[
+    { sub:"How → Concrete", name:"拆步", icon:FAMILY_ICON_BASE + "idea-lightbulb-innovation-creativity_sm.png", cards:[
       { id:"f4c1", method:"起点法", question:"迈出的最小一步是什么？" },
       { id:"f4c2", method:"全流程列举法", question:"完整的方法是怎么样的？一点一点说。" },
       { id:"f4c3", method:"新手风险法", question:"换个新手来做，哪一步最需要提醒？" }
     ]},
-    { sub:"What → Concrete", name:"复现", cards:[
+    { sub:"What → Concrete", name:"复现", icon:FAMILY_ICON_BASE + "paper-document-file-report_sm.png", cards:[
       { id:"f5c1", method:"场景还原法（5W1H）", question:"当时具体发生了什么？谁、在哪、什么时候、做了什么？" },
       { id:"f5c2", method:"高光时刻法", question:"有没有哪个场景画面，特别让人印象深刻？" },
       { id:"f5c3", method:"对话/动作还原法", question:"有谁说了什么、做了什么，让你现在还记得？" }
     ]},
-    { sub:"What → Abstract", name:"定性", cards:[
+    { sub:"What → Abstract", name:"定性", icon:FAMILY_ICON_BASE + "megaphone-announcement-broadcast_sm.png", cards:[
       { id:"f6c1", method:"归类法", question:"定义“这是什么”？" },
       { id:"f6c2", method:"对比法", question:"其实就像和什么一样（相似和差别的点是什么）？" },
       { id:"f6c3", method:"类比法", question:"说白了，这就是什么？" }
@@ -1288,7 +1310,9 @@
   var topicReelEl = document.getElementById("topicReel");
   var topicAnnounceEl = document.getElementById("topicAnnounce");
   var langToggleBtn = document.getElementById("langToggleBtn");
+  var langToggleLabelEl = document.getElementById("langToggleLabel");
   var topicModeToggleBtn = document.getElementById("topicModeToggleBtn");
+  var topicModeToggleLabelEl = document.getElementById("topicModeToggleLabel");
   var randomTopicBtn = document.getElementById("randomTopicBtn");
   var cardWallEl = document.getElementById("cardWall");
   var transcriptPanelEl = document.getElementById("transcriptPanel");
@@ -1318,9 +1342,9 @@
   var dragUid = null;
 
   function updateToggleLabels(){
-    langToggleBtn.textContent = state.lang === "zh" ? "EN" : "中文";
+    langToggleLabelEl.textContent = state.lang === "zh" ? "EN" : "中文";
     var targetMode = state.topicMode === "daily" ? "interview" : "daily";
-    topicModeToggleBtn.textContent = TEXT.topicModeNames[targetMode];
+    topicModeToggleLabelEl.textContent = TEXT.topicModeNames[targetMode];
   }
 
   function toggleLanguage(){
@@ -1492,7 +1516,9 @@
 
       var label = document.createElement("div");
       label.className = "family-label";
-      label.innerHTML = '<div class="family-name">' + family.name + '</div><div class="family-sub">' + family.sub + '</div>';
+      label.innerHTML =
+        '<img class="family-icon" src="' + family.icon + '" alt="" aria-hidden="true" />' +
+        '<div class="family-name">' + family.name + '</div><div class="family-sub">' + family.sub + '</div>';
       row.appendChild(label);
 
       var cardsWrap = document.createElement("div");
