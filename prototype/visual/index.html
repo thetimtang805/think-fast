@@ -2373,6 +2373,7 @@
   var isSelectedTopicVisible = true;
   var topicVisibilityObserver = null;
   var stickyTopicHideHandle = null;
+  var cardTooltipSyncHandle = null;
 
   function createCustomSelect(config){
     var selectedValue = config.value;
@@ -2781,10 +2782,8 @@
                          (card.id === state.justClickedCardId ? " card-pop" : "");
         btn.setAttribute("data-card-id", card.id);
         btn.setAttribute("aria-pressed", count > 0 ? "true" : "false");
-        btn.title = card.question;
         if (atCardCap || atTotalCap){
           btn.disabled = true;
-          btn.title = atCardCap ? "这张卡片最多选 " + MAX_PER_CARD + " 次" : "最多选 " + MAX_TOTAL_SELECTED + " 张卡片";
         }
 
         if (count > 0){
@@ -2816,8 +2815,30 @@
       row.appendChild(cardsWrap);
       cardWallEl.appendChild(row);
     });
+    window.requestAnimationFrame(syncTruncatedCardTooltips);
     state.justClickedCardId = null;
   }
+
+  function syncTruncatedCardTooltips(){
+    Array.prototype.forEach.call(cardWallEl.querySelectorAll(".card"), function(cardEl){
+      var questionEl = cardEl.querySelector(".card-question");
+      if (!questionEl) return;
+      var isTruncated = questionEl.scrollHeight > questionEl.clientHeight + 1 || questionEl.scrollWidth > questionEl.clientWidth + 1;
+      if (isTruncated){
+        cardEl.title = questionEl.textContent;
+      } else {
+        cardEl.removeAttribute("title");
+      }
+    });
+  }
+
+  window.addEventListener("resize", function(){
+    if (cardTooltipSyncHandle) window.cancelAnimationFrame(cardTooltipSyncHandle);
+    cardTooltipSyncHandle = window.requestAnimationFrame(function(){
+      cardTooltipSyncHandle = null;
+      syncTruncatedCardTooltips();
+    });
+  });
 
   function addCard(cardId){
     if (state.selected.length >= MAX_TOTAL_SELECTED) return;
@@ -3150,6 +3171,7 @@
             window.setTimeout(function(){ countdownNumberEl.classList.remove("running-enter"); }, 300);
           }
           window.setTimeout(function(){
+            if (state.timer.status !== "running") return;
             countdownPhaseLabelEl.hidden = true;
             countdownPhaseLabelEl.classList.remove("is-leaving");
             movingElements.forEach(function(element, index){
@@ -3172,42 +3194,55 @@
       }
 
       if (state.timer.remaining <= 0){
-        window.clearInterval(state.timer.handle);
-        state.timer.handle = null;
-        state.timer.status = "done";
-        var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        var movingElements = [countdownOrderEl];
-        var previousPositions = movingElements.map(function(element){ return element.getBoundingClientRect().top; });
-        countdownNumberEl.classList.remove("running-enter");
-        countdownPanelEl.classList.add("is-complete");
-        countdownNumberEl.classList.add("is-complete");
-        countdownNumberEl.textContent = COUNTDOWN_COMPLETE_MESSAGES[Math.floor(Math.random() * COUNTDOWN_COMPLETE_MESSAGES.length)];
-        countdownNumberEl.classList.add("complete-enter");
-        movingElements.forEach(function(element, index){
-          if (reduceMotion) return;
-          var offset = previousPositions[index] - element.getBoundingClientRect().top;
-          if (!offset) return;
-          element.style.transition = "none";
-          element.style.transform = "translateY(" + offset + "px)";
-          window.requestAnimationFrame(function(){
-            element.style.transition = "transform .3s cubic-bezier(.22,1,.36,1)";
-            element.style.transform = "";
-            window.setTimeout(function(){ element.style.transition = ""; }, 320);
-          });
-        });
-        if (!reduceMotion) countdownActionsRunningEl.classList.add("is-leaving");
-        window.setTimeout(function(){
-          countdownActionsRunningEl.hidden = true;
-          countdownActionsRunningEl.classList.remove("is-leaving");
-          countdownActionsDoneEl.hidden = false;
-          countdownResultHintEl.hidden = false;
-          if (!reduceMotion) countdownActionsDoneEl.classList.add("complete-enter");
-          if (!reduceMotion) countdownResultHintEl.classList.add("complete-enter");
-        }, reduceMotion ? 0 : 140);
+        finishCountdown();
         return;
       }
       countdownNumberEl.textContent = formatTime(state.timer.remaining);
     }, 1000);
+  }
+
+  function finishCountdown(){
+    if (state.timer.status === "done") return;
+    if (state.timer.handle){
+      window.clearInterval(state.timer.handle);
+      state.timer.handle = null;
+    }
+    state.timer.status = "done";
+    state.timer.remaining = 0;
+
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var movingElements = [countdownOrderEl];
+    var previousPositions = movingElements.map(function(element){ return element.getBoundingClientRect().top; });
+    countdownPhaseLabelEl.hidden = true;
+    countdownPhaseLabelEl.classList.remove("is-leaving");
+    countdownNumberEl.classList.remove("running-enter");
+    countdownPanelEl.classList.add("is-complete");
+    countdownNumberEl.classList.add("is-complete");
+    countdownNumberEl.textContent = COUNTDOWN_COMPLETE_MESSAGES[Math.floor(Math.random() * COUNTDOWN_COMPLETE_MESSAGES.length)];
+    countdownNumberEl.classList.add("complete-enter");
+
+    movingElements.forEach(function(element, index){
+      if (reduceMotion) return;
+      var offset = previousPositions[index] - element.getBoundingClientRect().top;
+      if (!offset) return;
+      element.style.transition = "none";
+      element.style.transform = "translateY(" + offset + "px)";
+      window.requestAnimationFrame(function(){
+        element.style.transition = "transform .3s cubic-bezier(.22,1,.36,1)";
+        element.style.transform = "";
+        window.setTimeout(function(){ element.style.transition = ""; }, 320);
+      });
+    });
+
+    if (!reduceMotion) countdownActionsRunningEl.classList.add("is-leaving");
+    window.setTimeout(function(){
+      countdownActionsRunningEl.hidden = true;
+      countdownActionsRunningEl.classList.remove("is-leaving");
+      countdownActionsDoneEl.hidden = false;
+      countdownResultHintEl.hidden = false;
+      if (!reduceMotion) countdownActionsDoneEl.classList.add("complete-enter");
+      if (!reduceMotion) countdownResultHintEl.classList.add("complete-enter");
+    }, reduceMotion ? 0 : 140);
   }
 
   function startPractice(){
@@ -3324,7 +3359,7 @@
   }
 
   startBtn.addEventListener("click", startPractice);
-  stopBtn.addEventListener("click", function(){ stopPractice(true); });
+  stopBtn.addEventListener("click", finishCountdown);
   restartBtn.addEventListener("click", restartPractice);
   backBtn.addEventListener("click", function(){ stopPractice(true); });
   copyResultBtn.addEventListener("click", copyPracticeResult);
