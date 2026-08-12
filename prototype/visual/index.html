@@ -2605,10 +2605,12 @@
     disarmCountdownCompleteAudio();
     var armId = ++countdownCompleteAudioArmId;
 
-    // 必须在“开始练习”或“再练一次”的直接用户手势中启动。保持 0 音量循环，
-    // 让自然结束时沿用同一个已获授权的播放实例。
+    // 必须在“开始练习”或“再练一次”的直接用户手势中启动。使用原生 muted
+    // 静音循环，让自然结束时沿用同一个已获授权的播放实例；不能只设 volume=0，
+    // 因为 iOS/Safari 可能忽略脚本设置的媒体音量而导致等待音频反复漏播。
     countdownCompleteAudio.loop = true;
-    countdownCompleteAudio.volume = 0;
+    countdownCompleteAudio.muted = true;
+    countdownCompleteAudio.volume = 0.5;
     var playAttempt = countdownCompleteAudio.play();
     function markArmed(){
       if (armId !== countdownCompleteAudioArmId) return;
