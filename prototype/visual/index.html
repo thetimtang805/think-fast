@@ -6,20 +6,32 @@
 <title>即兴演讲 · 视觉方向 A（克制工具）</title>
 <style>
   :root{
-    /* 采纳的高保真视觉方向：方向 A · 克制工具（见 prototype/visual-direction/compare.html） */
-    --surface:#FFFFFF;
-    --page-bg:#F5F5F5;
-    --canvas-bg:#E8E8E8;
-    --border:#D9D9D9;
-    --border-soft:#F0F0F0;
-    --text:#1F1F1F;
-    --text-secondary:#595959;
-    --text-muted:#8C8C8C;
-    --text-disabled:#BFBFBF;
-    --hover:#FAFAFA;
-    --accent:#1F1F1F;
-    --accent-hover:#000000;
-    --on-accent:#FFFFFF;
+    /* 采纳的高保真视觉方向：方向 A · 克制工具 + 藏青主题色（H=240，见 emil-color 推导） */
+    --accent-50:  oklch(0.970 0.012 240);
+    --accent-100: oklch(0.930 0.026 240);
+    --accent-200: oklch(0.860 0.045 240);
+    --accent-300: oklch(0.760 0.065 240);
+    --accent-400: oklch(0.650 0.088 240);
+    --accent-500: oklch(0.560 0.100 240);
+    --accent-600: oklch(0.420 0.090 240); /* 藏青基准色 */
+    --accent-700: oklch(0.340 0.075 240);
+    --accent-800: oklch(0.260 0.055 240);
+    --accent-900: oklch(0.180 0.035 240);
+
+    --surface:oklch(1.000 0.000 240);
+    --hover:oklch(0.984 0.004 240);
+    --page-bg:oklch(0.965 0.006 240);
+    --border-soft:oklch(0.950 0.007 240);
+    --canvas-bg:oklch(0.925 0.009 240);
+    --border:oklch(0.880 0.011 240);
+    --text-disabled:oklch(0.800 0.010 240);
+    --text-muted:oklch(0.615 0.014 240);
+    --text-secondary:oklch(0.405 0.016 240);
+    --text:oklch(0.190 0.012 240);
+
+    --accent:var(--accent-600);
+    --accent-hover:color-mix(in oklch, var(--accent) 85%, black);
+    --on-accent:oklch(1 0 0);
     --radius:6px;
     --radius-lg:8px;
   }
