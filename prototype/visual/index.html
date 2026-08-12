@@ -2553,8 +2553,6 @@
   var countdownCompleteAudio = new Audio("../../reference/sound-effect/vadim_makes_sound-modern-success-confirmation-notification-566072.mp3");
   countdownCompleteAudio.preload = "auto";
   countdownCompleteAudio.volume = 0.5;
-  var countdownCompleteAudioArmed = false;
-  var countdownCompleteAudioArmId = 0;
 
   function startTopicSpinAudio(){
     topicSpinAudio.currentTime = 0;
@@ -2574,55 +2572,22 @@
   }
 
   function playCountdownCompleteAudio(){
-    // 音频在开始练习的用户手势中已静音循环播放；自然结束时只切回开头并恢复音量，
-    // 避免在异步倒计时回调中首次调用 play() 而被浏览器拦截。
+    // 只在自然倒计时归零时调用；开始练习、再练一次、提前结束和返回都不会播放音效。
+    countdownCompleteAudio.pause();
     countdownCompleteAudio.loop = false;
     countdownCompleteAudio.muted = false;
     countdownCompleteAudio.currentTime = 0;
     countdownCompleteAudio.volume = 0.5;
-    countdownCompleteAudioArmed = false;
-
-    if (!countdownCompleteAudio.paused) return;
     var playAttempt = countdownCompleteAudio.play();
-    if (playAttempt && typeof playAttempt.then === "function"){
-      playAttempt.catch(function(){
-        countdownCompleteAudioArmed = false;
-      });
-    }
+    if (playAttempt){ playAttempt.catch(function(){}); }
   }
 
-  function disarmCountdownCompleteAudio(){
-    countdownCompleteAudioArmId += 1;
-    countdownCompleteAudioArmed = false;
+  function resetCountdownCompleteAudio(){
     countdownCompleteAudio.loop = false;
     countdownCompleteAudio.pause();
     countdownCompleteAudio.currentTime = 0;
     countdownCompleteAudio.muted = false;
     countdownCompleteAudio.volume = 0.5;
-  }
-
-  function armCountdownCompleteAudio(){
-    disarmCountdownCompleteAudio();
-    var armId = ++countdownCompleteAudioArmId;
-
-    // 必须在“开始练习”或“再练一次”的直接用户手势中启动。使用原生 muted
-    // 静音循环，让自然结束时沿用同一个已获授权的播放实例；不能只设 volume=0，
-    // 因为 iOS/Safari 可能忽略脚本设置的媒体音量而导致等待音频反复漏播。
-    countdownCompleteAudio.loop = true;
-    countdownCompleteAudio.muted = true;
-    countdownCompleteAudio.volume = 0.5;
-    var playAttempt = countdownCompleteAudio.play();
-    function markArmed(){
-      if (armId !== countdownCompleteAudioArmId) return;
-      countdownCompleteAudioArmed = true;
-    }
-    if (playAttempt && typeof playAttempt.then === "function"){
-      playAttempt.then(markArmed).catch(function(){
-        if (armId === countdownCompleteAudioArmId) disarmCountdownCompleteAudio();
-      });
-    } else {
-      markArmed();
-    }
   }
 
   function buildTopicItem(text, landed){
@@ -3328,7 +3293,7 @@
     state.timer.status = "done";
     state.timer.remaining = 0;
     if (playCompletionSound) playCountdownCompleteAudio();
-    else disarmCountdownCompleteAudio();
+    else resetCountdownCompleteAudio();
 
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var movingElements = [countdownOrderEl];
@@ -3367,7 +3332,7 @@
 
   function startPractice(){
     if (state.selected.length === 0) return;
-    armCountdownCompleteAudio();
+    resetCountdownCompleteAudio();
     renderCountdownOrder();
     appEl.classList.add("practice-mode");
     renderStickyTopic();
@@ -3383,7 +3348,7 @@
       window.clearInterval(state.timer.handle);
       state.timer.handle = null;
     }
-    armCountdownCompleteAudio();
+    resetCountdownCompleteAudio();
     beginCountdownRun();
   }
 
@@ -3470,7 +3435,7 @@
       state.timer.handle = null;
     }
     state.timer.status = "idle";
-    disarmCountdownCompleteAudio();
+    resetCountdownCompleteAudio();
     if (backToSelection){
       appEl.classList.remove("practice-mode");
       renderStickyTopic();
