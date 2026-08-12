@@ -25,7 +25,7 @@ jobs:
           mkdir -p _site/reference/font/Vampiro_One _site/reference/icon _site/reference/sound-effect
           cp -R prototype/visual/. _site/
           cp reference/font/Vampiro_One/VampiroOne-Regular.ttf _site/reference/font/Vampiro_One/
-          cp reference/icon/language-outline.svg reference/icon/arrow-swap-horizontal-outline.svg reference/icon/handshake-outline.svg _site/reference/icon/
+          cp reference/icon/language-outline.svg reference/icon/arrow-swap-horizontal-outline.svg reference/icon/handshake-outline.svg "reference/icon/clipboard3-outline 1.svg" _site/reference/icon/
           cp reference/sound-effect/victorabdo-spin-232536.mp3 reference/sound-effect/koiroylers-get-coin-351945.mp3 _site/reference/sound-effect/
           sed -i 's#../../reference/#reference/#g' _site/index.html
       - uses: actions/upload-pages-artifact@v3
