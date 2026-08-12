@@ -1054,7 +1054,7 @@
   }
   body{
     background-color:rgb(190 221 234 / 0.7);
-    background-image:linear-gradient(rgb(190 221 234 / 0.7), rgb(190 221 234 / 0.7)), url("assets/slide-09-bg.jpg");
+    background-image:linear-gradient(rgb(190 221 234 / 0.7), rgb(190 221 234 / 0.7)), url("../../reference/bg/slide-22.png");
     background-position:center, center top;
     background-repeat:no-repeat, repeat-y;
     background-size:cover, 100% auto;
@@ -2506,6 +2506,9 @@
   var topicLandingAudio = new Audio("../../reference/sound-effect/koiroylers-get-coin-351945.mp3");
   topicLandingAudio.preload = "auto";
   topicLandingAudio.volume = 0.3;
+  var countdownCompleteAudio = new Audio("../../reference/sound-effect/vadim_makes_sound-modern-success-confirmation-notification-566072.mp3");
+  countdownCompleteAudio.preload = "auto";
+  countdownCompleteAudio.volume = 0.5;
 
   function startTopicSpinAudio(){
     topicSpinAudio.currentTime = 0;
@@ -2521,6 +2524,12 @@
   function playTopicLandingAudio(){
     topicLandingAudio.currentTime = 0;
     var playAttempt = topicLandingAudio.play();
+    if (playAttempt){ playAttempt.catch(function(){}); }
+  }
+
+  function playCountdownCompleteAudio(){
+    countdownCompleteAudio.currentTime = 0;
+    var playAttempt = countdownCompleteAudio.play();
     if (playAttempt){ playAttempt.catch(function(){}); }
   }
 
@@ -3209,14 +3218,14 @@
       }
 
       if (state.timer.remaining <= 0){
-        finishCountdown();
+        finishCountdown(true);
         return;
       }
       countdownNumberEl.textContent = formatTime(state.timer.remaining);
     }, 1000);
   }
 
-  function finishCountdown(){
+  function finishCountdown(playCompletionSound){
     if (state.timer.status === "done") return;
     if (state.timer.handle){
       window.clearInterval(state.timer.handle);
@@ -3224,6 +3233,7 @@
     }
     state.timer.status = "done";
     state.timer.remaining = 0;
+    if (playCompletionSound) playCountdownCompleteAudio();
 
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     var movingElements = [countdownOrderEl];
@@ -3374,7 +3384,7 @@
   }
 
   startBtn.addEventListener("click", startPractice);
-  stopBtn.addEventListener("click", finishCountdown);
+  stopBtn.addEventListener("click", function(){ finishCountdown(false); });
   restartBtn.addEventListener("click", restartPractice);
   backBtn.addEventListener("click", function(){ stopPractice(true); });
   copyResultBtn.addEventListener("click", copyPracticeResult);
