@@ -243,14 +243,15 @@
   .topic-reel.settled .topic-reel-item{
     opacity:0.35;
     transform:scale(1);
-    transition:opacity .3s ease, transform .3s ease, font-size .3s ease;
+    transition:opacity .2s ease-out, transform .2s ease-out;
   }
   .topic-reel.settled .topic-reel-item.landed{
+    /* 命中项字号直接跳变（不参与过渡），只用 transform 做放大动画 —— font-size 会触发重排，不能参与动画 */
     opacity:1;
     font-size:var(--fs-lg);
     transform:scale(1.05);
     font-weight:600;
-    transition:transform .45s cubic-bezier(.34,1.56,.64,1), opacity .3s ease, font-size .3s ease;
+    transition:transform .45s cubic-bezier(.34,1.56,.64,1), opacity .2s ease-out;
     position:relative;
     z-index:1;
   }
@@ -514,21 +515,21 @@
     from{ opacity:0; transform:translateY(-6px); }
     to{ opacity:1; transform:translateY(0); }
   }
-  .item-enter{ animation:itemEnter .18s ease; }
+  .item-enter{ animation:itemEnter .2s cubic-bezier(0.32,0.72,0,1); }
   .item-leaving{
+    /* 删除时的空间坍缩必须动 max-height/margin/padding 才能让下面的项补上来；
+       opacity/transform 单独用更快的 ease-in 退场，其余走稍慢一点的坍缩曲线 */
     opacity:0;
     transform:translateX(6px) scale(0.98);
     max-height:0;
     margin-bottom:0;
     padding-top:0;
     padding-bottom:0;
-    border-width:0;
     overflow:hidden;
-    transition:opacity .2s cubic-bezier(0,0,.2,1), transform .2s cubic-bezier(0,0,.2,1),
-               max-height .2s cubic-bezier(0,0,.2,1),
-               margin-bottom .2s cubic-bezier(0,0,.2,1),
-               padding .2s cubic-bezier(0,0,.2,1),
-               border-width .2s cubic-bezier(0,0,.2,1);
+    transition:opacity .15s ease-in, transform .15s ease-in,
+               max-height .2s ease-in,
+               margin-bottom .2s ease-in,
+               padding .2s ease-in;
   }
   .drag-handle{
     flex:0 0 16px;
@@ -694,8 +695,8 @@
     from{ opacity:0; transform:translateY(4px); }
     to{ opacity:1; transform:translateY(0); }
   }
-  .panel-fade-out{ animation:panelFadeOut .14s ease forwards; }
-  .panel-fade-in{ animation:panelFadeIn .18s ease; }
+  .panel-fade-out{ animation:panelFadeOut .14s ease-in forwards; }
+  .panel-fade-in{ animation:panelFadeIn .18s cubic-bezier(0.32,0.72,0,1); }
 
   /* 撤销提示 */
   @keyframes toastIn{
@@ -723,8 +724,8 @@
     box-shadow:var(--shadow-toast);
     z-index:var(--z-toast);
   }
-  .toast.toast-show{ animation:toastIn .16s ease; }
-  .toast.toast-hide{ animation:toastOut .14s ease forwards; }
+  .toast.toast-show{ animation:toastIn .2s cubic-bezier(0.32,0.72,0,1); }
+  .toast.toast-hide{ animation:toastOut .15s ease-in forwards; }
   .toast-undo{
     background:none;
     border:none;
