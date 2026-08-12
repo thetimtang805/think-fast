@@ -22,6 +22,7 @@
     --accent-900: oklch(0.100 0.014 240);
 
     --surface:oklch(1.000 0.000 240);
+    --app-surface:rgb(255 255 255 / 0.72);
     --hover:oklch(0.984 0.004 240);
     --page-bg:oklch(0.965 0.006 240);
     --border-soft:oklch(0.950 0.007 240);
@@ -40,6 +41,7 @@
 
     /* focus 环只用中性色，不用品牌色，避免和界面撞色（emil-ui-polish） */
     --focus-ring:var(--text);
+    --z-dropdown:100;
     --z-toast:400;
 
     /* 层叠阴影代替实色边框，做出可信的深度（emil-surfaces） */
@@ -75,6 +77,7 @@
     --fs-xs:13px;
     --fs-sm:14px;
     --fs-md:16px;
+    --fs-title:18px;
     --fs-lg:20px;
     --fs-xl:36px;
     --fs-display:64px;
@@ -148,6 +151,7 @@
     max-width:1440px;
     margin:0 auto;
     padding:24px;
+    background:var(--app-surface);
   }
 
   .layout{
@@ -176,7 +180,7 @@
     height:100%;
   }
   .transcript-title{
-    font-size:var(--fs-lg);
+    font-size:var(--fs-title);
     line-height:1.3;
     font-weight:600;
     margin:0 0 12px;
@@ -357,15 +361,16 @@
     flex:1;
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:8px;
+    gap:16px;
   }
   .card{
     border:none;
     box-shadow:var(--shadow-raised);
     border-radius:var(--radius);
     background:var(--surface);
-    padding:10px 12px;
-    min-height:88px;
+    padding:14px 16px;
+    height:100px;
+    min-height:0;
     display:flex;
     flex-direction:column;
     gap:4px;
@@ -373,10 +378,18 @@
     text-align:left;
     width:100%;
     cursor:pointer;
-    font-size:var(--fs-sm);
-    line-height:20px;
+    font-size:var(--fs-md);
+    line-height:1.3;
     color:var(--text);
     transition:box-shadow 150ms ease-out;
+    overflow:hidden;
+  }
+  .card-question{
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:3;
+    overflow:hidden;
+    text-overflow:ellipsis;
   }
   .card:hover{ box-shadow:var(--shadow-raised-hover); }
   .card:active{ background:var(--hover); }
@@ -432,22 +445,57 @@
   }
   .card-pop{ animation:cardPop .18s ease; }
 
-  /* 已选面板 */
+  /* 已选面板 —— 专家下拉（自定义组件，不用浏览器原生 select/弹层样式） */
+  .select-wrap{ position:relative; margin-bottom:12px; }
   .expert-select{
     width:100%;
     height:36px;
     padding:0 12px;
-    margin-bottom:12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
     border-radius:var(--radius);
     border:1px solid var(--border);
     background:var(--surface);
     color:var(--text);
     font-size:var(--fs-sm);
     font-family:inherit;
+    text-align:left;
     cursor:pointer;
   }
   .expert-select:hover{ background:var(--hover); }
   .expert-select:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+  .select-caret{
+    flex:0 0 14px;
+    color:var(--text-muted);
+    transition:transform 150ms ease-out;
+  }
+  .expert-select[aria-expanded="true"] .select-caret{ transform:rotate(180deg); }
+  .select-menu{
+    position:absolute;
+    left:0;
+    right:0;
+    top:calc(100% + 4px);
+    z-index:var(--z-dropdown);
+    margin:0;
+    padding:4px;
+    list-style:none;
+    max-height:280px;
+    overflow-y:auto;
+    background:var(--surface);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow-raised-hover);
+  }
+  .select-option{
+    padding:8px 10px;
+    border-radius:calc(var(--radius) - 2px);
+    font-size:var(--fs-sm);
+    color:var(--text);
+    cursor:pointer;
+  }
+  .select-option:hover{ background:var(--hover); }
+  .select-option.selected{ font-weight:600; background:var(--border-soft); }
   .panel-title-row{
     display:flex;
     align-items:baseline;
@@ -455,7 +503,7 @@
     margin:0 0 12px;
   }
   .panel-title{
-    font-size:var(--fs-lg);
+    font-size:var(--fs-sm);
     line-height:1.3;
     font-weight:600;
   }
@@ -495,7 +543,6 @@
   .selected-list{
     display:flex;
     flex-direction:column;
-    gap:8px;
     margin-bottom:16px;
   }
   .selected-item{
@@ -508,7 +555,10 @@
     padding:8px 10px;
     background:var(--surface);
     max-height:200px;
+    margin-bottom:8px;
+    overflow:hidden;
   }
+  .selected-item:last-child{ margin-bottom:0; }
   .selected-item.dragging{ opacity:0.4; }
   .selected-item.drag-over{ border:1px dashed var(--accent); }
   @keyframes itemEnter{
@@ -517,20 +567,15 @@
   }
   .item-enter{ animation:itemEnter .2s cubic-bezier(0.32,0.72,0,1); }
   .item-leaving{
-    /* 删除时的空间坍缩必须动 max-height/margin/padding 才能让下面的项补上来；
-       opacity/transform 单独用更快的 ease-in 退场，其余走稍慢一点的坍缩曲线 */
+    /* 离场只动合成层属性；列表补位由 JS 的 FLIP 位移完成。 */
     opacity:0;
-    transform:translateX(6px) scale(0.98);
-    max-height:0;
-    margin-bottom:0;
-    padding-top:0;
-    padding-bottom:0;
-    overflow:hidden;
-    transition:opacity .15s ease-in, transform .15s ease-in,
-               max-height .2s ease-in,
-               margin-bottom .2s ease-in,
-               padding .2s ease-in;
+    transform:translateY(-4px) scale(0.985);
+    pointer-events:none;
+    will-change:opacity, transform;
+    transition:opacity .13s cubic-bezier(0.23,1,0.32,1),
+               transform .13s cubic-bezier(0.23,1,0.32,1);
   }
+  .item-moving{ will-change:transform; }
   .drag-handle{
     flex:0 0 16px;
     color:var(--text-disabled);
@@ -551,8 +596,8 @@
   }
   .selected-item-body{ flex:1; min-width:0; }
   .selected-item-question{
-    font-size:var(--fs-sm);
-    line-height:20px;
+    font-size:var(--fs-md);
+    line-height:1.4;
     color:var(--text);
   }
   .delete-btn{
@@ -808,19 +853,25 @@
     <div class="col-right">
       <!-- 选卡 + 设置倒计时 面板 -->
       <div class="panel" id="selectionPanel">
-        <select id="expertSelect" class="expert-select">
-          <option value="custom">自定义</option>
-          <option value="0">Steve Jobs</option>
-          <option value="1">Simon Sinek</option>
-          <option value="2">Don Draper</option>
-          <option value="3">Feynman</option>
-          <option value="4">Obama</option>
-          <option value="5">Seth Godin</option>
-          <option value="6">Naval Ravikant</option>
-          <option value="7">Brené Brown</option>
-          <option value="8">Chris Voss</option>
-          <option value="9">Harari</option>
-        </select>
+        <div class="select-wrap" id="expertSelectWrap">
+          <button type="button" id="expertSelectBtn" class="expert-select" aria-haspopup="listbox" aria-expanded="false">
+            <span id="expertSelectLabel">自定义</span>
+            <svg class="select-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <ul id="expertSelectMenu" class="select-menu" role="listbox" tabindex="-1" hidden>
+            <li role="option" class="select-option selected" aria-selected="true" data-value="custom">自定义</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="0">Steve Jobs</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="1">Simon Sinek</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="2">Don Draper</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="3">Feynman</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="4">Obama</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="5">Seth Godin</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="6">Naval Ravikant</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="7">Brené Brown</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="8">Chris Voss</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="9">Harari</li>
+          </ul>
+        </div>
         <div class="panel-title-row">
           <div class="panel-title" id="panelTitle">已选卡片</div>
           <div class="panel-title-right">
@@ -1394,7 +1445,11 @@
   var selectedListEl = document.getElementById("selectedList");
   var selectedCountEl = document.getElementById("selectedCount");
   var clearSelectedBtn = document.getElementById("clearSelectedBtn");
-  var expertSelectEl = document.getElementById("expertSelect");
+  var expertSelectWrapEl = document.getElementById("expertSelectWrap");
+  var expertSelectBtnEl = document.getElementById("expertSelectBtn");
+  var expertSelectLabelEl = document.getElementById("expertSelectLabel");
+  var expertSelectMenuEl = document.getElementById("expertSelectMenu");
+  var expertSelectOptions = Array.prototype.slice.call(expertSelectMenuEl.querySelectorAll(".select-option"));
   var durationSegmentEl = document.getElementById("durationSegment");
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
@@ -1623,6 +1678,7 @@
           btn.appendChild(dots);
         }
         var q = document.createElement("span");
+        q.className = "card-question";
         q.textContent = card.question;
         btn.appendChild(q);
 
@@ -1645,7 +1701,7 @@
   function addCard(cardId){
     if (state.selected.length >= MAX_TOTAL_SELECTED) return;
     if ((state.counts[cardId] || 0) >= MAX_PER_CARD) return;
-    expertSelectEl.value = "custom";
+    setExpertValue("custom");
     var uid = state.nextUid++;
     state.selected.push({ uid: uid, cardId: cardId });
     state.counts[cardId] = (state.counts[cardId] || 0) + 1;
@@ -1656,16 +1712,30 @@
     renderStartButton();
   }
 
-  function removeCard(uid){
+  function updateSelectedListMeta(){
+    selectedCountEl.textContent = state.selected.length + " / " + MAX_TOTAL_SELECTED;
+    clearSelectedBtn.hidden = state.selected.length === 0;
+    emptyStateEl.hidden = state.selected.length !== 0;
+    selectedListEl.hidden = state.selected.length === 0;
+  }
+
+  function removeCard(uid, preserveList){
     var idx = state.selected.findIndex(function(item){ return item.uid === uid; });
     if (idx === -1) return;
-    expertSelectEl.value = "custom";
+    setExpertValue("custom");
     var removed = state.selected[idx];
     var cardId = removed.cardId;
     state.selected.splice(idx, 1);
     state.counts[cardId] = Math.max(0, (state.counts[cardId] || 0) - 1);
     renderCardWall();
-    renderSelectedList();
+    if (preserveList){
+      updateSelectedListMeta();
+      Array.prototype.forEach.call(selectedListEl.querySelectorAll(".seq-badge"), function(badge, index){
+        badge.textContent = index + 1;
+      });
+    } else {
+      renderSelectedList();
+    }
     renderStartButton();
     state.lastAction = { type:"single", item: removed, index: idx };
     showUndoToast(TEXT.toastDeleted);
@@ -1674,8 +1744,38 @@
   function requestRemoveCard(uid){
     var row = selectedListEl.querySelector('[data-uid="' + uid + '"]');
     if (!row){ removeCard(uid); return; }
+    if (row.classList.contains("item-leaving")) return;
     row.classList.add("item-leaving");
-    window.setTimeout(function(){ removeCard(uid); }, 200);
+    window.setTimeout(function(){
+      var currentRow = selectedListEl.querySelector('[data-uid="' + uid + '"]');
+      if (!currentRow){ removeCard(uid); return; }
+      var rows = Array.prototype.filter.call(selectedListEl.children, function(item){
+        return item !== currentRow && !item.classList.contains("item-leaving");
+      });
+      var before = rows.map(function(item){ return { item:item, top:item.getBoundingClientRect().top }; });
+      currentRow.remove();
+      removeCard(uid, true);
+
+      before.forEach(function(entry){
+        var offset = entry.top - entry.item.getBoundingClientRect().top;
+        if (!offset) return;
+        entry.item.classList.add("item-moving");
+        entry.item.style.transition = "none";
+        entry.item.style.transform = "translateY(" + offset + "px)";
+        entry.item.getBoundingClientRect();
+      });
+      window.requestAnimationFrame(function(){
+        before.forEach(function(entry){
+          if (!entry.item.classList.contains("item-moving")) return;
+          entry.item.style.transition = "transform .18s cubic-bezier(0.645,0.045,0.355,1)";
+          entry.item.style.transform = "";
+          entry.item.addEventListener("transitionend", function(){
+            entry.item.classList.remove("item-moving");
+            entry.item.style.transition = "";
+          }, { once:true });
+        });
+      });
+    }, 140);
   }
 
   function clearSelected(){
@@ -1683,7 +1783,7 @@
     state.lastAction = { type:"clear", items: state.selected.slice() };
     state.selected = [];
     state.counts = {};
-    expertSelectEl.value = "custom";
+    setExpertValue("custom");
     renderCardWall();
     renderSelectedList();
     renderStartButton();
@@ -1692,7 +1792,7 @@
 
   function undoLastAction(){
     if (!state.lastAction) return;
-    expertSelectEl.value = "custom";
+    setExpertValue("custom");
     if (state.lastAction.type === "single"){
       var insertAt = Math.min(state.lastAction.index, state.selected.length);
       state.selected.splice(insertAt, 0, state.lastAction.item);
@@ -1743,7 +1843,7 @@
     var fromIdx = state.selected.findIndex(function(item){ return item.uid === fromUid; });
     var toIdx = state.selected.findIndex(function(item){ return item.uid === toUid; });
     if (fromIdx === -1 || toIdx === -1) return;
-    expertSelectEl.value = "custom";
+    setExpertValue("custom");
     var moved = state.selected.splice(fromIdx, 1)[0];
     state.selected.splice(toIdx, 0, moved);
     renderSelectedList();
@@ -1764,10 +1864,42 @@
     renderStartButton();
   }
 
-  expertSelectEl.addEventListener("change", function(){
-    var val = expertSelectEl.value;
-    if (val === "custom"){ clearSelected(); return; }
-    applyExpertPreset(Number(val));
+  function setExpertValue(val){
+    var opt = expertSelectOptions.filter(function(o){ return o.getAttribute("data-value") === val; })[0];
+    expertSelectLabelEl.textContent = opt ? opt.textContent : "自定义";
+    expertSelectOptions.forEach(function(o){
+      var isSelected = o === opt;
+      o.classList.toggle("selected", isSelected);
+      o.setAttribute("aria-selected", isSelected ? "true" : "false");
+    });
+  }
+
+  function openExpertMenu(){
+    expertSelectMenuEl.hidden = false;
+    expertSelectBtnEl.setAttribute("aria-expanded", "true");
+  }
+  function closeExpertMenu(){
+    expertSelectMenuEl.hidden = true;
+    expertSelectBtnEl.setAttribute("aria-expanded", "false");
+  }
+
+  expertSelectBtnEl.addEventListener("click", function(){
+    if (expertSelectMenuEl.hidden) openExpertMenu(); else closeExpertMenu();
+  });
+  expertSelectOptions.forEach(function(opt){
+    opt.addEventListener("click", function(){
+      var val = opt.getAttribute("data-value");
+      setExpertValue(val);
+      closeExpertMenu();
+      if (val === "custom"){ clearSelected(); return; }
+      applyExpertPreset(Number(val));
+    });
+  });
+  document.addEventListener("click", function(e){
+    if (!expertSelectWrapEl.contains(e.target)) closeExpertMenu();
+  });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape") closeExpertMenu();
   });
 
   clearSelectedBtn.addEventListener("click", clearSelected);
