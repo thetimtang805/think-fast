@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>即兴演讲 · 自然专注台</title>
+<title>即兴演讲 · 方向 3：清爽任务台</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
@@ -114,16 +114,6 @@
     pointer-events:none;
     user-select:none;
   }
-  .header-tim-art{
-    position:absolute;
-    left:0;
-    bottom:-18px;
-    width:360px;
-    max-width:100%;
-    height:auto;
-    pointer-events:none;
-    user-select:none;
-  }
   .header-tagline{
     position:relative;
     z-index:1;
@@ -156,9 +146,6 @@
     width:44px;
     height:44px;
     object-fit:contain;
-  }
-  @media (max-width:960px){
-    .header-tim-art{ width:260px; bottom:-8px; }
   }
   .app{
     max-width:1440px;
@@ -232,7 +219,6 @@
     width:100%;
     height:168px;
     position:relative;
-    isolation:isolate;
     overflow:hidden;
     border-radius:var(--radius);
   }
@@ -241,7 +227,6 @@
     width:100%;
     left:0;
     top:0;
-    z-index:1;
     will-change:transform;
   }
   .topic-reel-item{
@@ -286,7 +271,6 @@
     transform:translate(-50%, -50%);
     width:88%;
     height:56px;
-    z-index:0;
     border-top:var(--border-hairline) solid var(--border-soft);
     border-bottom:var(--border-hairline) solid var(--border-soft);
     pointer-events:none;
@@ -808,50 +792,49 @@
     }
   }
 
-  /* 自然专注台：方案二的颜色、表面与分组识别语言。 */
+  /* Direction 3: crisp modular utility, borrowing the reference's cool canvas and bold actions. */
   :root{
-    --surface:#fbfdf9;
-    --app-surface:rgb(251 253 249 / 0.86);
-    --canvas-bg:#ffffff;
-    --page-bg:#eff5eb;
-    --border:#d6e2d2;
-    --border-soft:#e8f0e4;
-    --text:#19352b;
-    --text-secondary:#486257;
-    --text-muted:#758a7e;
-    --accent:#215d4b;
-    --accent-hover:#174536;
-    --radius:12px;
-    --radius-lg:22px;
-    --shadow-raised:0 0 0 1px rgb(25 53 43 / 0.06), 0 14px 32px -22px rgb(18 63 45 / 0.3);
-    --shadow-raised-hover:0 0 0 1px rgb(25 53 43 / 0.1), 0 18px 34px -22px rgb(18 63 45 / 0.35);
-    --shadow-selected:0 0 0 2px var(--accent), 0 14px 32px -22px rgb(18 63 45 / 0.3);
+    --surface:#ffffff;
+    --app-surface:rgb(255 255 255 / 0.74);
+    --canvas-bg:#d9dfeb;
+    --page-bg:#f1f4f9;
+    --border:#dce2ed;
+    --border-soft:#eaf0fa;
+    --text:#242120;
+    --text-secondary:#605d5b;
+    --text-muted:#878b94;
+    --accent:#2a2523;
+    --accent-hover:#12100f;
+    --radius:16px;
+    --radius-lg:24px;
+    --shadow-raised:0 0 0 1px rgb(25 35 55 / 0.06), 0 12px 22px -18px rgb(25 35 55 / 0.24);
+    --shadow-raised-hover:0 0 0 1px rgb(25 35 55 / 0.1), 0 16px 26px -18px rgb(25 35 55 / 0.3);
+    --shadow-selected:0 0 0 2px #4f99e8, 0 12px 22px -18px rgb(25 35 55 / 0.24);
   }
-  .app-header{ background:#beddea; border-bottom:none; }
-  .header-tagline{ color:#163d31; }
-  .app{ max-width:1360px; margin:0 auto 28px; border-radius:28px; box-shadow:0 22px 52px -34px rgb(18 63 45 / 0.42); }
-  .topic-window{ background:#f6fbf3; border-radius:18px; box-shadow:var(--shadow-raised); }
-  .panel{ padding:20px; }
-  .card{ background:#f8fbf6; border-radius:16px; }
-  .card:hover{ background:#edf6e8; }
-  .card.selected{ background:#ddedcf; }
-  .family-label{ border-left:3px solid #6e9c54; padding-left:10px; }
-  .family-row:nth-child(1) .family-label,
-  .family-row:nth-child(2) .family-label{ border-left-color:#6e9c54; } /* 溯因 / 推果 */
-  .family-row:nth-child(3) .family-label,
-  .family-row:nth-child(4) .family-label{ border-left-color:#d59a57; } /* 提炼 / 拆步 */
-  .family-row:nth-child(5) .family-label,
-  .family-row:nth-child(6) .family-label{ border-left-color:#bd7460; } /* 复现 / 定性 */
-  .seq-badge{ background:#6e9c54; }
-  .btn-primary, .start-btn{ background:var(--accent); }
-  .btn-primary:hover, .start-btn:hover{ background:var(--accent-hover); }
+  .app-header{ background:#f5f7fb; border-bottom:1px solid #ccd5e4; }
+  .app{ max-width:1360px; margin:0 auto 24px; border-radius:24px; }
+  .topic-window{ background:#fff; border-radius:18px; box-shadow:var(--shadow-raised); }
+  .topic-center-line{ background:#5a9ee6; }
+  .panel{ padding:18px; border-radius:20px; }
+  .card{ background:#fff; border-radius:18px; padding:13px 15px; }
+  .family-row:nth-child(3n+1) .card:nth-child(3n+1){ background:#e1f2fb; }
+  .family-row:nth-child(3n+1) .card:nth-child(3n+2){ background:#fdf0d0; }
+  .family-row:nth-child(3n+1) .card:nth-child(3n){ background:#eee4fa; }
+  .card.selected{ background:#e9f3ff; }
+  .card-plus{ background:#5a9ee6; color:#fff; }
+  .seq-badge{ background:#5a9ee6; }
+  .btn-primary, .start-btn{ background:var(--accent); border-radius:16px; }
+  .segment{ border-radius:14px; overflow:hidden; }
+  .segment-item.active{ background:#2a2523; }
 </style>
 </head>
 <body>
 
 <header class="app-header">
   <div class="header-side">
-    <img class="header-tim-art" src="assets/header-tim-prepares.png" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:60px; left:8px; width:40px; transform:rotate(-10deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/sketched-security-vault_sm.png" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:6px; left:60px; width:150px; transform:rotate(180deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/ai-data-processing-hub_sm.webp" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:100px; left:230px; width:64px; transform:rotate(6deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/retro-computer-monitor-technology_sm.png" alt="" aria-hidden="true" />
   </div>
   <div class="header-tagline">
     <span class="tagline-fixed">Think fast</span>

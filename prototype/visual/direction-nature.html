@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>即兴演讲 · 自然专注台</title>
+<title>即兴演讲 · 方向 2：自然专注台</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
@@ -114,16 +114,6 @@
     pointer-events:none;
     user-select:none;
   }
-  .header-tim-art{
-    position:absolute;
-    left:0;
-    bottom:-18px;
-    width:360px;
-    max-width:100%;
-    height:auto;
-    pointer-events:none;
-    user-select:none;
-  }
   .header-tagline{
     position:relative;
     z-index:1;
@@ -156,9 +146,6 @@
     width:44px;
     height:44px;
     object-fit:contain;
-  }
-  @media (max-width:960px){
-    .header-tim-art{ width:260px; bottom:-8px; }
   }
   .app{
     max-width:1440px;
@@ -232,7 +219,6 @@
     width:100%;
     height:168px;
     position:relative;
-    isolation:isolate;
     overflow:hidden;
     border-radius:var(--radius);
   }
@@ -241,7 +227,6 @@
     width:100%;
     left:0;
     top:0;
-    z-index:1;
     will-change:transform;
   }
   .topic-reel-item{
@@ -286,7 +271,6 @@
     transform:translate(-50%, -50%);
     width:88%;
     height:56px;
-    z-index:0;
     border-top:var(--border-hairline) solid var(--border-soft);
     border-bottom:var(--border-hairline) solid var(--border-soft);
     pointer-events:none;
@@ -808,11 +792,11 @@
     }
   }
 
-  /* 自然专注台：方案二的颜色、表面与分组识别语言。 */
+  /* Direction 2: an airy field-guide workspace with a quiet forest accent. */
   :root{
     --surface:#fbfdf9;
     --app-surface:rgb(251 253 249 / 0.86);
-    --canvas-bg:#ffffff;
+    --canvas-bg:#c7dac6;
     --page-bg:#eff5eb;
     --border:#d6e2d2;
     --border-soft:#e8f0e4;
@@ -831,11 +815,13 @@
   .header-tagline{ color:#163d31; }
   .app{ max-width:1360px; margin:0 auto 28px; border-radius:28px; box-shadow:0 22px 52px -34px rgb(18 63 45 / 0.42); }
   .topic-window{ background:#f6fbf3; border-radius:18px; box-shadow:var(--shadow-raised); }
+  .topic-center-line{ background:#6e9c54; }
   .panel{ padding:20px; }
   .card{ background:#f8fbf6; border-radius:16px; }
   .card:hover{ background:#edf6e8; }
   .card.selected{ background:#ddedcf; }
   .family-label{ border-left:3px solid #6e9c54; padding-left:10px; }
+  /* 同一思维组共享左侧标识色，帮助扫读时建立配对关系。 */
   .family-row:nth-child(1) .family-label,
   .family-row:nth-child(2) .family-label{ border-left-color:#6e9c54; } /* 溯因 / 推果 */
   .family-row:nth-child(3) .family-label,
@@ -845,13 +831,16 @@
   .seq-badge{ background:#6e9c54; }
   .btn-primary, .start-btn{ background:var(--accent); }
   .btn-primary:hover, .start-btn:hover{ background:var(--accent-hover); }
+  .countdown-panel{ background:#215d4b; }
 </style>
 </head>
 <body>
 
 <header class="app-header">
   <div class="header-side">
-    <img class="header-tim-art" src="assets/header-tim-prepares.png" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:60px; left:8px; width:40px; transform:rotate(-10deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/sketched-security-vault_sm.png" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:6px; left:60px; width:150px; transform:rotate(180deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/ai-data-processing-hub_sm.webp" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:100px; left:230px; width:64px; transform:rotate(6deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/retro-computer-monitor-technology_sm.png" alt="" aria-hidden="true" />
   </div>
   <div class="header-tagline">
     <span class="tagline-fixed">Think fast</span>
