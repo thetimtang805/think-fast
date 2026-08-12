@@ -3,18 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>即兴演讲 · 自然专注台</title>
+<title>即兴演讲 · 方向 3：清爽任务台</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
 <style>
-  @font-face{
-    font-family:"Vampiro One";
-    src:url("../../reference/font/Vampiro_One/VampiroOne-Regular.ttf") format("truetype");
-    font-weight:400;
-    font-style:normal;
-    font-display:swap;
-  }
   :root{
     /* 采纳的高保真视觉方向：方向 A · 克制工具 + 墨石蓝主题色（H=240，低彩度，见 emil-color 推导） */
     --accent-50:  oklch(0.970 0.006 240);
@@ -98,52 +91,26 @@
     -moz-osx-font-smoothing:grayscale;
     color:var(--text);
     background:var(--canvas-bg);
-    min-height:100vh;
-    padding:0;
+    padding:0 0 64px;
   }
   .app-header{
     width:100%;
-    margin:0;
+    margin:0 0 16px;
     height:172px;
-    padding:0;
-    display:block;
+    padding:0 24px;
+    display:grid;
+    grid-template-columns:1fr auto 1fr;
+    align-items:center;
     border:none;
     border-bottom:var(--border-hairline) solid var(--border);
     border-radius:0;
     background:var(--surface);
     overflow:hidden;
   }
-  .header-inner{
-    width:min(calc(100% - 48px), 1200px);
-    height:100%;
-    margin:0 auto;
-    display:grid;
-    grid-template-columns:1fr auto 1fr;
-    align-items:center;
-  }
   .header-side{ position:relative; height:100%; }
   .header-deco{
     position:absolute;
     opacity:0.9;
-    pointer-events:none;
-    user-select:none;
-  }
-  .header-tim-art{
-    position:absolute;
-    left:0;
-    bottom:-36px;
-    width:350px;
-    height:auto;
-    pointer-events:none;
-    user-select:none;
-  }
-  .header-path-art{
-    position:absolute;
-    right:0;
-    /* 补偿 PNG 自带的底部透明留白，使可见路径与左侧桌面同基线。 */
-    bottom:-69px;
-    width:374px;
-    height:auto;
     pointer-events:none;
     user-select:none;
   }
@@ -160,25 +127,11 @@
     letter-spacing:-0.01em;
     white-space:nowrap;
   }
-  .tagline-fixed{
-    font-family:"Vampiro One",var(--font-display);
-    font-size:42px;
-    font-weight:400;
-    letter-spacing:0;
-    color:var(--text);
-  }
-  .tagline-connector{
-    font-family:var(--font-sans);
-    font-size:inherit;
-    font-weight:400;
-    letter-spacing:inherit;
-    color:var(--text-secondary);
-  }
+  .tagline-fixed{ font-weight:700; color:var(--text); }
   .tagline-dynamic{
     display:inline-flex;
     align-items:center;
     gap:10px;
-    font-size:38px;
   }
   .tagline-scene-wrap{
     display:inline-flex;
@@ -188,25 +141,18 @@
     opacity:1;
   }
   .tagline-scene-wrap.fade-out{ opacity:0; }
-  .tagline-scene{
-    font-family:var(--font-sans);
-    font-weight:400;
-    color:var(--text-secondary);
+  .tagline-scene{ font-weight:400; color:var(--text-secondary); }
+  .tagline-icon{
+    width:44px;
+    height:44px;
+    object-fit:contain;
   }
   .app{
     max-width:1440px;
     margin:0 auto;
-    padding:0 24px 24px;
-    background:var(--app-surface);
-  }
-  .workspace-shell{ width:min(100%, 1200px); margin:0 auto; }
-  .workspace-section{
-    width:100%;
     padding:24px;
     background:var(--app-surface);
-    border-radius:22px;
   }
-  .workspace-section + .workspace-section{ margin-top:24px; }
 
   .layout{
     display:flex;
@@ -215,7 +161,7 @@
   }
   .col-left{ flex:0 0 60%; min-width:0; }
   .col-right{ flex:0 0 calc(40% - 24px); min-width:0; }
-  .app.practice-mode .workspace-section-topic{ display:none; }
+  .app.practice-mode .topic-bar{ display:none; }
   /* 练习时把宽度比例反过来：倒计时模块（右栏）变宽，发言记录输入框（左栏）变窄 */
   .app.practice-mode .col-left{ flex:0 0 calc(40% - 24px); }
   .app.practice-mode .col-right{ flex:0 0 60%; }
@@ -261,7 +207,7 @@
     display:flex;
     flex-direction:column;
     gap:12px;
-    margin-bottom:0;
+    margin-bottom:16px;
   }
   .topic-controls{
     display:flex;
@@ -273,7 +219,6 @@
     width:100%;
     height:168px;
     position:relative;
-    isolation:isolate;
     overflow:hidden;
     border-radius:var(--radius);
   }
@@ -282,7 +227,6 @@
     width:100%;
     left:0;
     top:0;
-    z-index:1;
     will-change:transform;
   }
   .topic-reel-item{
@@ -327,7 +271,6 @@
     transform:translate(-50%, -50%);
     width:88%;
     height:56px;
-    z-index:0;
     border-top:var(--border-hairline) solid var(--border-soft);
     border-bottom:var(--border-hairline) solid var(--border-soft);
     pointer-events:none;
@@ -461,7 +404,7 @@
   .card-dots{
     position:absolute;
     bottom:8px;
-    left:16px;
+    left:8px;
     display:flex;
     gap:4px;
   }
@@ -849,79 +792,68 @@
     }
   }
 
-  /* 自然专注台：方案二的颜色、表面与分组识别语言。 */
+  /* Direction 3: crisp modular utility, borrowing the reference's cool canvas and bold actions. */
   :root{
-    --surface:#fbfdf9;
-    --app-surface:rgb(251 253 249 / 0.86);
-    --canvas-bg:#BEDDEA;
-    --page-bg:#eff5eb;
-    --border:#d6e2d2;
-    --border-soft:#e8f0e4;
-    --text:#19352b;
-    --text-secondary:#486257;
-    --text-muted:#758a7e;
-    --accent:#215d4b;
-    --accent-hover:#174536;
-    --radius:12px;
-    --radius-lg:22px;
-    --shadow-raised:0 0 0 1px rgb(25 53 43 / 0.06), 0 14px 32px -22px rgb(18 63 45 / 0.3);
-    --shadow-raised-hover:0 0 0 1px rgb(25 53 43 / 0.1), 0 18px 34px -22px rgb(18 63 45 / 0.35);
-    --shadow-selected:0 0 0 2px var(--accent), 0 14px 32px -22px rgb(18 63 45 / 0.3);
+    --surface:#ffffff;
+    --app-surface:rgb(255 255 255 / 0.74);
+    --canvas-bg:#d9dfeb;
+    --page-bg:#f1f4f9;
+    --border:#dce2ed;
+    --border-soft:#eaf0fa;
+    --text:#242120;
+    --text-secondary:#605d5b;
+    --text-muted:#878b94;
+    --accent:#2a2523;
+    --accent-hover:#12100f;
+    --radius:16px;
+    --radius-lg:24px;
+    --shadow-raised:0 0 0 1px rgb(25 35 55 / 0.06), 0 12px 22px -18px rgb(25 35 55 / 0.24);
+    --shadow-raised-hover:0 0 0 1px rgb(25 35 55 / 0.1), 0 16px 26px -18px rgb(25 35 55 / 0.3);
+    --shadow-selected:0 0 0 2px #4f99e8, 0 12px 22px -18px rgb(25 35 55 / 0.24);
   }
-  .app-header{ background:#beddea; border-bottom:none; }
-  .header-tagline{ color:#163d31; }
-  .app{
-    width:100%;
-    max-width:none;
-    min-height:calc(100vh - 172px);
-    margin:0;
-    padding:0 24px 24px;
-    background:transparent;
-    border-radius:0;
-    box-shadow:none;
-  }
-  .topic-window{ background:#f6fbf3; border-radius:18px; box-shadow:var(--shadow-raised); }
-  .panel{ padding:20px; }
-  .card{ background:#f8fbf6; border-radius:16px; }
-  .card:hover{ background:#edf6e8; }
-  .card.selected{ background:#ddedcf; }
-  .family-label{ border-left:3px solid #6e9c54; padding-left:10px; }
-  .family-row:nth-child(1) .family-label,
-  .family-row:nth-child(2) .family-label{ border-left-color:#6e9c54; } /* 溯因 / 推果 */
-  .family-row:nth-child(3) .family-label,
-  .family-row:nth-child(4) .family-label{ border-left-color:#d59a57; } /* 提炼 / 拆步 */
-  .family-row:nth-child(5) .family-label,
-  .family-row:nth-child(6) .family-label{ border-left-color:#bd7460; } /* 复现 / 定性 */
-  .seq-badge{ background:#6e9c54; }
-  .btn-primary, .start-btn{ background:var(--accent); }
-  .btn-primary:hover, .start-btn:hover{ background:var(--accent-hover); }
+  .app-header{ background:#f5f7fb; border-bottom:1px solid #ccd5e4; }
+  .app{ max-width:1360px; margin:0 auto 24px; border-radius:24px; }
+  .topic-window{ background:#fff; border-radius:18px; box-shadow:var(--shadow-raised); }
+  .topic-center-line{ background:#5a9ee6; }
+  .panel{ padding:18px; border-radius:20px; }
+  .card{ background:#fff; border-radius:18px; padding:13px 15px; }
+  .family-row:nth-child(3n+1) .card:nth-child(3n+1){ background:#e1f2fb; }
+  .family-row:nth-child(3n+1) .card:nth-child(3n+2){ background:#fdf0d0; }
+  .family-row:nth-child(3n+1) .card:nth-child(3n){ background:#eee4fa; }
+  .card.selected{ background:#e9f3ff; }
+  .card-plus{ background:#5a9ee6; color:#fff; }
+  .seq-badge{ background:#5a9ee6; }
+  .btn-primary, .start-btn{ background:var(--accent); border-radius:16px; }
+  .segment{ border-radius:14px; overflow:hidden; }
+  .segment-item.active{ background:#2a2523; }
 </style>
 </head>
 <body>
 
 <header class="app-header">
-  <div class="header-inner">
   <div class="header-side">
-    <img class="header-tim-art" src="assets/header-tim-prepares.png" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:60px; left:8px; width:40px; transform:rotate(-10deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/sketched-security-vault_sm.png" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:6px; left:60px; width:150px; transform:rotate(180deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/ai-data-processing-hub_sm.webp" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:100px; left:230px; width:64px; transform:rotate(6deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/retro-computer-monitor-technology_sm.png" alt="" aria-hidden="true" />
   </div>
   <div class="header-tagline">
     <span class="tagline-fixed">Think fast</span>
     <span class="tagline-dynamic" id="taglineDynamic">
-      <span class="tagline-fixed tagline-connector">in</span>
+      <span class="tagline-fixed">in</span>
       <span class="tagline-scene-wrap" id="taglineSceneWrap">
         <span class="tagline-scene" id="taglineScene"></span>
+        <img class="tagline-icon" id="taglineIcon" src="" alt="" aria-hidden="true" />
       </span>
     </span>
   </div>
   <div class="header-side right">
-    <img class="header-path-art" src="assets/header-cards-path.png" alt="" aria-hidden="true" />
-  </div>
+    <img class="header-deco" style="top:105px; right:230px; width:56px; transform:rotate(-8deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/hot-tea-mug-beverage-break_sm.png" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:10px; right:60px; width:150px; transform:rotate(-6deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/robot-coding-on-laptop_sm.webp" alt="" aria-hidden="true" />
+    <img class="header-deco" style="top:55px; right:8px; width:44px; transform:rotate(12deg);" src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/vintage-desk-lamp-icon_sm.png" alt="" aria-hidden="true" />
   </div>
 </header>
 
 <div class="app" id="appRoot">
-  <main class="workspace-shell">
-  <section class="workspace-section workspace-section-topic">
   <div class="topic-bar">
     <div class="topic-window" id="topicWindow" aria-hidden="true">
       <div class="topic-reel" id="topicReel"></div>
@@ -943,15 +875,13 @@
       </button>
     </div>
   </div>
-  </section>
 
-  <section class="workspace-section workspace-section-cards">
   <div class="layout" id="layout">
     <div class="col-left">
       <div class="panel" id="cardWall"></div>
       <div class="panel transcript-panel" id="transcriptPanel" hidden>
         <div class="transcript-title">你的发言记录</div>
-        <textarea id="transcriptInput" class="transcript-textarea" placeholder="打开支持“语音转文字”的输入法，记录发言..." aria-label="发言记录"></textarea>
+        <textarea id="transcriptInput" class="transcript-textarea" placeholder="可以打开手机自带的语音输入法，边讲边把内容打在这里…" aria-label="发言记录"></textarea>
       </div>
     </div>
 
@@ -1014,8 +944,6 @@
       </div>
     </div>
   </div>
-  </section>
-  </main>
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite" hidden>
@@ -1418,56 +1346,16 @@
         "现代人的孤独，是否被即时通讯掩盖得更深了"
       ],
       en: [
-        "Parents helping adult children buy a home: support or prolonged dependence?",
-        "Is moving away from your hometown still necessary to become independent?",
-        "Are modern weddings becoming social performances rather than personal celebrations?",
-        "Should couples combine their finances before they get married?",
-        "Is choosing not to have children becoming a practical decision rather than a personal preference?",
-        "Does therapy language help people set boundaries, or make ordinary conflict feel clinical?",
-        "Are friendship breakups harder than romantic breakups to talk about?",
-        "Is living alone a sign of freedom, or a symptom of social isolation?",
-        "Should adult children be expected to care for aging parents at home?",
-        "Are dating apps expanding choice, or making commitment harder?",
-        "Has a university degree become more of a financial risk than a career advantage?",
-        "Should public universities be tuition-free?",
-        "Does remote work create freedom, or simply make people available all the time?",
-        "Is frequent job-hopping a smart career strategy or a sign of insecurity?",
-        "Are unpaid internships ever justified?",
-        "Should employers care whether people use AI tools to do their work?",
-        "Is a four-day workweek realistic for most industries?",
-        "Are side hustles empowering people, or normalizing unstable wages?",
-        "Does personal branding help people find opportunities, or force everyone to become a salesperson?",
-        "Is follow your passion still useful career advice?",
-        "Is home ownership still the best measure of financial stability?",
-        "Are short-term rentals making cities less livable for residents?",
-        "Should cities charge drivers to enter congested downtown areas?",
-        "Is suburban life more comfortable, or simply more car-dependent?",
-        "Do open-plan offices improve collaboration, or make focused work impossible?",
-        "Should public libraries offer more services than books?",
-        "Are bike lanes worth removing parking spaces for?",
-        "Is public transit a public good, or should users pay its full cost?",
-        "Are neighborhood groups strengthening communities, or amplifying local conflict?",
-        "Should cities build more housing even when it changes a neighborhood's character?",
-        "Is tipping culture a fair way to reward service, or a way for employers to avoid paying wages?",
-        "Are subscription services convenient, or designed to make people forget what they are paying for?",
-        "Does free shipping encourage people to buy more than they need?",
-        "Are loyalty programs rewarding customers, or training them to spend more?",
-        "Is self-care becoming another form of consumer pressure?",
-        "Are social media influencers more trustworthy than traditional advertising?",
-        "Is cancel culture accountability, or online punishment without due process?",
-        "Should children be allowed on social media before high school?",
-        "Is algorithmic personalization making culture more relevant, or more narrow?",
-        "Are smart home devices worth the privacy trade-off?",
-        "Should people separate an artist's work from the artist's behavior?",
-        "Is cultural appropriation a useful idea, or too blunt for real cultural exchange?",
-        "Are public holidays losing meaning as they become shopping events?",
-        "Is local food culture being protected, or turned into a tourist product?",
-        "Should schools require uniforms to reduce social pressure?",
-        "Is learning a second language still worth the effort when translation tools are everywhere?",
-        "Does recycling place too much responsibility on individual consumers?",
-        "Is flying less for environmental reasons a real responsibility or an unrealistic expectation?",
-        "Are pets increasingly replacing human connection for young adults?",
-        "Is slowing down a privilege, or a necessary response to modern life?"
+        "Sweet tangyuan is better than savory tangyuan",
+        "Cats make better pets than dogs",
+        "Slacking off at work should be allowed",
+        "Ordering delivery is more worth it than cooking",
+        "Early risers aren't necessarily more disciplined",
+        "Introverts make better leaders",
+        "Handwritten notes are more effective than digital ones",
+        "Short videos are ruining our attention spans",
+        "Working more overtime doesn't mean contributing more",
+        "Perfectionism is really just procrastination"
       ]
     },
     interview: {
@@ -1505,7 +1393,7 @@
       { id:"f1c2", method:"连续追问法", question:"继续追问“为什么”？" },
       { id:"f1c3", method:"本质提炼法", question:"归根打底，最本质的原因是什么？" }
     ]},
-    { sub:"Why → Concrete", name:"推果", icon:FAMILY_ICON_BASE + "notification-bell-alert-reminder_sm.png", cards:[
+    { sub:"Why → Concrete, So What", name:"推果", icon:FAMILY_ICON_BASE + "notification-bell-alert-reminder_sm.png", cards:[
       { id:"f2c1", method:"直接推导法", question:"So what，所以会怎么样？" },
       { id:"f2c2", method:"连锁反应法", question:"这之后，还会引发什么连锁反应？" },
       { id:"f2c3", method:"最坏情况法", question:"否认这件事/这个观点，最坏会怎么样？" }
@@ -1576,6 +1464,7 @@
   var taglineDynamicEl = document.getElementById("taglineDynamic");
   var taglineSceneWrapEl = document.getElementById("taglineSceneWrap");
   var taglineSceneEl = document.getElementById("taglineScene");
+  var taglineIconEl = document.getElementById("taglineIcon");
   var topicWindowEl = document.getElementById("topicWindow");
   var topicReelEl = document.getElementById("topicReel");
   var topicAnnounceEl = document.getElementById("topicAnnounce");
@@ -1623,9 +1512,6 @@
 
   function toggleLanguage(){
     state.lang = state.lang === "zh" ? "en" : "zh";
-    if (state.lang === "en"){
-      state.topicIndex = pickRandomTopicIndex(null, TOPICS[state.topicMode].en.length);
-    }
     updateToggleLabels();
     renderTopicSettled();
   }
@@ -1640,35 +1526,11 @@
   langToggleBtn.addEventListener("click", toggleLanguage);
   topicModeToggleBtn.addEventListener("click", toggleTopicMode);
 
-  /* 话题老虎机：滚动和回正总时长与 spin 音效的 3.683 秒时长一致。 */
+  /* 话题老虎机：机制仿照 speechtopicgen.com —— 初速度 + 摩擦力衰减到停止阈值后，
+     用弹簧公式精确回正到目标行，最后换成一个干净的三行"静止态"（前一条/当前/后一条）。 */
   var TOPIC_ITEM_H = 56;
-  var TOPIC_SPIN_DURATION_MS = 3683;
-  var TOPIC_SETTLE_DURATION_MS = 650;
   var isTopicSpinning = false;
   var topicSpinFrame = null;
-  var topicSpinAudio = new Audio("../../reference/sound-effect/victorabdo-spin-232536.mp3");
-  topicSpinAudio.loop = false;
-  topicSpinAudio.preload = "auto";
-  var topicLandingAudio = new Audio("../../reference/sound-effect/koiroylers-get-coin-351945.mp3");
-  topicLandingAudio.preload = "auto";
-  topicLandingAudio.volume = 0.3;
-
-  function startTopicSpinAudio(){
-    topicSpinAudio.currentTime = 0;
-    var playAttempt = topicSpinAudio.play();
-    if (playAttempt){ playAttempt.catch(function(){}); }
-  }
-
-  function stopTopicSpinAudio(){
-    topicSpinAudio.pause();
-    topicSpinAudio.currentTime = 0;
-  }
-
-  function playTopicLandingAudio(){
-    topicLandingAudio.currentTime = 0;
-    var playAttempt = topicLandingAudio.play();
-    if (playAttempt){ playAttempt.catch(function(){}); }
-  }
 
   function buildTopicItem(text, landed){
     var div = document.createElement("div");
@@ -1679,11 +1541,6 @@
 
   function renderTopicSettled(){
     if (topicSpinFrame){ window.cancelAnimationFrame(topicSpinFrame); topicSpinFrame = null; }
-    if (isTopicSpinning){
-      isTopicSpinning = false;
-      randomTopicBtn.disabled = false;
-      stopTopicSpinAudio();
-    }
     topicReelEl.classList.remove("settled");
     topicReelEl.style.transition = "none";
     topicReelEl.style.transform = "translateY(0px)";
@@ -1722,10 +1579,18 @@
     if (!pool.length) return;
     isTopicSpinning = true;
     randomTopicBtn.disabled = true;
-    startTopicSpinAudio();
 
     var windowHeight = topicWindowEl.offsetHeight || TOPIC_ITEM_H * 3;
-    var landingIndex = 43;
+    var INITIAL_VELOCITY = 40;   // px/帧（60fps 基准）
+    var FRICTION = 0.985;
+    var STOP_THRESHOLD = 1.5;
+
+    var simVelocity = INITIAL_VELOCITY, simDistance = 0;
+    while (simVelocity >= STOP_THRESHOLD){ simDistance += simVelocity; simVelocity *= FRICTION; }
+
+    var centerAtStop = simDistance + windowHeight / 2;
+    var naturalIndex = Math.round((centerAtStop - TOPIC_ITEM_H / 2) / TOPIC_ITEM_H);
+    var landingIndex = naturalIndex + 1;
     var reelCount = landingIndex + 3;
 
     var finalIndex = pickRandomTopicIndex(state.topicIndex, pool.length);
@@ -1754,28 +1619,34 @@
       }
     }
 
-    var rollDuration = TOPIC_SPIN_DURATION_MS - TOPIC_SETTLE_DURATION_MS;
-    var rollDistance = -targetY - TOPIC_ITEM_H * 0.55;
-    var rollStartTime = null;
+    var position = 0;
+    var velocity = INITIAL_VELOCITY;
+    var lastFrameTime = null;
 
     function tick(timestamp){
-      if (rollStartTime === null) rollStartTime = timestamp;
-      var elapsed = Math.min((timestamp - rollStartTime) / rollDuration, 1);
-      var position = rollDistance * (1 - Math.pow(1 - elapsed, 2.6));
+      if (lastFrameTime === null) lastFrameTime = timestamp;
+      var dt = Math.min((timestamp - lastFrameTime) / 16.667, 3);
+      lastFrameTime = timestamp;
+      if (dt === 0){ topicSpinFrame = window.requestAnimationFrame(tick); return; }
+
+      position += velocity * dt;
+      velocity *= Math.pow(FRICTION, dt);
+
       topicReelEl.style.transform = "translateY(" + (-position) + "px)";
       styleByPosition(-position);
 
-      if (elapsed >= 1){ settle(position); return; }
+      if (velocity < STOP_THRESHOLD){ settle(); return; }
       topicSpinFrame = window.requestAnimationFrame(tick);
     }
 
-    function settle(position){
+    function settle(){
       var startY = -position;
       var distance = targetY - startY;
       var startTime = performance.now();
+      var duration = 650;
 
       function spring(now){
-        var elapsed = Math.min((now - startTime) / TOPIC_SETTLE_DURATION_MS, 1);
+        var elapsed = Math.min((now - startTime) / duration, 1);
         var eased = 1 - Math.exp(-7 * elapsed) * Math.cos(5 * elapsed);
         var y = startY + distance * eased;
         topicReelEl.style.transform = "translateY(" + y + "px)";
@@ -1784,11 +1655,9 @@
           topicSpinFrame = window.requestAnimationFrame(spring);
         } else {
           state.topicIndex = finalIndex;
+          renderTopicSettled();
           isTopicSpinning = false;
           randomTopicBtn.disabled = false;
-          stopTopicSpinAudio();
-          renderTopicSettled();
-          playTopicLandingAudio();
         }
       }
       topicSpinFrame = window.requestAnimationFrame(spring);
@@ -2275,18 +2144,21 @@
   });
 
   /* Header 动态标语："Think fast in ___"，固定英文，不跟随语言切换（品牌元素）。
-     每 5 秒切换一个场景，循环播放，切换时做一次淡出淡入。 */
-var HEADER_SCENES = [
-  { word: "interviews" },
-  { word: "small talks" },
-  { word: "meetings" },
-  { word: "classrooms" }
-];
+     每 3 秒切换一个场景，循环播放，切换时做一次淡出淡入。 */
+  var ILLUSTRATION_BASE = "../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/";
+  var HEADER_SCENES = [
+    { word: "interviews", img: ILLUSTRATION_BASE + "business-briefcase-work-portfolio_sm.png" },
+    { word: "small talks", img: ILLUSTRATION_BASE + "communication-chat-bubbles_sm.png" },
+    { word: "meetings", img: ILLUSTRATION_BASE + "customer-support-headset-agent_sm.png" },
+    { word: "classrooms", img: ILLUSTRATION_BASE + "paper-document-file-report_sm.png" }
+  ];
   var headerSceneIndex = 0;
 
   function renderHeaderScene(){
     var scene = HEADER_SCENES[headerSceneIndex];
     taglineSceneEl.textContent = scene.word;
+    taglineIconEl.src = scene.img;
+    taglineIconEl.alt = scene.word;
   }
 
   function rotateHeaderScene(){
@@ -2299,7 +2171,7 @@ var HEADER_SCENES = [
   }
 
   renderHeaderScene();
-  window.setInterval(rotateHeaderScene, 5000);
+  window.setInterval(rotateHeaderScene, 3000);
 
   state.topicIndex = pickRandomTopicIndex(null, TOPICS[state.topicMode][state.lang].length);
   updateToggleLabels();

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>视觉方向对比 v3 · 即兴演讲训练工具</title>
+<style>
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"PingFang SC","Microsoft YaHei","HarmonyOS Sans","Noto Sans SC",
+                "SF Pro","Segoe UI",Arial,sans-serif;
+    background:#E8E8E8;
+    padding:32px 24px 64px;
+  }
+  .page-title{
+    max-width:1440px;
+    margin:0 auto 24px;
+    font-size:13px;
+    color:#595959;
+    line-height:20px;
+  }
+  .columns{
+    max-width:1440px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+    align-items:start;
+  }
+  .col-label{
+    font-size:15px;
+    font-weight:600;
+    margin:0 0 4px;
+    color:#1F1F1F;
+  }
+  .col-sub{
+    font-size:12px;
+    color:#8C8C8C;
+    margin:0 0 12px;
+    line-height:18px;
+  }
+
+  /* ---------- shared component skeleton ---------- */
+  .demo{
+    position:relative;
+    background:var(--page-bg);
+    border:1px solid var(--page-border);
+    border-radius:16px;
+    padding:20px;
+    font-family:var(--font);
+  }
+  .demo .headline{
+    font-size:22px;
+    font-weight:800;
+    line-height:1.2;
+    color:var(--text);
+    margin:0 0 14px;
+    letter-spacing:-0.01em;
+  }
+  .demo .topic-bar{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .demo .topic-input{
+    flex:1;
+    height:44px;
+    border:1px solid var(--border);
+    border-radius:var(--radius-pill);
+    background:var(--surface);
+    display:flex;
+    align-items:center;
+    padding:0 16px;
+    font-size:13px;
+    color:var(--text);
+  }
+  .demo .btn{
+    height:44px;
+    padding:0 20px;
+    border-radius:var(--radius-pill);
+    font-size:13px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--accent);
+    background:var(--accent);
+    color:var(--on-accent);
+    white-space:nowrap;
+    font-weight:700;
+  }
+  .demo .chip-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .demo .chip{
+    height:32px;
+    padding:0 14px;
+    border-radius:999px;
+    background:var(--chip-bg);
+    color:var(--chip-text);
+    font-size:12px;
+    font-weight:600;
+    display:inline-flex;
+    align-items:center;
+  }
+  .demo .chip.active{
+    background:var(--accent);
+    color:var(--on-accent);
+  }
+  .demo .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:16px;
+  }
+  .demo .family-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .demo .family-icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:var(--icon-bg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 40px;
+  }
+  .demo .family-icon img{ width:22px; height:22px; object-fit:contain; }
+  .demo .family-name{ font-size:13px; font-weight:700; color:var(--text); }
+  .demo .family-sub{ font-size:11px; color:var(--text-secondary); }
+  .demo .cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .demo .card{
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:var(--surface);
+    padding:10px;
+    font-size:12.5px;
+    line-height:18px;
+    color:var(--text);
+    min-height:64px;
+  }
+  .demo .card.selected{
+    background:var(--selected-bg);
+    border-color:var(--accent);
+    color:var(--selected-text);
+  }
+  .demo .divider{ border:none; border-top:1px solid var(--border); margin:14px 0; }
+  .demo .panel-title{ font-size:14px; font-weight:700; margin:0 0 10px; color:var(--text); }
+  .demo .selected-item{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:8px 10px;
+    background:var(--item-bg);
+    margin-bottom:8px;
+    font-size:12.5px;
+    color:var(--text);
+  }
+  .demo .seq{
+    flex:0 0 18px; height:18px; border-radius:50%;
+    background:var(--accent); color:var(--on-accent);
+    font-size:11px; line-height:18px; text-align:center;
+  }
+  .demo .timer-row{
+    display:flex; align-items:center; gap:8px;
+    margin-bottom:14px; font-size:12.5px; color:var(--text-secondary);
+  }
+  .demo .segment{ display:flex; border:1px solid var(--border); border-radius:999px; overflow:hidden; }
+  .demo .segment span{
+    height:30px; padding:0 14px; font-size:12.5px; line-height:30px;
+    color:var(--text-secondary); border-right:1px solid var(--border);
+  }
+  .demo .segment span:last-child{ border-right:none; }
+  .demo .segment span.active{ background:var(--accent); color:var(--on-accent); }
+  .demo .start-btn{
+    width:100%; height:46px; border-radius:999px;
+    background:var(--accent); color:var(--on-accent); border:none;
+    font-size:14px; font-weight:700;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .demo .stage{
+    margin-top:16px; background:var(--stage-bg); border-radius:var(--radius-lg);
+    padding:18px; text-align:center;
+  }
+  .demo .stage-number{ font-size:32px; font-weight:800; color:var(--stage-text); margin-bottom:4px; }
+  .demo .stage-caption{ font-size:12px; color:var(--stage-caption); }
+
+  /* =========================================================
+     方向 E · 纯净卡片（screen 1 语言：大黑体标题 + 黑色胶囊 + 色块插画卡）
+     ========================================================= */
+  .direction-pure{
+    --font:"PingFang SC","Microsoft YaHei","SF Pro","Segoe UI",Arial,sans-serif;
+    --page-bg:#FFFFFF;
+    --page-border:#EFEFEF;
+    --surface:#FFFFFF;
+    --border:#EAEAEA;
+    --text:#141414;
+    --text-secondary:#7A7A7A;
+    --radius-pill:999px;
+    --radius-lg:22px;
+    --accent:#141414;
+    --on-accent:#FFFFFF;
+    --selected-bg:#F2F2F2;
+    --selected-text:#141414;
+    --item-bg:#FFFFFF;
+    --stage-bg:#141414;
+    --stage-text:#FFFFFF;
+    --stage-caption:#9C9C9C;
+    --icon-bg:#F2F2F2;
+    --chip-bg:#F2F2F2;
+    --chip-text:#5C5C5C;
+  }
+  .direction-pure .hero-card{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .direction-pure .hero-tile{
+    border-radius:20px;
+    padding:12px;
+    min-height:74px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    font-size:12px;
+    font-weight:700;
+    color:#fff;
+  }
+  .direction-pure .hero-tile.blue{ background:linear-gradient(160deg,#8FC1F5,#5B93E8); }
+  .direction-pure .hero-tile.orange{ background:linear-gradient(160deg,#F4A56B,#E2604C); }
+  .direction-pure .card{ border-radius:16px; }
+
+  /* =========================================================
+     方向 F · 数据胶囊（screen 2 语言：色块统计圆点 + 柱状图 + 大黑胶囊 CTA）
+     ========================================================= */
+  .direction-capsule{
+    --font:"PingFang SC","Microsoft YaHei","SF Pro","Segoe UI",Arial,sans-serif;
+    --page-bg:#F6F7F9;
+    --page-border:#E9EBEF;
+    --surface:#FFFFFF;
+    --border:#EDEFF3;
+    --text:#151A22;
+    --text-secondary:#7C8592;
+    --radius-pill:999px;
+    --radius-lg:22px;
+    --accent:#151A22;
+    --on-accent:#FFFFFF;
+    --selected-bg:#EAF1FD;
+    --selected-text:#2A5CB8;
+    --item-bg:#FFFFFF;
+    --stage-bg:#151A22;
+    --stage-text:#FFFFFF;
+    --stage-caption:#8A93A3;
+    --icon-bg:#EAF1FD;
+    --chip-bg:#EDEFF3;
+    --chip-text:#5C6572;
+  }
+  .direction-capsule .hero-band{
+    height:96px;
+    border-radius:20px;
+    background:linear-gradient(160deg,#8FC1F5,#5B93E8);
+    margin-bottom:-28px;
+  }
+  .direction-capsule .panel{ position:relative; z-index:1; }
+  .direction-capsule .stat-chips{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .direction-capsule .stat-chip{
+    flex:1;
+    border-radius:16px;
+    padding:10px;
+    text-align:left;
+  }
+  .direction-capsule .stat-chip .dot{
+    width:26px; height:26px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:12px; margin-bottom:8px;
+  }
+  .direction-capsule .stat-chip.teal{ background:#DCF0F7; }
+  .direction-capsule .stat-chip.teal .dot{ background:#3FA9CC; }
+  .direction-capsule .stat-chip.purple{ background:#EDE1FB; }
+  .direction-capsule .stat-chip.purple .dot{ background:#8F6FE0; }
+  .direction-capsule .stat-chip.pink{ background:#FBDEDD; }
+  .direction-capsule .stat-chip.pink .dot{ background:#E2604C; }
+  .direction-capsule .stat-chip .num{ font-size:15px; font-weight:800; color:var(--text); }
+  .direction-capsule .stat-chip .label{ font-size:10px; color:var(--text-secondary); }
+  .direction-capsule .bars{
+    display:flex; align-items:flex-end; gap:4px; height:44px; margin:10px 0 16px;
+  }
+  .direction-capsule .bars span{
+    flex:1; background:#E3E7ED; border-radius:3px;
+  }
+  .direction-capsule .bars span.peak{ background:#151A22; }
+
+  /* =========================================================
+     方向 G · 浮层导航（screen 3 语言：浮层白卡 + 分段胶囊 + 圆环表盘 + 滑动 CTA）
+     ========================================================= */
+  .direction-float{
+    --font:"PingFang SC","Microsoft YaHei","SF Pro","Segoe UI",Arial,sans-serif;
+    --page-bg:#EEF1F5;
+    --page-border:#E2E7EE;
+    --surface:#FFFFFF;
+    --border:#E9ECF2;
+    --text:#151A22;
+    --text-secondary:#7C8592;
+    --radius-pill:999px;
+    --radius-lg:22px;
+    --accent:#151A22;
+    --on-accent:#FFFFFF;
+    --selected-bg:#EAF1FD;
+    --selected-text:#2A5CB8;
+    --item-bg:#F6F8FB;
+    --stage-bg:#FFFFFF;
+    --stage-text:#151A22;
+    --stage-caption:#7C8592;
+    --icon-bg:#EAF1FD;
+    --chip-bg:#E9ECF2;
+    --chip-text:#5C6572;
+  }
+  .direction-float .callout{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#3B6FE0;
+    color:#fff;
+    border-radius:14px 14px 14px 4px;
+    padding:8px 12px;
+    font-size:11px;
+    font-weight:600;
+    margin-bottom:14px;
+  }
+  .direction-float .stage{
+    border:1px solid var(--border);
+    text-align:left;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 18px;
+  }
+  .direction-float .stage-number{ font-size:30px; margin-bottom:0; }
+  .direction-float .dial{
+    width:52px; height:52px; border-radius:50%;
+    background:conic-gradient(#3B6FE0 0% 70%, #E9ECF2 70% 100%);
+    display:flex; align-items:center; justify-content:center;
+    flex:0 0 52px;
+  }
+  .direction-float .dial::after{
+    content:"1:00";
+    width:40px; height:40px; border-radius:50%;
+    background:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:700; color:var(--text);
+  }
+  .direction-float .swipe-cta{
+    width:100%; height:48px; border-radius:999px;
+    background:var(--accent); color:var(--on-accent);
+    display:flex; align-items:center; gap:10px; padding:0 6px;
+    font-size:14px; font-weight:700;
+    margin-top:14px;
+  }
+  .direction-float .swipe-cta .knob{
+    width:36px; height:36px; border-radius:50%;
+    background:#fff; color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  视觉方向对比 v3 · 即兴演讲训练工具&nbsp;|&nbsp;三版都基于同一张停车 App 参考图的不同侧面提炼：大黑体标题语言、色块统计+柱状图语言、浮层卡片+表盘语言。
+</div>
+
+<div class="columns">
+
+  <div>
+    <p class="col-label">方向 E · 纯净卡片</p>
+    <p class="col-sub">纯白画布 + 超粗黑体大标题，黑色胶囊按钮做唯一强调色。色块插画卡只用在话题老虎机上方，作为"抽到的话题类型"的视觉锚点，其余保持极简。</p>
+    <div class="demo direction-pure">
+      <div class="headline">今天练点什么？</div>
+      <div class="hero-card">
+        <div class="hero-tile blue">日常话题</div>
+        <div class="hero-tile orange">面试准备</div>
+      </div>
+      <div class="topic-bar">
+        <div class="topic-input">甜汤圆比咸汤圆好吃</div>
+        <button class="btn">随机</button>
+      </div>
+      <div class="panel">
+        <div class="family-row">
+          <div class="family-icon">
+            <img src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/bold-magnifying-glass-icon_sm.png" alt="" />
+          </div>
+          <div>
+            <div class="family-name">溯因</div>
+            <div class="family-sub">Why → Abstract</div>
+          </div>
+        </div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <hr class="divider" />
+        <div class="panel-title">已选卡片</div>
+        <div class="selected-item"><span class="seq">1</span>为什么？只留一个理由，是什么？</div>
+        <div class="selected-item"><span class="seq">2</span>不做，或者搞砸了，最坏会怎样？</div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <button class="start-btn">开始练习</button>
+        <div class="stage">
+          <div class="stage-number">01:00</div>
+          <div class="stage-caption">倒计时进行中</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="col-label">方向 F · 数据胶囊</p>
+    <p class="col-sub">顶部蓝色渐变色块作为场景横幅，浮层白卡压在上面。三色圆点统计胶囊（原本是摩托/轿车/卡车车位数）复用成"溯因/推果/提炼…每类已选几张"；柱状图复用成"每类问题的选用频次"。</p>
+    <div class="demo direction-capsule">
+      <div class="hero-band"></div>
+      <div class="panel">
+        <div class="family-row">
+          <div class="family-icon">
+            <img src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/bold-magnifying-glass-icon_sm.png" alt="" />
+          </div>
+          <div>
+            <div class="family-name">溯因</div>
+            <div class="family-sub">Why → Abstract</div>
+          </div>
+        </div>
+        <div class="stat-chips">
+          <div class="stat-chip teal"><div class="dot">2</div><div class="num">2 张</div><div class="label">溯因已选</div></div>
+          <div class="stat-chip purple"><div class="dot">1</div><div class="num">1 张</div><div class="label">推果已选</div></div>
+          <div class="stat-chip pink"><div class="dot">0</div><div class="num">0 张</div><div class="label">提炼已选</div></div>
+        </div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <div class="bars">
+          <span style="height:30%"></span><span style="height:50%"></span><span style="height:35%"></span>
+          <span class="peak" style="height:100%"></span><span style="height:60%"></span><span style="height:40%"></span>
+          <span style="height:25%"></span>
+        </div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <button class="start-btn">开始练习</button>
+        <div class="stage">
+          <div class="stage-number">01:00</div>
+          <div class="stage-caption">倒计时进行中</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="col-label">方向 G · 浮层导航</p>
+    <p class="col-sub">灰蓝底 + 浮层白卡分层，聊天气泡样式的提示条复用成"当前场景"提示。倒计时区做成左文右表盘的浮层条（复用 10:13 圆环表盘），开始按钮做成"滑动开始"胶囊，呼应 Slide to Park。</p>
+    <div class="demo direction-float">
+      <div class="callout">💬 已选 2 张卡片，随时可以开始</div>
+      <div class="topic-bar">
+        <div class="topic-input">甜汤圆比咸汤圆好吃</div>
+        <button class="btn">随机</button>
+      </div>
+      <div class="panel">
+        <div class="family-row">
+          <div class="family-icon">
+            <img src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/bold-magnifying-glass-icon_sm.png" alt="" />
+          </div>
+          <div>
+            <div class="family-name">溯因</div>
+            <div class="family-sub">Why → Abstract</div>
+          </div>
+        </div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <hr class="divider" />
+        <div class="panel-title">已选卡片</div>
+        <div class="selected-item"><span class="seq">1</span>为什么？只留一个理由，是什么？</div>
+        <div class="selected-item"><span class="seq">2</span>不做，或者搞砸了，最坏会怎样？</div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <div class="stage">
+          <div>
+            <div class="stage-number">01:00</div>
+            <div class="stage-caption">剩余时间</div>
+          </div>
+          <div class="dial"></div>
+        </div>
+        <div class="swipe-cta"><span class="knob">»</span>滑动开始练习</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

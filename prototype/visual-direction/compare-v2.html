@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>视觉方向对比 v2 · 即兴演讲训练工具</title>
+<style>
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"PingFang SC","Microsoft YaHei","HarmonyOS Sans","Noto Sans SC",
+                "SF Pro","Segoe UI",Arial,sans-serif;
+    background:#E8E8E8;
+    padding:32px 24px 64px;
+  }
+  .page-title{
+    max-width:1440px;
+    margin:0 auto 24px;
+    font-size:13px;
+    color:#595959;
+    line-height:20px;
+  }
+  .columns{
+    max-width:1440px;
+    margin:0 auto;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+    align-items:start;
+  }
+  .col-label{
+    font-size:15px;
+    font-weight:600;
+    margin:0 0 4px;
+    color:#1F1F1F;
+  }
+  .col-sub{
+    font-size:12px;
+    color:#8C8C8C;
+    margin:0 0 12px;
+    line-height:18px;
+  }
+
+  /* ---------- shared component skeleton, themed via CSS variables ---------- */
+  .demo{
+    position:relative;
+    background:var(--page-bg);
+    border:1px solid var(--page-border);
+    border-radius:14px;
+    padding:20px;
+    font-family:var(--font);
+    overflow:hidden;
+  }
+  .demo .topic-bar{
+    position:relative;
+    z-index:1;
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .demo .topic-input{
+    flex:1;
+    height:40px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:var(--surface);
+    display:flex;
+    align-items:center;
+    padding:0 14px;
+    font-size:13px;
+    color:var(--text);
+  }
+  .demo .btn{
+    height:40px;
+    padding:0 18px;
+    border-radius:var(--radius);
+    font-size:13px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid var(--accent);
+    background:var(--accent);
+    color:var(--on-accent);
+    white-space:nowrap;
+    font-weight:var(--weight-strong);
+  }
+  .demo .panel{
+    position:relative;
+    z-index:1;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:16px;
+  }
+  .demo .family-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .demo .family-icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:var(--icon-bg, var(--selected-bg));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 40px;
+    overflow:hidden;
+  }
+  .demo .family-icon img{ width:22px; height:22px; object-fit:contain; }
+  .demo .family-name{
+    font-size:13px;
+    font-weight:var(--weight-strong);
+    color:var(--text);
+  }
+  .demo .family-sub{
+    font-size:11px;
+    color:var(--text-secondary);
+  }
+  .demo .cards{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .demo .card{
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    background:var(--surface);
+    padding:10px;
+    font-size:12.5px;
+    line-height:18px;
+    color:var(--text);
+    min-height:64px;
+  }
+  .demo .card.selected{
+    background:var(--selected-bg);
+    border-color:var(--accent);
+    color:var(--selected-text);
+  }
+  .demo .divider{
+    border:none;
+    border-top:1px solid var(--border);
+    margin:14px 0;
+  }
+  .demo .panel-title{
+    font-size:14px;
+    font-weight:var(--weight-strong);
+    margin:0 0 10px;
+    color:var(--text);
+  }
+  .demo .selected-item{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:8px 10px;
+    background:var(--item-bg);
+    margin-bottom:8px;
+    font-size:12.5px;
+    color:var(--text);
+  }
+  .demo .seq{
+    flex:0 0 18px;
+    height:18px;
+    border-radius:50%;
+    background:var(--accent);
+    color:var(--on-accent);
+    font-size:11px;
+    line-height:18px;
+    text-align:center;
+  }
+  .demo .timer-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:14px;
+    font-size:12.5px;
+    color:var(--text-secondary);
+  }
+  .demo .segment{
+    display:flex;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
+  .demo .segment span{
+    height:28px;
+    padding:0 12px;
+    font-size:12.5px;
+    line-height:28px;
+    color:var(--text-secondary);
+    border-right:1px solid var(--border);
+  }
+  .demo .segment span:last-child{ border-right:none; }
+  .demo .segment span.active{
+    background:var(--accent);
+    color:var(--on-accent);
+  }
+  .demo .start-btn{
+    width:100%;
+    height:42px;
+    border-radius:var(--radius);
+    background:var(--accent);
+    color:var(--on-accent);
+    border:none;
+    font-size:14px;
+    font-weight:var(--weight-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .demo .stage{
+    margin-top:16px;
+    background:var(--stage-bg);
+    border-radius:var(--radius-lg);
+    padding:18px;
+    text-align:center;
+  }
+  .demo .stage-number{
+    font-size:32px;
+    font-weight:700;
+    color:var(--stage-text);
+    margin-bottom:4px;
+  }
+  .demo .stage-caption{
+    font-size:12px;
+    color:var(--stage-caption);
+  }
+
+  /* =========================================================
+     方向 B · 游戏化陪伴教练
+     ========================================================= */
+  .direction-coach{
+    --font:"PingFang SC","Microsoft YaHei","SF Pro","Segoe UI",Arial,sans-serif;
+    --page-bg:#FBF6EE;
+    --page-border:#EFDFC4;
+    --surface:#FFFDF9;
+    --border:#F0E1C4;
+    --text:#3A2E1F;
+    --text-secondary:#9C8560;
+    --radius:14px;
+    --radius-lg:22px;
+    --accent:#C4622D;
+    --on-accent:#FFFFFF;
+    --weight-strong:700;
+    --selected-bg:#FBE7D4;
+    --selected-text:#9A4A1C;
+    --item-bg:#FFFDF9;
+    --stage-bg:#4E5B3B;
+    --stage-text:#FFFFFF;
+    --stage-caption:#CFE0B8;
+    --icon-bg:#EDE3CE;
+  }
+  .direction-coach .btn,
+  .direction-coach .start-btn{ border-radius:999px; }
+  .direction-coach .segment{ border-radius:999px; overflow:hidden; }
+  .direction-coach .card.selected{ border-width:2px; }
+  .direction-coach .stage{ position:relative; }
+  .direction-coach .stage-ring{
+    width:64px; height:64px; margin:0 auto 8px;
+    border-radius:50%;
+    background:conic-gradient(#F2A93B 0% 60%, rgba(255,255,255,0.18) 60% 100%);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .direction-coach .stage-ring::after{
+    content:"";
+    width:50px; height:50px;
+    border-radius:50%;
+    background:var(--stage-bg);
+  }
+  .direction-coach .level-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:#EDE3CE;
+    color:#9A4A1C;
+    border-radius:999px;
+    padding:4px 12px 4px 6px;
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  .direction-coach .level-badge .dot{
+    width:20px; height:20px; border-radius:50%;
+    background:#C4622D; color:#fff;
+    font-size:11px; line-height:20px; text-align:center;
+  }
+
+  /* =========================================================
+     方向 C · 极简工具留白升级版
+     ========================================================= */
+  .direction-minimal{
+    --font:"PingFang SC","Microsoft YaHei","SF Pro","Segoe UI",Arial,sans-serif;
+    --page-bg:#FAFAFA;
+    --page-border:#E5E5E5;
+    --surface:#FFFFFF;
+    --border:#E5E5E5;
+    --text:#181818;
+    --text-secondary:#6B6B6B;
+    --radius:12px;
+    --radius-lg:18px;
+    --accent:#181818;
+    --on-accent:#FFFFFF;
+    --weight-strong:600;
+    --selected-bg:#F4F4F4;
+    --selected-text:#181818;
+    --item-bg:#FFFFFF;
+    --stage-bg:#181818;
+    --stage-text:#F4E24D;
+    --stage-caption:#9C9C9C;
+    --icon-bg:#F4F4F4;
+  }
+  .direction-minimal .btn,
+  .direction-minimal .start-btn,
+  .direction-minimal .topic-input{ border-radius:999px; }
+  .direction-minimal .btn{ background:#F4E24D; color:#181818; border-color:#F4E24D; }
+  .direction-minimal .segment{ border-radius:999px; overflow:hidden; }
+  .direction-minimal .card{ border-radius:16px; }
+  .direction-minimal .card.selected{ border-width:2px; }
+  .direction-minimal .panel{ border-radius:20px; }
+  .direction-minimal .stage-number{ color:#F4E24D; }
+  .direction-minimal .family-icon{ background:#F4F4F4; }
+
+  /* =========================================================
+     方向 D · 沉浸场景 + 玻璃拟态
+     ========================================================= */
+  .direction-immersive{
+    --font:"PingFang SC","Microsoft YaHei","SF Pro","Segoe UI",Arial,sans-serif;
+    --page-bg:#0F2A24;
+    --page-border:#0F2A24;
+    --surface:rgba(255,255,255,0.86);
+    --border:rgba(255,255,255,0.5);
+    --text:#152A22;
+    --text-secondary:#4E6259;
+    --radius:12px;
+    --radius-lg:18px;
+    --accent:#E8823A;
+    --on-accent:#FFFFFF;
+    --weight-strong:700;
+    --selected-bg:rgba(232,130,58,0.16);
+    --selected-text:#9A4A1C;
+    --item-bg:rgba(255,255,255,0.9);
+    --stage-bg:rgba(15,25,20,0.72);
+    --stage-text:#FFFFFF;
+    --stage-caption:#CFE0B8;
+    --icon-bg:rgba(232,130,58,0.18);
+  }
+  .direction-immersive{
+    background:
+      radial-gradient(circle at 15% 12%, rgba(255,255,255,0.10), transparent 45%),
+      linear-gradient(160deg, #16382F 0%, #0F2A24 55%, #0A1F1A 100%);
+  }
+  .direction-immersive::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:url("../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/communication-chat-bubbles_sm.png");
+    background-repeat:no-repeat;
+    background-position:right -30px top -20px;
+    background-size:220px;
+    opacity:0.14;
+    filter:invert(1) brightness(1.6);
+    pointer-events:none;
+  }
+  .direction-immersive .topic-input,
+  .direction-immersive .panel{
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  }
+  .direction-immersive .btn,
+  .direction-immersive .start-btn{ border-radius:999px; }
+  .direction-immersive .scene-tag{
+    position:relative; z-index:1;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    color:#EAF2EC;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    margin-bottom:10px;
+  }
+  .direction-immersive .scene-tag .dot{
+    width:6px; height:6px; border-radius:50%; background:#F2A93B;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="page-title">
+  视觉方向对比 v2 · 即兴演讲训练工具&nbsp;|&nbsp;基于 reference/ui-references 四张参考图提炼的三个方向，结构复用现有低保真骨架，只替换视觉 token 和局部装饰元素，不改变信息结构。
+</div>
+
+<div class="columns">
+
+  <div>
+    <p class="col-label">方向 B · 游戏化陪伴教练</p>
+    <p class="col-sub">暖橄榄绿 + 陶土橙 + 米白，大圆角、胶囊按钮。每个问题家族配一个圆形插画头像；练习时长做成等级徽章；倒计时舞台加一个进度环，像陪你打怪升级的教练。</p>
+    <div class="demo direction-coach">
+      <div class="topic-bar">
+        <div class="topic-input">甜汤圆比咸汤圆好吃</div>
+        <button class="btn">随机生成</button>
+      </div>
+      <div class="panel">
+        <div class="level-badge"><span class="dot">4</span>已选 2 张 · 继续加油</div>
+        <div class="family-row">
+          <div class="family-icon">
+            <img src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/bold-magnifying-glass-icon_sm.png" alt="" />
+          </div>
+          <div>
+            <div class="family-name">溯因</div>
+            <div class="family-sub">Why → Abstract</div>
+          </div>
+        </div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <hr class="divider" />
+        <div class="panel-title">已选卡片</div>
+        <div class="selected-item"><span class="seq">1</span>为什么？只留一个理由，是什么？</div>
+        <div class="selected-item"><span class="seq">2</span>不做，或者搞砸了，最坏会怎样？</div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <button class="start-btn">开始练习</button>
+        <div class="stage">
+          <div class="stage-ring"></div>
+          <div class="stage-number">01:00</div>
+          <div class="stage-caption">倒计时进行中 · 继续加油</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="col-label">方向 C · 极简工具留白升级版</p>
+    <p class="col-sub">延续现在的黑白灰基调，只放大圆角、间距、卡片质感到参考图水准；用一个高饱和亮黄色只做唯一强调色（主按钮 + 倒计时数字），其余保持克制。</p>
+    <div class="demo direction-minimal">
+      <div class="topic-bar">
+        <div class="topic-input">甜汤圆比咸汤圆好吃</div>
+        <button class="btn">随机生成</button>
+      </div>
+      <div class="panel">
+        <div class="family-row">
+          <div class="family-icon">
+            <img src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/bold-magnifying-glass-icon_sm.png" alt="" />
+          </div>
+          <div>
+            <div class="family-name">溯因</div>
+            <div class="family-sub">Why → Abstract</div>
+          </div>
+        </div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <hr class="divider" />
+        <div class="panel-title">已选卡片</div>
+        <div class="selected-item"><span class="seq">1</span>为什么？只留一个理由，是什么？</div>
+        <div class="selected-item"><span class="seq">2</span>不做，或者搞砸了，最坏会怎样？</div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <button class="start-btn">开始练习</button>
+        <div class="stage">
+          <div class="stage-number">01:00</div>
+          <div class="stage-caption">倒计时进行中</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <p class="col-label">方向 D · 沉浸场景 + 玻璃拟态</p>
+    <p class="col-sub">页面背景换成随机到的场景插画（面试/小对话/会议/课堂），选卡面板做成半透明玻璃卡片浮在场景上。练习感更沉浸，但改动量最大，需要重构头部与整体骨架。</p>
+    <div class="demo direction-immersive">
+      <div class="scene-tag"><span class="dot"></span>当前场景 · small talks</div>
+      <div class="topic-bar">
+        <div class="topic-input">甜汤圆比咸汤圆好吃</div>
+        <button class="btn">随机生成</button>
+      </div>
+      <div class="panel">
+        <div class="family-row">
+          <div class="family-icon">
+            <img src="../../reference/hand-drawn-essential-mini-illustrations-boldline-chapter-2-previews/bold-magnifying-glass-icon_sm.png" alt="" />
+          </div>
+          <div>
+            <div class="family-name">溯因</div>
+            <div class="family-sub">Why → Abstract</div>
+          </div>
+        </div>
+        <div class="cards">
+          <div class="card selected">为什么？只留一个理由，是什么？</div>
+          <div class="card">有人继续追问"为什么"，你还能往下说吗？</div>
+          <div class="card">归根到底，最本质的原因是什么？</div>
+        </div>
+        <hr class="divider" />
+        <div class="panel-title">已选卡片</div>
+        <div class="selected-item"><span class="seq">1</span>为什么？只留一个理由，是什么？</div>
+        <div class="selected-item"><span class="seq">2</span>不做，或者搞砸了，最坏会怎样？</div>
+        <div class="timer-row">练习时长
+          <span class="segment"><span class="active">1 分钟</span><span>2 分钟</span><span>3 分钟</span></span>
+        </div>
+        <button class="start-btn">开始练习</button>
+        <div class="stage">
+          <div class="stage-number">01:00</div>
+          <div class="stage-caption">倒计时进行中 · 舞台模式</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
