@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>即兴演讲 · 视觉方向 A（克制工具）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
 <style>
   :root{
     /* 采纳的高保真视觉方向：方向 A · 克制工具 + 藏青主题色（H=240，见 emil-color 推导） */
@@ -58,12 +61,27 @@
     @media only screen and (min-device-pixel-ratio:2), only screen and (min-resolution:192dpi){
       --border-hairline:0.5px;
     }
+
+    /* 字体：英文走 DM 家族，中文走 PingFang，DM 排在前面时浏览器会按字符自动分流 */
+    --font-sans:"DM Sans","PingFang SC","Microsoft YaHei","HarmonyOS Sans","Noto Sans SC","Segoe UI",Arial,sans-serif;
+    --font-display:"DM Serif Display","Noto Serif SC","PingFang SC",serif;
+
+    /* 字号梯度：拉开层级，避免大片文字挤在 12-16px 之间 */
+    --fs-2xs:12px;
+    --fs-xs:13px;
+    --fs-sm:14px;
+    --fs-md:16px;
+    --fs-lg:20px;
+    --fs-xl:36px;
+    --fs-display:64px;
   }
   *{box-sizing:border-box;}
   body{
     margin:0;
-    font-family:"PingFang SC","Microsoft YaHei","HarmonyOS Sans","Noto Sans SC",
-                "SF Pro","Segoe UI",Arial,sans-serif;
+    font-family:var(--font-sans);
+    font-synthesis:none;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
     color:var(--text);
     background:var(--canvas-bg);
     padding:0 0 64px;
@@ -96,9 +114,10 @@
     align-items:center;
     justify-content:center;
     gap:10px;
-    font-family:Georgia,"Noto Serif SC","DM Serif Display",serif;
-    font-size:32px;
-    line-height:1.2;
+    font-family:var(--font-display);
+    font-size:var(--fs-xl);
+    line-height:1.1;
+    letter-spacing:-0.01em;
     white-space:nowrap;
   }
   .tagline-fixed{ font-weight:700; color:var(--text); }
@@ -153,8 +172,8 @@
     height:100%;
   }
   .transcript-title{
-    font-size:16px;
-    line-height:24px;
+    font-size:var(--fs-lg);
+    line-height:1.3;
     font-weight:600;
     margin:0 0 12px;
   }
@@ -168,7 +187,7 @@
     background:var(--surface);
     color:var(--text);
     font-family:inherit;
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:22px;
     resize:vertical;
   }
@@ -211,7 +230,7 @@
     justify-content:center;
     text-align:center;
     padding:0 16px;
-    font-size:13px;
+    font-size:var(--fs-xs);
     line-height:1.35;
     color:var(--text);
     user-select:none;
@@ -220,13 +239,14 @@
   .topic-reel.settled .topic-reel-item{
     opacity:0.35;
     transform:scale(1);
-    transition:opacity .3s ease, transform .3s ease;
+    transition:opacity .3s ease, transform .3s ease, font-size .3s ease;
   }
   .topic-reel.settled .topic-reel-item.landed{
     opacity:1;
-    transform:scale(1.15);
+    font-size:var(--fs-lg);
+    transform:scale(1.05);
     font-weight:600;
-    transition:transform .45s cubic-bezier(.34,1.56,.64,1), opacity .3s ease;
+    transition:transform .45s cubic-bezier(.34,1.56,.64,1), opacity .3s ease, font-size .3s ease;
     position:relative;
     z-index:1;
   }
@@ -252,7 +272,7 @@
     height:40px;
     padding:0 16px;
     border-radius:var(--radius);
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:22px;
     display:inline-flex;
     align-items:center;
@@ -288,7 +308,7 @@
     box-shadow:none;
     cursor:not-allowed;
   }
-  .btn-sm{ height:32px; padding:0 12px; font-size:14px; }
+  .btn-sm{ height:32px; padding:0 12px; font-size:var(--fs-sm); }
   .btn-ghost-dark{
     background:transparent;
     color:var(--on-accent);
@@ -318,13 +338,13 @@
     object-fit:contain;
   }
   .family-name{
-    font-size:14px;
-    line-height:22px;
+    font-size:var(--fs-md);
+    line-height:1.4;
     font-weight:600;
     color:var(--text);
   }
   .family-sub{
-    font-size:12px;
+    font-size:var(--fs-2xs);
     line-height:18px;
     color:var(--text-muted);
   }
@@ -348,7 +368,7 @@
     text-align:left;
     width:100%;
     cursor:pointer;
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:20px;
     color:var(--text);
     transition:box-shadow 150ms ease-out;
@@ -385,7 +405,7 @@
     border-radius:50%;
     background:var(--border-soft);
     color:var(--text-muted);
-    font-size:13px;
+    font-size:var(--fs-xs);
     line-height:1;
     display:flex;
     align-items:center;
@@ -417,7 +437,7 @@
     border:1px solid var(--border);
     background:var(--surface);
     color:var(--text);
-    font-size:14px;
+    font-size:var(--fs-sm);
     font-family:inherit;
     cursor:pointer;
   }
@@ -430,8 +450,8 @@
     margin:0 0 12px;
   }
   .panel-title{
-    font-size:16px;
-    line-height:24px;
+    font-size:var(--fs-lg);
+    line-height:1.3;
     font-weight:600;
   }
   .panel-title-right{
@@ -440,7 +460,7 @@
     gap:8px;
   }
   .selected-count{
-    font-size:12px;
+    font-size:var(--fs-2xs);
     line-height:20px;
     color:var(--text-muted);
     font-variant-numeric:tabular-nums;
@@ -449,7 +469,7 @@
     background:none;
     border:none;
     padding:0;
-    font-size:12px;
+    font-size:var(--fs-2xs);
     line-height:20px;
     color:var(--text-muted);
     text-decoration:underline;
@@ -463,7 +483,7 @@
     padding:40px 16px;
     text-align:center;
     color:var(--text-muted);
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:22px;
     margin-bottom:16px;
   }
@@ -509,7 +529,7 @@
   .drag-handle{
     flex:0 0 16px;
     color:var(--text-disabled);
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:20px;
     padding-top:2px;
     cursor:grab;
@@ -520,13 +540,13 @@
     border-radius:50%;
     background:var(--accent);
     color:var(--on-accent);
-    font-size:12px;
+    font-size:var(--fs-2xs);
     line-height:20px;
     text-align:center;
   }
   .selected-item-body{ flex:1; min-width:0; }
   .selected-item-question{
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:20px;
     color:var(--text);
   }
@@ -534,7 +554,7 @@
     flex:0 0 20px;
     height:20px;
     color:var(--text-disabled);
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:20px;
     text-align:center;
     background:none;
@@ -558,7 +578,7 @@
     flex-wrap:wrap;
   }
   .timer-label{
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:22px;
     color:var(--text-secondary);
     margin-right:4px;
@@ -572,7 +592,7 @@
   .segment-item{
     height:32px;
     padding:0 16px;
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:32px;
     color:var(--text-secondary);
     border-right:var(--border-hairline) solid var(--border);
@@ -599,7 +619,7 @@
     padding:64px 24px;
   }
   .countdown-phase-label{
-    font-size:13px;
+    font-size:var(--fs-xs);
     line-height:20px;
     font-weight:600;
     letter-spacing:0.04em;
@@ -607,15 +627,16 @@
     margin-bottom:4px;
   }
   .countdown-number{
-    font-size:56px;
-    line-height:64px;
+    font-size:var(--fs-display);
+    line-height:1.1;
+    letter-spacing:-0.02em;
     font-weight:700;
     color:var(--on-accent);
     margin-bottom:8px;
     font-variant-numeric:tabular-nums;
   }
   .countdown-caption{
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:22px;
     color:rgba(255,255,255,0.6);
     margin-bottom:24px;
@@ -686,7 +707,7 @@
     color:var(--on-accent);
     border-radius:var(--radius);
     padding:10px 16px;
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:22px;
     box-shadow:var(--shadow-toast);
     z-index:10;
@@ -698,7 +719,7 @@
     border:none;
     color:var(--on-accent);
     text-decoration:underline;
-    font-size:14px;
+    font-size:var(--fs-sm);
     line-height:22px;
     cursor:pointer;
     padding:0;
