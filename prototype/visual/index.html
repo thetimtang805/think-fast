@@ -803,9 +803,16 @@
   .quick-notes{
     margin-bottom:16px;
   }
+  .quick-notes-title-row{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:8px;
+  }
   .quick-notes-label{
     display:block;
-    margin-bottom:8px;
+    margin:0;
     font-size:var(--fs-sm);
     line-height:22px;
     font-weight:600;
@@ -1344,7 +1351,10 @@
         <div id="emptyState" class="empty-state">先选择思维卡，再在这里整理思路</div>
         <div id="selectedList" class="selected-list" hidden></div>
         <div class="quick-notes">
-          <label class="quick-notes-label" for="quickNotesInput">快速笔记</label>
+          <div class="quick-notes-title-row">
+            <label class="quick-notes-label" for="quickNotesInput">快速笔记</label>
+            <button id="clearQuickNotesBtn" class="clear-link" type="button" hidden>清除</button>
+          </div>
           <textarea id="quickNotesInput" class="quick-notes-input" placeholder="记下你的观点、例子或想说的一句话…" aria-label="快速笔记"></textarea>
         </div>
         <hr class="divider" />
@@ -2386,6 +2396,7 @@
   var transcriptPanelEl = document.getElementById("transcriptPanel");
   var transcriptInputEl = document.getElementById("transcriptInput");
   var quickNotesInputEl = document.getElementById("quickNotesInput");
+  var clearQuickNotesBtn = document.getElementById("clearQuickNotesBtn");
   var emptyStateEl = document.getElementById("emptyState");
   var selectedListEl = document.getElementById("selectedList");
   var selectedCountEl = document.getElementById("selectedCount");
@@ -2425,8 +2436,25 @@
     quickNotesInputEl.style.height = Math.max(96, quickNotesInputEl.scrollHeight) + "px";
   }
 
-  quickNotesInputEl.addEventListener("input", resizeQuickNotesInput);
+  function updateQuickNotesClearButton(){
+    clearQuickNotesBtn.hidden = quickNotesInputEl.value.length === 0;
+  }
+
+  function clearQuickNotes(){
+    if (quickNotesInputEl.value.length === 0) return;
+    quickNotesInputEl.value = "";
+    resizeQuickNotesInput();
+    updateQuickNotesClearButton();
+    quickNotesInputEl.focus();
+  }
+
+  quickNotesInputEl.addEventListener("input", function(){
+    resizeQuickNotesInput();
+    updateQuickNotesClearButton();
+  });
+  clearQuickNotesBtn.addEventListener("click", clearQuickNotes);
   resizeQuickNotesInput();
+  updateQuickNotesClearButton();
 
   function createCustomSelect(config){
     var selectedValue = config.value;
