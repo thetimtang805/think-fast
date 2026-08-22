@@ -982,7 +982,7 @@
     grid-template-columns:64px minmax(140px, 1fr) 64px;
     width:100%;
     max-width:420px;
-    margin:0 auto 20px;
+    margin:0 auto;
     overflow:visible;
     border:1px solid rgba(255,255,255,0.32);
     border-radius:var(--radius);
@@ -999,10 +999,14 @@
   .timer-control-part + .timer-control-part{ border-left:1px solid rgba(255,255,255,0.25); }
   .timer-control-part:first-child{ border-radius:calc(var(--radius) - 1px) 0 0 calc(var(--radius) - 1px); }
   .timer-control-part:last-child{ border-radius:0 calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0; }
-  #timerPlayBtn .btn-icon,
+  #timerSubtractBtn .btn-icon,
   #timerAddBtn .btn-icon{ transform:translateY(1px); }
   .timer-control-part:not(:disabled){ cursor:pointer; }
   .timer-control-part:not(:disabled):hover{ background:rgba(255,255,255,0.18); }
+  .timer-control-part:disabled{
+    cursor:not-allowed;
+    color:rgba(255,255,255,0.38);
+  }
   .timer-control-part:focus-visible{ outline:2px solid var(--on-accent); outline-offset:-3px; }
   .timer-control-part[data-tooltip]::after{
     content:attr(data-tooltip);
@@ -1030,7 +1034,7 @@
     opacity:1;
     visibility:visible;
   }
-  #timerPlayBtn::after{
+  #timerSubtractBtn::after{
     top:50%;
     right:calc(100% + 8px);
     left:auto;
@@ -1040,6 +1044,13 @@
     top:50%;
     left:calc(100% + 8px);
     transform:translateY(-50%);
+  }
+  .timer-start-btn{
+    display:flex;
+    width:100%;
+    max-width:420px;
+    margin:12px auto 0;
+    justify-content:center;
   }
   .timer-control-time{
     display:flex;
@@ -1531,14 +1542,15 @@
           <div class="timer-setup-view" id="timerSetupView">
             <div class="countdown-order" id="timerSetupOrder"></div>
             <div class="timer-control" aria-label="倒计时控制">
-              <button class="timer-control-part" id="timerPlayBtn" type="button" aria-label="开始倒计时" data-tooltip="开始倒计时">
-                <img class="btn-icon" src="../../reference/icon/alarm-play-outline.svg" alt="" aria-hidden="true" />
+              <button class="timer-control-part" id="timerSubtractBtn" type="button" aria-label="减少 30 秒" data-tooltip="减少 30 秒">
+                <img class="btn-icon" src="../../reference/icon/minus-circle-outline.svg" alt="" aria-hidden="true" />
               </button>
               <div class="timer-control-part timer-control-time" id="timerSetupNumber" aria-live="polite">01:00</div>
               <button class="timer-control-part" id="timerAddBtn" type="button" aria-label="添加 30 秒" data-tooltip="添加 30 秒">
                 <img class="btn-icon" src="../../reference/icon/plus-circle-outline.svg" alt="" aria-hidden="true" />
               </button>
             </div>
+            <button class="btn btn-ghost-dark timer-start-btn" id="timerStartBtn" type="button">开始倒计时</button>
           </div>
           <div class="timer-running-view" id="timerRunningView" hidden>
             <p class="countdown-complete-message" id="countdownCompleteMessage" hidden aria-live="polite"></p>
@@ -2665,8 +2677,9 @@
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownCompleteMessageEl = document.getElementById("countdownCompleteMessage");
   var countdownOrderEl = document.getElementById("countdownOrder");
-  var timerPlayBtn = document.getElementById("timerPlayBtn");
+  var timerSubtractBtn = document.getElementById("timerSubtractBtn");
   var timerAddBtn = document.getElementById("timerAddBtn");
+  var timerStartBtn = document.getElementById("timerStartBtn");
   var countdownActionsDoneEl = document.getElementById("countdownActionsDone");
   var restartBtn = document.getElementById("restartBtn");
   var copyResultBtn = document.getElementById("copyResultBtn");
@@ -3504,19 +3517,26 @@
     countdownResultHintEl.classList.remove("complete-enter");
     countdownCompleteMessageEl.hidden = true;
     countdownCompleteMessageEl.textContent = "";
-    timerPlayBtn.disabled = false;
     timerAddBtn.disabled = false;
-    timerSetupNumberEl.textContent = formatTime(state.timer.remaining);
+    timerStartBtn.disabled = false;
+    renderTimerSetupControls();
     timerSetupViewEl.hidden = false;
     timerSetupViewEl.classList.remove("is-leaving");
     timerRunningViewEl.hidden = true;
     timerRunningViewEl.classList.remove("is-entering");
   }
 
+  function renderTimerSetupControls(){
+    timerSetupNumberEl.textContent = formatTime(state.timer.remaining);
+    timerSubtractBtn.disabled = state.timer.remaining <= 30;
+  }
+
   function beginCountdownRun(){
     if (state.timer.status !== "idle") return;
     state.timer.status = "running";
-    timerPlayBtn.disabled = true;
+    timerSubtractBtn.disabled = true;
+    timerAddBtn.disabled = true;
+    timerStartBtn.disabled = true;
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
     timerRunningViewEl.hidden = false;
     window.requestAnimationFrame(function(){
@@ -3552,7 +3572,9 @@
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     countdownPanelEl.classList.add("is-complete");
     countdownNumberEl.textContent = "00:00";
+    timerSubtractBtn.disabled = true;
     timerAddBtn.disabled = true;
+    timerStartBtn.disabled = true;
     countdownCompleteMessageEl.textContent = COUNTDOWN_COMPLETE_MESSAGES[Math.floor(Math.random() * COUNTDOWN_COMPLETE_MESSAGES.length)];
     countdownCompleteMessageEl.hidden = false;
 
@@ -3704,12 +3726,17 @@
   }
 
   startBtn.addEventListener("click", startPractice);
-  timerPlayBtn.addEventListener("click", beginCountdownRun);
-  timerAddBtn.addEventListener("click", function(){
-    if (state.timer.status === "done") return;
-    state.timer.remaining += 30;
-    timerSetupNumberEl.textContent = formatTime(state.timer.remaining);
+  timerSubtractBtn.addEventListener("click", function(){
+    if (state.timer.status !== "idle" || state.timer.remaining <= 30) return;
+    state.timer.remaining -= 30;
+    renderTimerSetupControls();
   });
+  timerAddBtn.addEventListener("click", function(){
+    if (state.timer.status !== "idle") return;
+    state.timer.remaining += 30;
+    renderTimerSetupControls();
+  });
+  timerStartBtn.addEventListener("click", beginCountdownRun);
   restartBtn.addEventListener("click", restartPractice);
   practiceBackBtn.addEventListener("click", function(){ stopPractice(true); });
   copyResultBtn.addEventListener("click", copyPracticeResult);
