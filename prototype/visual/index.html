@@ -1055,15 +1055,22 @@
     justify-content:center;
   }
   /* 深色倒计时舞台中的主操作采用反相主按钮，保持明确的视觉优先级。 */
-  .countdown-stage .timer-start-btn.btn-primary{
+  .countdown-stage .btn-primary{
     background:var(--surface);
     color:var(--accent);
   }
-  .countdown-stage .timer-start-btn.btn-primary:not(:disabled):hover{ background:var(--hover); }
-  .countdown-stage .timer-start-btn.btn-primary:not(:disabled):active{ background:var(--border-soft); }
-  .countdown-stage .timer-start-btn.btn-primary:disabled{
+  .countdown-stage .btn-primary:not(:disabled):hover{ background:var(--hover); }
+  .countdown-stage .btn-primary:not(:disabled):active{ background:var(--border-soft); }
+  .countdown-stage .btn-primary:disabled{
     background:rgba(255,255,255,0.22);
     color:rgba(255,255,255,0.48);
+  }
+  #copyResultBtn .btn-icon{
+    filter:brightness(0) saturate(100%) invert(20%) sepia(20%) saturate(1514%) hue-rotate(106deg) brightness(92%) contrast(90%);
+  }
+  #restartBtn .btn-icon{
+    filter:brightness(0) invert(1);
+    transform:translateY(1px);
   }
   .timer-control-time{
     display:flex;
@@ -1570,11 +1577,14 @@
             <div class="countdown-number" id="countdownNumber">01:00</div>
             <div class="countdown-order" id="countdownOrder"></div>
             <div class="countdown-actions" id="countdownActionsDone" hidden>
-              <button id="copyResultBtn" class="btn btn-sm btn-ghost-dark" type="button">
+              <button id="copyResultBtn" class="btn btn-sm btn-primary" type="button">
                 <img class="btn-icon btn-icon-sm" src="../../reference/icon/clipboard3-outline%201.svg" alt="" aria-hidden="true" />
                 <span id="copyResultLabel" aria-live="polite" aria-atomic="true">复制结果</span>
               </button>
-              <button id="restartBtn" class="btn btn-sm btn-ghost-dark" type="button">再练一次</button>
+              <button id="restartBtn" class="btn btn-sm btn-ghost-dark" type="button">
+                <img class="btn-icon btn-icon-sm" src="../../reference/icon/restart-outline.svg" alt="" aria-hidden="true" />
+                <span>再练一次</span>
+              </button>
             </div>
             <p class="countdown-result-hint" id="countdownResultHint" hidden>点击“复制结果”，发送到任意 AI，即可复盘这次发言。</p>
           </div>
