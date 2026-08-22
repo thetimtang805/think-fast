@@ -946,16 +946,16 @@
   }
   .timer-control{
     display:grid;
-    grid-template-columns:1fr minmax(96px, 1fr) 1fr;
+    grid-template-columns:64px minmax(140px, 1fr) 64px;
     width:100%;
     max-width:420px;
     margin:0 auto 20px;
     overflow:hidden;
     border:1px solid rgba(255,255,255,0.32);
-    border-radius:var(--radius-sm);
+    border-radius:var(--radius);
   }
   .timer-control-part{
-    min-height:48px;
+    height:40px;
     border:0;
     background:rgba(255,255,255,0.1);
     color:var(--on-accent);
@@ -972,7 +972,7 @@
     justify-content:center;
     background:rgba(255,255,255,0.18);
     font-variant-numeric:tabular-nums;
-    font-size:20px;
+    font-size:18px;
     letter-spacing:0.03em;
   }
   .countdown-complete-message{
@@ -1399,15 +1399,25 @@
         <button id="startBtn" class="btn btn-primary" style="width:100%;" type="button" disabled>开始练习</button>
       </div>
 
-      <!-- 练习面板：进入后由用户手动播放倒计时 -->
+      <!-- 练习设置：思维卡下方先配置时长，默认不自动开始。 -->
+      <div class="panel countdown-stage" id="timerSetupPanel" hidden>
+        <div class="countdown-order" id="timerSetupOrder"></div>
+        <div class="timer-control" aria-label="倒计时控制">
+          <button class="timer-control-part" id="timerPlayBtn" type="button" aria-label="播放倒计时" title="播放倒计时">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v14l11-7-11-7Z" fill="currentColor"/></svg>
+          </button>
+          <div class="timer-control-part timer-control-time" id="timerSetupNumber" aria-live="polite">01:00</div>
+          <button class="timer-control-part" id="timerAddBtn" type="button" aria-label="增加 30 秒" title="增加 30 秒">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- 倒计时舞台：点击播放后显示，与原有倒计时状态保持一致。 -->
       <div class="panel countdown-stage" id="countdownPanel" hidden>
         <p class="countdown-complete-message" id="countdownCompleteMessage" hidden aria-live="polite"></p>
+        <div class="countdown-number" id="countdownNumber">01:00</div>
         <div class="countdown-order" id="countdownOrder"></div>
-        <div class="timer-control" aria-label="倒计时控制">
-          <button class="timer-control-part" id="timerPlayBtn" type="button">播放</button>
-          <div class="timer-control-part timer-control-time" id="countdownNumber" aria-live="polite">01:00</div>
-          <button class="timer-control-part" id="timerAddBtn" type="button">添加</button>
-        </div>
         <div class="countdown-actions" id="countdownActionsDone" hidden>
           <button id="copyResultBtn" class="btn btn-sm btn-ghost-dark" type="button">
             <img class="btn-icon btn-icon-sm" src="../../reference/icon/clipboard3-outline%201.svg" alt="" aria-hidden="true" />
@@ -2518,6 +2528,9 @@
   var expertSelectOptions = Array.prototype.slice.call(expertSelectMenuEl.querySelectorAll(".select-option"));
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
+  var timerSetupPanelEl = document.getElementById("timerSetupPanel");
+  var timerSetupOrderEl = document.getElementById("timerSetupOrder");
+  var timerSetupNumberEl = document.getElementById("timerSetupNumber");
   var countdownPanelEl = document.getElementById("countdownPanel");
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownCompleteMessageEl = document.getElementById("countdownCompleteMessage");
@@ -3311,17 +3324,20 @@
   }
 
   function renderCountdownOrder(){
-    countdownOrderEl.innerHTML = "";
+    [timerSetupOrderEl, countdownOrderEl].forEach(function(orderEl){ orderEl.innerHTML = ""; });
     state.selected.forEach(function(item, index){
       var meta = CARD_BY_ID[item.cardId];
-      var row = document.createElement("div");
-      row.className = "selected-item";
-      row.innerHTML =
+      var itemMarkup =
         '<div class="seq-badge">' + (index + 1) + '</div>' +
         '<div class="selected-item-body">' +
-          '<div class="selected-item-question">' + meta.question + '</div>' +
+        '<div class="selected-item-question">' + meta.question + '</div>' +
         '</div>';
-      countdownOrderEl.appendChild(row);
+      [timerSetupOrderEl, countdownOrderEl].forEach(function(orderEl){
+        var row = document.createElement("div");
+        row.className = "selected-item";
+        row.innerHTML = itemMarkup;
+        orderEl.appendChild(row);
+      });
     });
   }
 
@@ -3361,13 +3377,15 @@
     countdownCompleteMessageEl.textContent = "";
     timerPlayBtn.disabled = false;
     timerAddBtn.disabled = false;
-    countdownNumberEl.textContent = formatTime(state.timer.remaining);
+    timerSetupNumberEl.textContent = formatTime(state.timer.remaining);
   }
 
   function beginCountdownRun(){
     if (state.timer.status !== "idle") return;
     state.timer.status = "running";
     timerPlayBtn.disabled = true;
+    countdownNumberEl.textContent = formatTime(state.timer.remaining);
+    switchPanel(timerSetupPanelEl, countdownPanelEl);
     state.timer.handle = window.setInterval(function(){
       state.timer.remaining -= 1;
       if (state.timer.remaining <= 0){
@@ -3411,13 +3429,14 @@
     cardWallEl.hidden = true;
     transcriptPanelEl.hidden = false;
     taglineDynamicEl.hidden = true;
-    switchPanel(selectionPanelEl, countdownPanelEl);
+    switchPanel(selectionPanelEl, timerSetupPanelEl);
     resetCountdown();
   }
 
   function restartPractice(){
     resetCountdownCompleteAudio();
     resetCountdown();
+    switchPanel(countdownPanelEl, timerSetupPanelEl);
   }
 
   function getCurrentTopic(){
@@ -3511,7 +3530,7 @@
       cardWallEl.hidden = false;
       transcriptPanelEl.hidden = true;
       taglineDynamicEl.hidden = false;
-      switchPanel(countdownPanelEl, selectionPanelEl);
+      switchPanel(countdownPanelEl.hidden ? timerSetupPanelEl : countdownPanelEl, selectionPanelEl);
     }
   }
 
@@ -3520,7 +3539,7 @@
   timerAddBtn.addEventListener("click", function(){
     if (state.timer.status === "done") return;
     state.timer.remaining += 30;
-    countdownNumberEl.textContent = formatTime(state.timer.remaining);
+    timerSetupNumberEl.textContent = formatTime(state.timer.remaining);
   });
   restartBtn.addEventListener("click", restartPractice);
   backBtn.addEventListener("click", function(){ stopPractice(true); });
