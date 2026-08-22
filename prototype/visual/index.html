@@ -1001,12 +1001,14 @@
   .timer-control-part:last-child{ border-radius:0 calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0; }
   #timerSubtractBtn .btn-icon,
   #timerAddBtn .btn-icon{ transform:translateY(1px); }
+  .timer-control-part .btn-icon{ filter:brightness(0) invert(1); }
   .timer-control-part:not(:disabled){ cursor:pointer; }
   .timer-control-part:not(:disabled):hover{ background:rgba(255,255,255,0.18); }
   .timer-control-part:disabled{
     cursor:not-allowed;
     color:rgba(255,255,255,0.38);
   }
+  .timer-control-part:disabled .btn-icon{ opacity:0.38; }
   .timer-control-part:focus-visible{ outline:2px solid var(--on-accent); outline-offset:-3px; }
   .timer-control-part[data-tooltip]::after{
     content:attr(data-tooltip);
@@ -1051,6 +1053,17 @@
     max-width:420px;
     margin:12px auto 0;
     justify-content:center;
+  }
+  /* 深色倒计时舞台中的主操作采用反相主按钮，保持明确的视觉优先级。 */
+  .countdown-stage .timer-start-btn.btn-primary{
+    background:var(--surface);
+    color:var(--accent);
+  }
+  .countdown-stage .timer-start-btn.btn-primary:not(:disabled):hover{ background:var(--hover); }
+  .countdown-stage .timer-start-btn.btn-primary:not(:disabled):active{ background:var(--border-soft); }
+  .countdown-stage .timer-start-btn.btn-primary:disabled{
+    background:rgba(255,255,255,0.22);
+    color:rgba(255,255,255,0.48);
   }
   .timer-control-time{
     display:flex;
@@ -1550,7 +1563,7 @@
                 <img class="btn-icon" src="../../reference/icon/plus-circle-outline.svg" alt="" aria-hidden="true" />
               </button>
             </div>
-            <button class="btn btn-ghost-dark timer-start-btn" id="timerStartBtn" type="button">开始倒计时</button>
+            <button class="btn btn-primary timer-start-btn" id="timerStartBtn" type="button">开始倒计时</button>
           </div>
           <div class="timer-running-view" id="timerRunningView" hidden>
             <p class="countdown-complete-message" id="countdownCompleteMessage" hidden aria-live="polite"></p>
