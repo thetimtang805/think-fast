@@ -1029,7 +1029,7 @@
   }
   .timer-running-controls{
     display:grid;
-    grid-template-columns:48px minmax(0, 1fr) 48px;
+    grid-template-columns:40px minmax(0, 1fr) 40px;
     align-items:center;
     width:100%;
     max-width:420px;
@@ -1037,14 +1037,15 @@
   }
   .timer-running-controls .countdown-number{ margin:0; }
   .timer-running-action{
+    position:relative;
     display:grid;
     place-items:center;
     width:40px;
     height:40px;
     padding:0;
-    border:1px solid rgba(255,255,255,0.32);
-    border-radius:var(--radius);
-    background:rgba(255,255,255,0.1);
+    border:0;
+    border-radius:50%;
+    background:transparent;
     color:var(--on-accent);
     cursor:pointer;
     transition:background-color 150ms ease-out, transform 100ms ease-out;
@@ -1053,9 +1054,41 @@
     filter:brightness(0) invert(1);
     transform:translateY(1px);
   }
-  .timer-running-action:hover{ background:rgba(255,255,255,0.18); }
+  .timer-running-action:hover{ background:rgba(255,255,255,0.14); }
+  #timerCloseBtn:hover{ background:rgba(207,71,71,0.34); }
   .timer-running-action:active{ transform:scale(0.96); }
   .timer-running-action:focus-visible{ outline:2px solid var(--on-accent); outline-offset:2px; }
+  .timer-running-action[data-tooltip]::after{
+    content:attr(data-tooltip);
+    position:absolute;
+    top:50%;
+    z-index:2;
+    width:max-content;
+    padding:6px 8px;
+    border-radius:var(--radius);
+    background:var(--surface);
+    box-shadow:var(--shadow-raised);
+    color:var(--text);
+    font-size:var(--fs-xs);
+    font-weight:500;
+    line-height:18px;
+    pointer-events:none;
+    opacity:0;
+    visibility:hidden;
+  }
+  .timer-running-action[data-tooltip]:hover::after,
+  .timer-running-action[data-tooltip]:focus-visible::after{
+    opacity:1;
+    visibility:visible;
+  }
+  #timerCloseBtn::after{
+    right:calc(100% + 8px);
+    transform:translateY(-50%);
+  }
+  #timerRunningAddBtn::after{
+    left:calc(100% + 8px);
+    transform:translateY(-50%);
+  }
   .timer-running-view .countdown-order{ margin-bottom:28px; }
   .timer-running-view .countdown-actions{ gap:10px; }
   .timer-running-view .countdown-result-hint{ margin-top:14px; }
@@ -1512,11 +1545,11 @@
           <div class="timer-running-view" id="timerRunningView" hidden>
             <p class="countdown-complete-message" id="countdownCompleteMessage" hidden aria-live="polite"></p>
             <div class="timer-running-controls" id="timerRunningControls">
-              <button class="timer-running-action" id="timerCloseBtn" type="button" aria-label="关闭倒计时并返回设置">
+              <button class="timer-running-action" id="timerCloseBtn" type="button" aria-label="停止" data-tooltip="停止">
                 <img class="btn-icon" src="../../reference/icon/x-circle-outline.svg" alt="" aria-hidden="true" />
               </button>
               <div class="countdown-number" id="countdownNumber" aria-live="polite">01:00</div>
-              <button class="timer-running-action" id="timerRunningAddBtn" type="button" aria-label="添加 30 秒">
+              <button class="timer-running-action" id="timerRunningAddBtn" type="button" aria-label="加 30 秒" data-tooltip="加 30 秒">
                 <img class="btn-icon" src="../../reference/icon/plus-circle-outline.svg" alt="" aria-hidden="true" />
               </button>
             </div>
