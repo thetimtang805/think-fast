@@ -950,11 +950,12 @@
     width:100%;
     max-width:420px;
     margin:0 auto 20px;
-    overflow:hidden;
+    overflow:visible;
     border:1px solid rgba(255,255,255,0.32);
     border-radius:var(--radius);
   }
   .timer-control-part{
+    position:relative;
     height:40px;
     border:0;
     background:rgba(255,255,255,0.1);
@@ -963,9 +964,37 @@
     font-weight:600;
   }
   .timer-control-part + .timer-control-part{ border-left:1px solid rgba(255,255,255,0.25); }
+  .timer-control-part:first-child{ border-radius:calc(var(--radius) - 1px) 0 0 calc(var(--radius) - 1px); }
+  .timer-control-part:last-child{ border-radius:0 calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0; }
   .timer-control-part:not(:disabled){ cursor:pointer; }
   .timer-control-part:not(:disabled):hover{ background:rgba(255,255,255,0.18); }
   .timer-control-part:focus-visible{ outline:2px solid var(--on-accent); outline-offset:-3px; }
+  .timer-control-part[data-tooltip]::after{
+    content:attr(data-tooltip);
+    position:absolute;
+    top:calc(100% + 8px);
+    left:50%;
+    z-index:2;
+    width:max-content;
+    max-width:180px;
+    padding:6px 8px;
+    border-radius:var(--radius);
+    background:var(--surface);
+    box-shadow:var(--shadow-raised);
+    color:var(--text);
+    font-size:var(--fs-xs);
+    font-weight:500;
+    line-height:18px;
+    pointer-events:none;
+    transform:translateX(-50%);
+    opacity:0;
+    visibility:hidden;
+  }
+  .timer-control-part[data-tooltip]:hover::after,
+  .timer-control-part[data-tooltip]:focus-visible::after{
+    opacity:1;
+    visibility:visible;
+  }
   .timer-control-time{
     display:flex;
     align-items:center;
@@ -1429,11 +1458,11 @@
           <div class="timer-setup-view" id="timerSetupView">
             <div class="countdown-order" id="timerSetupOrder"></div>
             <div class="timer-control" aria-label="倒计时控制">
-              <button class="timer-control-part" id="timerPlayBtn" type="button" aria-label="开始倒计时" title="开始倒计时">
+              <button class="timer-control-part" id="timerPlayBtn" type="button" aria-label="开始倒计时" data-tooltip="开始倒计时">
                 <img class="btn-icon" src="../../reference/icon/alarm-play-outline.svg" alt="" aria-hidden="true" />
               </button>
               <div class="timer-control-part timer-control-time" id="timerSetupNumber" aria-live="polite">01:00</div>
-              <button class="timer-control-part" id="timerAddBtn" type="button" aria-label="添加 30 秒" title="添加 30 秒">
+              <button class="timer-control-part" id="timerAddBtn" type="button" aria-label="添加 30 秒" data-tooltip="添加 30 秒">
                 <img class="btn-icon" src="../../reference/icon/plus-circle-outline.svg" alt="" aria-hidden="true" />
               </button>
             </div>
