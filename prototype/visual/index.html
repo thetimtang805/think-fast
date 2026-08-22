@@ -291,7 +291,7 @@
     position:absolute;
     left:12px;
     top:50%;
-    display:grid;
+    display:none;
     place-items:center;
     width:40px;
     height:40px;
@@ -304,6 +304,7 @@
     transform:translateY(-50%);
     transition:background-color 150ms ease-out, color 150ms ease-out;
   }
+  .app.practice-mode .practice-back-btn{ display:grid; }
   .practice-back-btn:hover{ background:rgba(18,63,45,0.08); }
   .practice-back-btn:active{ transform:translateY(-50%) scale(0.96); }
   .practice-back-btn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
