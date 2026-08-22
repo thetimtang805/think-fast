@@ -982,6 +982,27 @@
     line-height:1.35;
     font-weight:700;
   }
+  .timer-stage-content{
+    display:grid;
+    align-items:center;
+  }
+  .timer-setup-view,
+  .timer-running-view{
+    grid-area:1 / 1;
+  }
+  .timer-setup-view.is-leaving{
+    animation:timerSetupOut 220ms cubic-bezier(.4,0,1,1) forwards;
+  }
+  .timer-running-view.is-entering{
+    animation:timerRunIn 360ms cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes timerSetupOut{
+    to{ opacity:0; transform:translateY(-10px) scale(.985); }
+  }
+  @keyframes timerRunIn{
+    from{ opacity:0; transform:translateY(14px) scale(.985); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
   .countdown-stage.is-complete{
     padding:24px;
   }
@@ -1105,6 +1126,8 @@
       animation-iteration-count:1 !important;
       transition-duration:0.001ms !important;
     }
+    .timer-setup-view.is-leaving,
+    .timer-running-view.is-entering{ animation:none; }
   }
 
   /* 自然专注台：方案二的颜色、表面与分组识别语言。 */
@@ -1399,34 +1422,36 @@
         <button id="startBtn" class="btn btn-primary" style="width:100%;" type="button" disabled>开始练习</button>
       </div>
 
-      <!-- 练习设置：思维卡下方先配置时长，默认不自动开始。 -->
-      <div class="panel countdown-stage" id="timerSetupPanel" hidden>
-        <div class="countdown-order" id="timerSetupOrder"></div>
-        <div class="timer-control" aria-label="倒计时控制">
-          <button class="timer-control-part" id="timerPlayBtn" type="button" aria-label="播放倒计时" title="播放倒计时">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v14l11-7-11-7Z" fill="currentColor"/></svg>
-          </button>
-          <div class="timer-control-part timer-control-time" id="timerSetupNumber" aria-live="polite">01:00</div>
-          <button class="timer-control-part" id="timerAddBtn" type="button" aria-label="增加 30 秒" title="增加 30 秒">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- 倒计时舞台：点击播放后显示，与原有倒计时状态保持一致。 -->
+      <!-- 同一块舞台内在「设置」与「倒计时」之间平滑过渡。 -->
       <div class="panel countdown-stage" id="countdownPanel" hidden>
-        <p class="countdown-complete-message" id="countdownCompleteMessage" hidden aria-live="polite"></p>
-        <div class="countdown-number" id="countdownNumber">01:00</div>
-        <div class="countdown-order" id="countdownOrder"></div>
-        <div class="countdown-actions" id="countdownActionsDone" hidden>
-          <button id="copyResultBtn" class="btn btn-sm btn-ghost-dark" type="button">
-            <img class="btn-icon btn-icon-sm" src="../../reference/icon/clipboard3-outline%201.svg" alt="" aria-hidden="true" />
-            <span id="copyResultLabel" aria-live="polite" aria-atomic="true">复制结果</span>
-          </button>
-          <button id="restartBtn" class="btn btn-sm btn-ghost-dark" type="button">再练一次</button>
-          <button id="backBtn" class="btn btn-sm btn-ghost-dark" type="button">返回上一页</button>
+        <div class="timer-stage-content">
+          <div class="timer-setup-view" id="timerSetupView">
+            <div class="countdown-order" id="timerSetupOrder"></div>
+            <div class="timer-control" aria-label="倒计时控制">
+              <button class="timer-control-part" id="timerPlayBtn" type="button" aria-label="播放倒计时" title="播放倒计时">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v14l11-7-11-7Z" fill="currentColor"/></svg>
+              </button>
+              <div class="timer-control-part timer-control-time" id="timerSetupNumber" aria-live="polite">01:00</div>
+              <button class="timer-control-part" id="timerAddBtn" type="button" aria-label="增加 30 秒" title="增加 30 秒">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="timer-running-view" id="timerRunningView" hidden>
+            <p class="countdown-complete-message" id="countdownCompleteMessage" hidden aria-live="polite"></p>
+            <div class="countdown-number" id="countdownNumber">01:00</div>
+            <div class="countdown-order" id="countdownOrder"></div>
+            <div class="countdown-actions" id="countdownActionsDone" hidden>
+              <button id="copyResultBtn" class="btn btn-sm btn-ghost-dark" type="button">
+                <img class="btn-icon btn-icon-sm" src="../../reference/icon/clipboard3-outline%201.svg" alt="" aria-hidden="true" />
+                <span id="copyResultLabel" aria-live="polite" aria-atomic="true">复制结果</span>
+              </button>
+              <button id="restartBtn" class="btn btn-sm btn-ghost-dark" type="button">再练一次</button>
+              <button id="backBtn" class="btn btn-sm btn-ghost-dark" type="button">返回上一页</button>
+            </div>
+            <p class="countdown-result-hint" id="countdownResultHint" hidden>点击“复制结果”，发送到任意 AI，即可复盘这次发言。</p>
+          </div>
         </div>
-        <p class="countdown-result-hint" id="countdownResultHint" hidden>点击“复制结果”，发送到任意 AI，即可复盘这次发言。</p>
       </div>
     </div>
   </div>
@@ -2528,7 +2553,8 @@
   var expertSelectOptions = Array.prototype.slice.call(expertSelectMenuEl.querySelectorAll(".select-option"));
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
-  var timerSetupPanelEl = document.getElementById("timerSetupPanel");
+  var timerSetupViewEl = document.getElementById("timerSetupView");
+  var timerRunningViewEl = document.getElementById("timerRunningView");
   var timerSetupOrderEl = document.getElementById("timerSetupOrder");
   var timerSetupNumberEl = document.getElementById("timerSetupNumber");
   var countdownPanelEl = document.getElementById("countdownPanel");
@@ -3378,6 +3404,10 @@
     timerPlayBtn.disabled = false;
     timerAddBtn.disabled = false;
     timerSetupNumberEl.textContent = formatTime(state.timer.remaining);
+    timerSetupViewEl.hidden = false;
+    timerSetupViewEl.classList.remove("is-leaving");
+    timerRunningViewEl.hidden = true;
+    timerRunningViewEl.classList.remove("is-entering");
   }
 
   function beginCountdownRun(){
@@ -3385,7 +3415,16 @@
     state.timer.status = "running";
     timerPlayBtn.disabled = true;
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
-    switchPanel(timerSetupPanelEl, countdownPanelEl);
+    timerRunningViewEl.hidden = false;
+    window.requestAnimationFrame(function(){
+      timerSetupViewEl.classList.add("is-leaving");
+      timerRunningViewEl.classList.add("is-entering");
+    });
+    window.setTimeout(function(){
+      timerSetupViewEl.hidden = true;
+      timerSetupViewEl.classList.remove("is-leaving");
+      timerRunningViewEl.classList.remove("is-entering");
+    }, window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 360);
     state.timer.handle = window.setInterval(function(){
       state.timer.remaining -= 1;
       if (state.timer.remaining <= 0){
@@ -3429,14 +3468,13 @@
     cardWallEl.hidden = true;
     transcriptPanelEl.hidden = false;
     taglineDynamicEl.hidden = true;
-    switchPanel(selectionPanelEl, timerSetupPanelEl);
+    switchPanel(selectionPanelEl, countdownPanelEl);
     resetCountdown();
   }
 
   function restartPractice(){
     resetCountdownCompleteAudio();
     resetCountdown();
-    switchPanel(countdownPanelEl, timerSetupPanelEl);
   }
 
   function getCurrentTopic(){
@@ -3530,7 +3568,7 @@
       cardWallEl.hidden = false;
       transcriptPanelEl.hidden = true;
       taglineDynamicEl.hidden = false;
-      switchPanel(countdownPanelEl.hidden ? timerSetupPanelEl : countdownPanelEl, selectionPanelEl);
+      switchPanel(countdownPanelEl, selectionPanelEl);
     }
   }
 
