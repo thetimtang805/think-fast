@@ -976,76 +976,6 @@
     gap:10px;
     margin-bottom:24px;
   }
-  .timer-control{
-    display:grid;
-    grid-template-columns:64px minmax(140px, 1fr) 64px;
-    width:100%;
-    max-width:420px;
-    margin:0 auto;
-    overflow:visible;
-    border:1px solid rgba(255,255,255,0.32);
-    border-radius:var(--radius);
-  }
-  .timer-control-part{
-    position:relative;
-    height:40px;
-    border:0;
-    background:rgba(255,255,255,0.1);
-    color:var(--on-accent);
-    font:inherit;
-    font-weight:600;
-  }
-  .timer-control-part + .timer-control-part{ border-left:1px solid rgba(255,255,255,0.25); }
-  .timer-control-part:first-child{ border-radius:calc(var(--radius) - 1px) 0 0 calc(var(--radius) - 1px); }
-  .timer-control-part:last-child{ border-radius:0 calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0; }
-  #timerSubtractBtn .btn-icon,
-  #timerAddBtn .btn-icon{ transform:translateY(1px); }
-  .timer-control-part .btn-icon{ filter:brightness(0) invert(1); }
-  .timer-control-part:not(:disabled){ cursor:pointer; }
-  .timer-control-part:not(:disabled):hover{ background:rgba(255,255,255,0.18); }
-  .timer-control-part:disabled{
-    cursor:not-allowed;
-    color:rgba(255,255,255,0.38);
-  }
-  .timer-control-part:disabled .btn-icon{ opacity:0.38; }
-  .timer-control-part:focus-visible{ outline:2px solid var(--on-accent); outline-offset:-3px; }
-  .timer-control-part[data-tooltip]::after{
-    content:attr(data-tooltip);
-    position:absolute;
-    top:calc(100% + 8px);
-    left:50%;
-    z-index:2;
-    width:max-content;
-    max-width:180px;
-    padding:6px 8px;
-    border-radius:var(--radius);
-    background:var(--surface);
-    box-shadow:var(--shadow-raised);
-    color:var(--text);
-    font-size:var(--fs-xs);
-    font-weight:500;
-    line-height:18px;
-    pointer-events:none;
-    transform:translateX(-50%);
-    opacity:0;
-    visibility:hidden;
-  }
-  .timer-control-part[data-tooltip]:hover::after,
-  .timer-control-part[data-tooltip]:focus-visible::after{
-    opacity:1;
-    visibility:visible;
-  }
-  #timerSubtractBtn::after{
-    top:50%;
-    right:calc(100% + 8px);
-    left:auto;
-    transform:translateY(-50%);
-  }
-  #timerAddBtn::after{
-    top:50%;
-    left:calc(100% + 8px);
-    transform:translateY(-50%);
-  }
   .timer-start-btn{
     display:flex;
     width:100%;
@@ -1070,16 +1000,6 @@
   #restartBtn .btn-icon{
     filter:brightness(0) invert(1);
     transform:translateY(1px);
-  }
-  .timer-control-time{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(255,255,255,0.18);
-    font-family:"DM Sans",sans-serif;
-    font-variant-numeric:tabular-nums;
-    font-size:18px;
-    letter-spacing:0.03em;
   }
   .countdown-complete-message{
     margin:0 0 20px;
@@ -1107,7 +1027,35 @@
     flex-direction:column;
     align-items:center;
   }
-  .timer-running-view .countdown-number{ margin:0 0 20px; }
+  .timer-running-controls{
+    display:grid;
+    grid-template-columns:48px minmax(0, 1fr) 48px;
+    align-items:center;
+    width:100%;
+    max-width:420px;
+    margin:0 auto 20px;
+  }
+  .timer-running-controls .countdown-number{ margin:0; }
+  .timer-running-action{
+    display:grid;
+    place-items:center;
+    width:40px;
+    height:40px;
+    padding:0;
+    border:1px solid rgba(255,255,255,0.32);
+    border-radius:var(--radius);
+    background:rgba(255,255,255,0.1);
+    color:var(--on-accent);
+    cursor:pointer;
+    transition:background-color 150ms ease-out, transform 100ms ease-out;
+  }
+  .timer-running-action .btn-icon{
+    filter:brightness(0) invert(1);
+    transform:translateY(1px);
+  }
+  .timer-running-action:hover{ background:rgba(255,255,255,0.18); }
+  .timer-running-action:active{ transform:scale(0.96); }
+  .timer-running-action:focus-visible{ outline:2px solid var(--on-accent); outline-offset:2px; }
   .timer-running-view .countdown-order{ margin-bottom:28px; }
   .timer-running-view .countdown-actions{ gap:10px; }
   .timer-running-view .countdown-result-hint{ margin-top:14px; }
@@ -1419,7 +1367,6 @@
       flex-direction:column;
     }
     .countdown-actions .btn{ width:100%; }
-    .timer-control{ max-width:none; }
     .toast{
       left:16px;
       right:16px;
@@ -1560,20 +1507,19 @@
         <div class="timer-stage-content">
           <div class="timer-setup-view" id="timerSetupView">
             <div class="countdown-order" id="timerSetupOrder"></div>
-            <div class="timer-control" aria-label="倒计时控制">
-              <button class="timer-control-part" id="timerSubtractBtn" type="button" aria-label="减少 30 秒" data-tooltip="减少 30 秒">
-                <img class="btn-icon" src="../../reference/icon/minus-circle-outline.svg" alt="" aria-hidden="true" />
-              </button>
-              <div class="timer-control-part timer-control-time" id="timerSetupNumber" aria-live="polite">01:00</div>
-              <button class="timer-control-part" id="timerAddBtn" type="button" aria-label="添加 30 秒" data-tooltip="添加 30 秒">
-                <img class="btn-icon" src="../../reference/icon/plus-circle-outline.svg" alt="" aria-hidden="true" />
-              </button>
-            </div>
             <button class="btn btn-primary timer-start-btn" id="timerStartBtn" type="button">开始倒计时</button>
           </div>
           <div class="timer-running-view" id="timerRunningView" hidden>
             <p class="countdown-complete-message" id="countdownCompleteMessage" hidden aria-live="polite"></p>
-            <div class="countdown-number" id="countdownNumber">01:00</div>
+            <div class="timer-running-controls" id="timerRunningControls">
+              <button class="timer-running-action" id="timerCloseBtn" type="button" aria-label="关闭倒计时并返回设置">
+                <img class="btn-icon" src="../../reference/icon/x-circle-outline.svg" alt="" aria-hidden="true" />
+              </button>
+              <div class="countdown-number" id="countdownNumber" aria-live="polite">01:00</div>
+              <button class="timer-running-action" id="timerRunningAddBtn" type="button" aria-label="添加 30 秒">
+                <img class="btn-icon" src="../../reference/icon/plus-circle-outline.svg" alt="" aria-hidden="true" />
+              </button>
+            </div>
             <div class="countdown-order" id="countdownOrder"></div>
             <div class="countdown-actions" id="countdownActionsDone" hidden>
               <button id="copyResultBtn" class="btn btn-sm btn-primary" type="button">
@@ -2694,14 +2640,14 @@
   var timerSetupViewEl = document.getElementById("timerSetupView");
   var timerRunningViewEl = document.getElementById("timerRunningView");
   var timerSetupOrderEl = document.getElementById("timerSetupOrder");
-  var timerSetupNumberEl = document.getElementById("timerSetupNumber");
   var countdownPanelEl = document.getElementById("countdownPanel");
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownCompleteMessageEl = document.getElementById("countdownCompleteMessage");
   var countdownOrderEl = document.getElementById("countdownOrder");
-  var timerSubtractBtn = document.getElementById("timerSubtractBtn");
-  var timerAddBtn = document.getElementById("timerAddBtn");
   var timerStartBtn = document.getElementById("timerStartBtn");
+  var timerRunningControlsEl = document.getElementById("timerRunningControls");
+  var timerCloseBtn = document.getElementById("timerCloseBtn");
+  var timerRunningAddBtn = document.getElementById("timerRunningAddBtn");
   var countdownActionsDoneEl = document.getElementById("countdownActionsDone");
   var restartBtn = document.getElementById("restartBtn");
   var copyResultBtn = document.getElementById("copyResultBtn");
@@ -3539,26 +3485,19 @@
     countdownResultHintEl.classList.remove("complete-enter");
     countdownCompleteMessageEl.hidden = true;
     countdownCompleteMessageEl.textContent = "";
-    timerAddBtn.disabled = false;
     timerStartBtn.disabled = false;
-    renderTimerSetupControls();
     timerSetupViewEl.hidden = false;
     timerSetupViewEl.classList.remove("is-leaving");
     timerRunningViewEl.hidden = true;
     timerRunningViewEl.classList.remove("is-entering");
   }
 
-  function renderTimerSetupControls(){
-    timerSetupNumberEl.textContent = formatTime(state.timer.remaining);
-    timerSubtractBtn.disabled = state.timer.remaining <= 30;
-  }
-
   function beginCountdownRun(){
     if (state.timer.status !== "idle") return;
     state.timer.status = "running";
-    timerSubtractBtn.disabled = true;
-    timerAddBtn.disabled = true;
+    state.timer.remaining = state.duration;
     timerStartBtn.disabled = true;
+    timerRunningControlsEl.hidden = false;
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
     timerRunningViewEl.hidden = false;
     window.requestAnimationFrame(function(){
@@ -3594,9 +3533,8 @@
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     countdownPanelEl.classList.add("is-complete");
     countdownNumberEl.textContent = "00:00";
-    timerSubtractBtn.disabled = true;
-    timerAddBtn.disabled = true;
     timerStartBtn.disabled = true;
+    timerRunningControlsEl.hidden = true;
     countdownCompleteMessageEl.textContent = COUNTDOWN_COMPLETE_MESSAGES[Math.floor(Math.random() * COUNTDOWN_COMPLETE_MESSAGES.length)];
     countdownCompleteMessageEl.hidden = false;
 
@@ -3650,6 +3588,11 @@
 
   function restartPractice(){
     resetCountdownCompleteAudio();
+    resetCountdown();
+  }
+
+  function closeCountdown(){
+    if (state.timer.status !== "running") return;
     resetCountdown();
   }
 
@@ -3749,17 +3692,13 @@
   }
 
   startBtn.addEventListener("click", startPractice);
-  timerSubtractBtn.addEventListener("click", function(){
-    if (state.timer.status !== "idle" || state.timer.remaining <= 30) return;
-    state.timer.remaining -= 30;
-    renderTimerSetupControls();
-  });
-  timerAddBtn.addEventListener("click", function(){
-    if (state.timer.status !== "idle") return;
+  timerRunningAddBtn.addEventListener("click", function(){
+    if (state.timer.status !== "running") return;
     state.timer.remaining += 30;
-    renderTimerSetupControls();
+    countdownNumberEl.textContent = formatTime(state.timer.remaining);
   });
   timerStartBtn.addEventListener("click", beginCountdownRun);
+  timerCloseBtn.addEventListener("click", closeCountdown);
   restartBtn.addEventListener("click", restartPractice);
   practiceBackBtn.addEventListener("click", function(){ stopPractice(true); });
   copyResultBtn.addEventListener("click", copyPracticeResult);
