@@ -1049,7 +1049,6 @@
     transform:translateY(1px);
   }
   .timer-running-action:hover{ background:rgba(255,255,255,0.14); }
-  #timerCloseBtn:hover{ background:rgba(207,71,71,0.34); }
   .timer-running-action:active{ transform:scale(0.96); }
   .timer-running-action:focus-visible{ outline:2px solid var(--on-accent); outline-offset:2px; }
   .timer-running-action[data-tooltip]::after{
@@ -1532,7 +1531,7 @@
           <div class="timer-running-view" id="timerRunningView" hidden>
             <p class="countdown-complete-message" id="countdownCompleteMessage" hidden aria-live="polite"></p>
             <div class="timer-running-controls" id="timerRunningControls">
-              <button class="timer-running-action" id="timerCloseBtn" type="button" aria-label="停止" data-tooltip="停止">
+              <button class="timer-running-action" id="timerCloseBtn" type="button" aria-label="结束" data-tooltip="结束">
                 <img class="btn-icon" src="../../reference/icon/x-circle-outline.svg" alt="" aria-hidden="true" />
               </button>
               <div class="countdown-number" id="countdownNumber" aria-live="polite">01:00</div>
@@ -3611,9 +3610,9 @@
     resetCountdown();
   }
 
-  function closeCountdown(){
+  function endCountdown(){
     if (state.timer.status !== "running") return;
-    resetCountdown();
+    finishCountdown(false);
   }
 
   function getCurrentTopic(){
@@ -3718,7 +3717,7 @@
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
   });
   timerStartBtn.addEventListener("click", beginCountdownRun);
-  timerCloseBtn.addEventListener("click", closeCountdown);
+  timerCloseBtn.addEventListener("click", endCountdown);
   restartBtn.addEventListener("click", restartPractice);
   practiceBackBtn.addEventListener("click", function(){ stopPractice(true); });
   copyResultBtn.addEventListener("click", copyPracticeResult);
