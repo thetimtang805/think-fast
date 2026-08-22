@@ -1322,13 +1322,20 @@
     <div class="col-right">
       <!-- 选卡 + 设置倒计时 面板 -->
       <div class="panel" id="selectionPanel">
+        <div class="panel-title-row">
+          <div class="panel-title" id="panelTitle">选择思维卡片</div>
+          <div class="panel-title-right">
+            <span class="selected-count" id="selectedCount">0 / 10</span>
+            <button id="clearSelectedBtn" class="clear-link" type="button" hidden>清除</button>
+          </div>
+        </div>
         <div class="select-wrap" id="expertSelectWrap">
           <button type="button" id="expertSelectBtn" class="custom-select" aria-haspopup="listbox" aria-expanded="false">
-            <span id="expertSelectLabel">我的思路</span>
+            <span id="expertSelectLabel">自定义思路</span>
             <svg class="select-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <ul id="expertSelectMenu" class="select-menu" role="listbox" tabindex="-1" hidden>
-            <li role="option" class="select-option selected" aria-selected="true" data-value="custom">我的思路</li>
+            <li role="option" class="select-option selected" aria-selected="true" data-value="custom">自定义思路</li>
             <li role="option" class="select-option" aria-selected="false" data-value="0">Steve Jobs</li>
             <li role="option" class="select-option" aria-selected="false" data-value="1">Simon Sinek</li>
             <li role="option" class="select-option" aria-selected="false" data-value="2">Don Draper</li>
@@ -1341,13 +1348,6 @@
             <li role="option" class="select-option" aria-selected="false" data-value="9">Harari</li>
           </ul>
         </div>
-        <div class="panel-title-row">
-          <div class="panel-title" id="panelTitle">已选卡片</div>
-          <div class="panel-title-right">
-            <span class="selected-count" id="selectedCount">0 / 10</span>
-            <button id="clearSelectedBtn" class="clear-link" type="button" hidden>清除</button>
-          </div>
-        </div>
         <div id="emptyState" class="empty-state">先选择思维卡，再在这里整理思路</div>
         <div id="selectedList" class="selected-list" hidden></div>
         <div class="quick-notes">
@@ -1356,16 +1356,6 @@
             <button id="clearQuickNotesBtn" class="clear-link" type="button" hidden>清除</button>
           </div>
           <textarea id="quickNotesInput" class="quick-notes-input" placeholder="记下你的观点、例子或想说的一句话…" aria-label="快速笔记"></textarea>
-        </div>
-        <hr class="divider" />
-        <div class="timer-row">
-          <span class="timer-label" id="durationLabel">练习时长</span>
-          <div class="segment" id="durationSegment">
-            <button class="segment-item" type="button" data-duration="30" aria-pressed="false">30 秒</button>
-            <button class="segment-item active" type="button" data-duration="60" aria-pressed="true">1 分钟</button>
-            <button class="segment-item" type="button" data-duration="120" aria-pressed="false">2 分钟</button>
-            <button class="segment-item" type="button" data-duration="180" aria-pressed="false">3 分钟</button>
-          </div>
         </div>
         <button id="startBtn" class="btn btn-primary" style="width:100%;" type="button" disabled>开始练习</button>
       </div>
@@ -2486,7 +2476,6 @@
   var expertSelectLabelEl = document.getElementById("expertSelectLabel");
   var expertSelectMenuEl = document.getElementById("expertSelectMenu");
   var expertSelectOptions = Array.prototype.slice.call(expertSelectMenuEl.querySelectorAll(".select-option"));
-  var durationSegmentEl = document.getElementById("durationSegment");
   var startBtn = document.getElementById("startBtn");
   var selectionPanelEl = document.getElementById("selectionPanel");
   var countdownPanelEl = document.getElementById("countdownPanel");
@@ -2613,7 +2602,7 @@
     menuEl: expertSelectMenuEl,
     options: expertSelectOptions,
     value: "custom",
-    fallbackLabel: "我的思路",
+    fallbackLabel: "自定义思路",
     onChange: function(val){
       if (val === "custom"){ clearSelected(); return; }
       applyExpertPreset(Number(val));
@@ -3272,17 +3261,6 @@
     startBtn.disabled = empty;
     startBtn.title = empty ? TEXT.startDisabledTitle : "";
   }
-
-  durationSegmentEl.addEventListener("click", function(e){
-    var btn = e.target.closest(".segment-item");
-    if (!btn) return;
-    state.duration = Number(btn.getAttribute("data-duration"));
-    Array.prototype.forEach.call(durationSegmentEl.children, function(child){
-      var isActive = child === btn;
-      child.classList.toggle("active", isActive);
-      child.setAttribute("aria-pressed", isActive ? "true" : "false");
-    });
-  });
 
   randomTopicBtn.addEventListener("click", spinTopic);
 
