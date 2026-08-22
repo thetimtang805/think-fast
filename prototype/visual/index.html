@@ -349,12 +349,13 @@
   .transcript-panel{
     display:flex;
     flex-direction:column;
-    height:100%;
+    height:auto;
   }
   .transcript-textarea{
-    flex:1;
+    flex:0 0 auto;
     width:100%;
     min-height:480px;
+    max-height:640px;
     padding:12px;
     border:1px solid var(--border);
     border-radius:var(--radius);
@@ -366,7 +367,7 @@
     caret-color:var(--accent);
     resize:none;
     overflow-y:hidden;
-    transition:border-color 150ms ease-out, box-shadow 150ms ease-out, background-color 150ms ease-out;
+    transition:height 120ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out, background-color 150ms ease-out;
   }
   .transcript-textarea::placeholder{ color:var(--text-disabled); }
   .transcript-textarea:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
@@ -1363,7 +1364,10 @@
     .family-icon{ margin-bottom:0; grid-row:1 / span 2; }
     .family-cards{ grid-template-columns:1fr; gap:10px; }
     .card{ height:104px; padding:12px; }
-    .transcript-textarea{ min-height:300px; }
+    .transcript-textarea{
+      min-height:300px;
+      max-height:480px;
+    }
     .countdown-stage{ padding:44px 16px; }
   }
 
@@ -2702,6 +2706,19 @@
     quickNotesInputEl.style.overflowY = hasReachedMaxHeight ? "auto" : "hidden";
   }
 
+  function resizeTranscriptInput(){
+    var transcriptStyle = window.getComputedStyle(transcriptInputEl);
+    var minHeight = parseFloat(transcriptStyle.minHeight) || 300;
+    var maxHeight = parseFloat(transcriptStyle.maxHeight) || 640;
+
+    // 按实际内容撑开；达到上限后保留原生上下滚动，方便回看先前发言。
+    transcriptInputEl.style.height = "auto";
+    var desiredHeight = Math.max(minHeight, transcriptInputEl.scrollHeight);
+    var hasReachedMaxHeight = desiredHeight > maxHeight;
+    transcriptInputEl.style.height = Math.min(desiredHeight, maxHeight) + "px";
+    transcriptInputEl.style.overflowY = hasReachedMaxHeight ? "auto" : "hidden";
+  }
+
   function updateQuickNotesClearButton(){
     clearQuickNotesBtn.hidden = quickNotesInputEl.value.length === 0;
   }
@@ -2718,8 +2735,10 @@
     resizeQuickNotesInput();
     updateQuickNotesClearButton();
   });
+  transcriptInputEl.addEventListener("input", resizeTranscriptInput);
   clearQuickNotesBtn.addEventListener("click", clearQuickNotes);
   window.addEventListener("resize", resizeQuickNotesInput);
+  window.addEventListener("resize", resizeTranscriptInput);
   resizeQuickNotesInput();
   updateQuickNotesClearButton();
 
@@ -3511,6 +3530,7 @@
       state.timer.handle = null;
     }
     transcriptInputEl.value = quickNotesInputEl.value;
+    if (!transcriptPanelEl.hidden) resizeTranscriptInput();
     state.timer.status = "idle";
     state.timer.remaining = state.duration;
     countdownPanelEl.classList.remove("is-complete");
@@ -3590,6 +3610,7 @@
     selectionPanelEl.classList.remove("practice-source-out");
     transcriptPanelEl.hidden = false;
     countdownPanelEl.hidden = false;
+    window.requestAnimationFrame(resizeTranscriptInput);
     if (reduceMotion){
       state.isTransitioning = false;
       return;
