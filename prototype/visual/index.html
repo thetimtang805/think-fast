@@ -999,6 +999,8 @@
   .timer-control-part + .timer-control-part{ border-left:1px solid rgba(255,255,255,0.25); }
   .timer-control-part:first-child{ border-radius:calc(var(--radius) - 1px) 0 0 calc(var(--radius) - 1px); }
   .timer-control-part:last-child{ border-radius:0 calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0; }
+  #timerPlayBtn .btn-icon,
+  #timerAddBtn .btn-icon{ transform:translateY(1px); }
   .timer-control-part:not(:disabled){ cursor:pointer; }
   .timer-control-part:not(:disabled):hover{ background:rgba(255,255,255,0.18); }
   .timer-control-part:focus-visible{ outline:2px solid var(--on-accent); outline-offset:-3px; }
