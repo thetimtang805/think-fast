@@ -1022,14 +1022,19 @@
     align-items:center;
   }
   .timer-running-controls{
-    display:flex;
+    display:grid;
+    grid-template-columns:40px minmax(0, 1fr) 40px;
     align-items:center;
-    width:fit-content;
+    width:min(280px, 100%);
     max-width:100%;
-    gap:24px;
+    column-gap:0;
     margin:0 auto 20px;
   }
-  .timer-running-controls .countdown-number{ margin:0; }
+  .timer-running-controls .countdown-number{
+    margin:0;
+    min-width:0;
+    text-align:center;
+  }
   .timer-running-action{
     position:relative;
     display:grid;
