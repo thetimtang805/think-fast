@@ -1141,12 +1141,18 @@
   @keyframes practiceSourceOut{
     to{ opacity:0; transform:translateY(-8px) scale(.985); }
   }
-  @keyframes practiceTranscriptIn{
+  @keyframes practiceTargetIn{
     from{ opacity:0; transform:translateY(10px) scale(.985); }
     to{ opacity:1; transform:translateY(0) scale(1); }
   }
-  .practice-source-out{ animation:practiceSourceOut 160ms cubic-bezier(.4,0,1,1) forwards; }
-  .practice-transcript-in{ animation:practiceTranscriptIn 240ms cubic-bezier(.22,1,.36,1) both; }
+  .practice-source-out{
+    pointer-events:none;
+    animation:practiceSourceOut 160ms cubic-bezier(.4,0,1,1) forwards;
+  }
+  .practice-target-in{
+    animation:practiceTargetIn 240ms cubic-bezier(.22,1,.36,1) both;
+    will-change:transform,opacity;
+  }
 
   /* 撤销提示 */
   @keyframes toastIn{
@@ -2603,6 +2609,7 @@
       remaining: 0,
       handle: null
     },
+    isTransitioning: false,
     lastAction: null,    // { type:"single", item, index } | { type:"clear", items } for undo
     toastHandle: null,
     justClickedCardId: null,  // 触发一次卡片墙的 pop 反馈
@@ -3555,28 +3562,44 @@
     if (!reduceMotion) countdownResultHintEl.classList.add("complete-enter");
   }
 
-  function startPractice(){
-    if (state.selected.length === 0) return;
-    resetCountdownCompleteAudio();
-    renderCountdownOrder();
+  function enterPracticeView(reduceMotion){
     appEl.classList.add("practice-mode");
     renderStickyTopic();
     taglineDynamicEl.hidden = true;
-    switchPanel(selectionPanelEl, countdownPanelEl);
+    cardWallEl.hidden = true;
+    selectionPanelEl.hidden = true;
+    cardWallEl.classList.remove("practice-source-out");
+    selectionPanelEl.classList.remove("practice-source-out");
+    transcriptPanelEl.hidden = false;
+    countdownPanelEl.hidden = false;
+    if (reduceMotion){
+      state.isTransitioning = false;
+      return;
+    }
+    transcriptPanelEl.classList.add("practice-target-in");
+    countdownPanelEl.classList.add("practice-target-in");
+    window.setTimeout(function(){
+      transcriptPanelEl.classList.remove("practice-target-in");
+      countdownPanelEl.classList.remove("practice-target-in");
+      state.isTransitioning = false;
+    }, 260);
+  }
+
+  function startPractice(){
+    if (state.selected.length === 0 || state.isTransitioning) return;
+    resetCountdownCompleteAudio();
+    renderCountdownOrder();
     resetCountdown();
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduceMotion){
-      cardWallEl.hidden = true;
-      transcriptPanelEl.hidden = false;
+      enterPracticeView(true);
       return;
     }
+    state.isTransitioning = true;
     cardWallEl.classList.add("practice-source-out");
+    selectionPanelEl.classList.add("practice-source-out");
     window.setTimeout(function(){
-      cardWallEl.hidden = true;
-      cardWallEl.classList.remove("practice-source-out");
-      transcriptPanelEl.hidden = false;
-      transcriptPanelEl.classList.add("practice-transcript-in");
-      window.setTimeout(function(){ transcriptPanelEl.classList.remove("practice-transcript-in"); }, 260);
+      enterPracticeView(false);
     }, 160);
   }
 
