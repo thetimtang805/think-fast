@@ -94,6 +94,8 @@
   html{
     text-rendering:optimizeLegibility;
     scroll-behavior:smooth;
+    scrollbar-gutter:stable;
+    overflow-x:clip;
   }
   body{
     margin:0;
@@ -335,9 +337,6 @@
   .app.practice-mode .workspace-section-cards{ margin-top:0; }
   .workspace-section-cards.has-sticky-topic .col-right{ top:76px; }
   .app.practice-mode .workspace-section-cards.has-sticky-topic .col-right{ top:24px; }
-  /* 练习时把宽度比例反过来：倒计时模块（右栏）变宽，发言记录输入框（左栏）变窄 */
-  .app.practice-mode .col-left{ flex:0 0 calc(40% - 24px); }
-  .app.practice-mode .col-right{ flex:0 0 60%; }
 
   .panel{
     background:var(--surface);
@@ -3608,6 +3607,7 @@
   }
 
   function enterPracticeView(reduceMotion){
+    window.scrollTo(0, 0);
     appEl.classList.add("practice-mode");
     renderStickyTopic();
     taglineDynamicEl.hidden = true;
