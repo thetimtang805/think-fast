@@ -277,7 +277,7 @@
     transform:translateY(0);
   }
   .sticky-topic-value{
-    max-width:min(900px, 100%);
+    max-width:min(900px, calc(100% - 96px));
     overflow:hidden;
     color:var(--text);
     font-size:var(--fs-md);
@@ -286,6 +286,33 @@
     text-align:center;
     text-overflow:ellipsis;
     white-space:nowrap;
+  }
+  .practice-back-btn{
+    position:absolute;
+    left:12px;
+    top:50%;
+    display:grid;
+    place-items:center;
+    width:40px;
+    height:40px;
+    padding:0;
+    border:0;
+    border-radius:var(--radius);
+    background:transparent;
+    color:var(--text);
+    cursor:pointer;
+    transform:translateY(-50%);
+    transition:background-color 150ms ease-out, color 150ms ease-out;
+  }
+  .practice-back-btn:hover{ background:rgba(18,63,45,0.08); }
+  .practice-back-btn:active{ transform:translateY(-50%) scale(0.96); }
+  .practice-back-btn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+  .practice-back-icon{
+    width:20px;
+    height:20px;
+    background:currentColor;
+    -webkit-mask:url("../../reference/icon/square-arrow-left-outline.svg") center / contain no-repeat;
+    mask:url("../../reference/icon/square-arrow-left-outline.svg") center / contain no-repeat;
   }
 
   .layout{
@@ -944,6 +971,10 @@
     margin:0 auto 32px;
     text-align:left;
   }
+  .timer-setup-view .countdown-order{
+    gap:10px;
+    margin-bottom:24px;
+  }
   .timer-control{
     display:grid;
     grid-template-columns:64px minmax(140px, 1fr) 64px;
@@ -1037,6 +1068,15 @@
   .timer-running-view.is-entering{
     animation:timerRunIn 360ms cubic-bezier(.22,1,.36,1) both;
   }
+  .timer-running-view{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  .timer-running-view .countdown-number{ margin:0 0 20px; }
+  .timer-running-view .countdown-order{ margin-bottom:28px; }
+  .timer-running-view .countdown-actions{ gap:10px; }
+  .timer-running-view .countdown-result-hint{ margin-top:14px; }
   @keyframes timerSetupOut{
     to{ opacity:0; transform:translateY(-10px) scale(.985); }
   }
@@ -1411,6 +1451,9 @@
 
   <section class="workspace-section workspace-section-cards">
   <div id="stickyTopicSummary" class="sticky-topic-summary" hidden aria-label="当前话题">
+    <button id="practiceBackBtn" class="practice-back-btn" type="button" aria-label="返回选择">
+      <span class="practice-back-icon" aria-hidden="true"></span>
+    </button>
     <span id="stickyTopicValue" class="sticky-topic-value"></span>
   </div>
   <div class="layout" id="layout">
@@ -1488,7 +1531,6 @@
                 <span id="copyResultLabel" aria-live="polite" aria-atomic="true">复制结果</span>
               </button>
               <button id="restartBtn" class="btn btn-sm btn-ghost-dark" type="button">再练一次</button>
-              <button id="backBtn" class="btn btn-sm btn-ghost-dark" type="button">返回上一页</button>
             </div>
             <p class="countdown-result-hint" id="countdownResultHint" hidden>点击“复制结果”，发送到任意 AI，即可复盘这次发言。</p>
           </div>
@@ -2565,6 +2607,7 @@
   var topicAnnounceEl = document.getElementById("topicAnnounce");
   var stickyTopicSummaryEl = document.getElementById("stickyTopicSummary");
   var stickyTopicValueEl = document.getElementById("stickyTopicValue");
+  var practiceBackBtn = document.getElementById("practiceBackBtn");
   var layoutEl = document.getElementById("layout");
   var langSelectWrapEl = document.getElementById("langSelectWrap");
   var langSelectBtnEl = document.getElementById("langSelectBtn");
@@ -2606,7 +2649,6 @@
   var timerAddBtn = document.getElementById("timerAddBtn");
   var countdownActionsDoneEl = document.getElementById("countdownActionsDone");
   var restartBtn = document.getElementById("restartBtn");
-  var backBtn = document.getElementById("backBtn");
   var copyResultBtn = document.getElementById("copyResultBtn");
   var copyResultLabel = document.getElementById("copyResultLabel");
   var countdownResultHintEl = document.getElementById("countdownResultHint");
@@ -3621,7 +3663,7 @@
     timerSetupNumberEl.textContent = formatTime(state.timer.remaining);
   });
   restartBtn.addEventListener("click", restartPractice);
-  backBtn.addEventListener("click", function(){ stopPractice(true); });
+  practiceBackBtn.addEventListener("click", function(){ stopPractice(true); });
   copyResultBtn.addEventListener("click", copyPracticeResult);
 
   window.addEventListener("beforeunload", function(e){
