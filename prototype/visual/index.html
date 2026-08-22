@@ -2616,6 +2616,7 @@
     lang: "zh",
     topicMode: "daily",
     topicIndex: null,
+    topicHistory: {},    // 按「题库 + 语言」保存最近抽到的题目索引
     selected: [],       // [{ uid, cardId }]
     counts: {},          // cardId -> selected count
     duration: 60,        // seconds
@@ -3063,8 +3064,30 @@
 
   function pickRandomTopicIndex(exclude, poolLength){
     if (poolLength <= 1) return 0;
-    var idx;
-    do { idx = Math.floor(Math.random() * poolLength); } while (idx === exclude);
+
+    var historyKey = state.topicMode + ":" + state.lang;
+    var noRepeatLimit = Math.min(10, poolLength);
+    var history = (state.topicHistory[historyKey] || []).filter(function(index){
+      return index >= 0 && index < poolLength;
+    });
+
+    // 释放最早的一题，保留最近 9 题；新题加入后，任意连续 10 次抽取都不会重复。
+    if (history.length >= noRepeatLimit) history.shift();
+
+    var candidates = [];
+    for (var i = 0; i < poolLength; i++){
+      if (history.indexOf(i) === -1 && i !== exclude) candidates.push(i);
+    }
+    // 切换题库等极端场景下保底，仍尽量不重复当前题。
+    if (!candidates.length){
+      for (var j = 0; j < poolLength; j++){
+        if (j !== exclude) candidates.push(j);
+      }
+    }
+
+    var idx = candidates[Math.floor(Math.random() * candidates.length)];
+    history.push(idx);
+    state.topicHistory[historyKey] = history;
     return idx;
   }
 
