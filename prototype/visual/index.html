@@ -332,6 +332,66 @@
     position:sticky;
     top:24px;
   }
+  .cards-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:8px;
+    white-space:nowrap;
+  }
+  .cards-head-title{
+    font-size:var(--fs-sm);
+    line-height:1.3;
+    font-weight:600;
+    color:var(--text);
+  }
+  .cards-collapse-btn{
+    flex:none;
+    width:32px;
+    height:32px;
+    display:grid;
+    place-items:center;
+    border:none;
+    border-radius:50%;
+    background:transparent;
+    color:var(--text-muted);
+    cursor:pointer;
+    transition:background-color 150ms ease-out, transform 100ms ease-out;
+  }
+  @media (hover:hover) and (pointer:fine){ .cards-collapse-btn:hover{ background:var(--border-soft); } }
+  .cards-collapse-btn:active{ transform:scale(0.96); }
+  .cards-collapse-btn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+  .app.practice-mode .cards-head{ display:none; }
+  .layout.cards-anim #cardWall{ overflow:hidden; }
+  .layout.cards-collapsed:not(.cards-anim) #cardWallList{ display:none; }
+  @media (min-width: 981px){
+    .app:not(.practice-mode) .col-left,
+    .app:not(.practice-mode) .col-right{ transition:flex-basis 260ms cubic-bezier(0.22, 1, 0.36, 1); }
+    .app:not(.practice-mode) .layout.cards-collapsed > .col-left{
+      flex-basis:56px;
+      align-self:stretch;
+      display:flex;
+      flex-direction:column;
+    }
+    .app:not(.practice-mode) .layout.cards-collapsed #cardWall{ flex:1 1 auto; }
+    .app:not(.practice-mode) .layout.cards-collapsed > .col-right{ flex-basis:calc(100% - 80px); }
+    .app:not(.practice-mode) .layout.cards-collapsed:not(.cards-anim) #cardWall{ padding:12px 0; }
+    .app:not(.practice-mode) .layout.cards-collapsed:not(.cards-anim) .cards-head{
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+      margin:0;
+    }
+    .app:not(.practice-mode) .layout.cards-collapsed:not(.cards-anim) .cards-collapse-btn{ order:-1; }
+    .app:not(.practice-mode) .layout.cards-collapsed:not(.cards-anim) .cards-head-title{
+      writing-mode:vertical-rl;
+      letter-spacing:0.12em;
+    }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .col-left, .col-right{ transition:none !important; }
+  }
   .app.practice-mode .workspace-section-topic{ display:none; }
   .app.practice-mode{ padding-top:0; }
   .app.practice-mode .workspace-section-cards{ margin-top:0; }
@@ -1356,11 +1416,12 @@
     }
     .col-right{ order:1; }
     .col-left{ order:2; }
-    #cardWall{
+    #cardWallList{
       display:grid;
       grid-template-columns:repeat(2, minmax(0, 1fr));
       gap:20px 10px;
     }
+    .layout.cards-collapsed #cardWallList{ display:none; }
     .family-row{
       flex-direction:column;
       gap:10px;
@@ -1499,7 +1560,15 @@
   </div>
   <div class="layout" id="layout">
     <div class="col-left">
-      <div class="panel" id="cardWall"></div>
+      <div class="panel" id="cardWall">
+        <div class="cards-head">
+          <span class="cards-head-title">思维卡片库</span>
+          <button type="button" id="cardsCollapseBtn" class="cards-collapse-btn" aria-expanded="true" aria-controls="cardWallList" aria-label="收起思维卡片库" title="收起思维卡片库">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+          </button>
+        </div>
+        <div id="cardWallList"></div>
+      </div>
       <div class="panel transcript-panel" id="transcriptPanel" hidden>
         <textarea id="transcriptInput" class="transcript-textarea" placeholder="打开支持“语音转文字”的输入法，记录发言…" aria-label="发言记录"></textarea>
       </div>
@@ -2690,6 +2759,8 @@
   var randomTopicBtn = document.getElementById("randomTopicBtn");
   var cardsSectionEl = document.querySelector(".workspace-section-cards");
   var cardWallEl = document.getElementById("cardWall");
+  var cardWallListEl = document.getElementById("cardWallList");
+  var cardsCollapseBtnEl = document.getElementById("cardsCollapseBtn");
   var transcriptPanelEl = document.getElementById("transcriptPanel");
   var transcriptInputEl = document.getElementById("transcriptInput");
   var quickNotesInputEl = document.getElementById("quickNotesInput");
@@ -3239,7 +3310,7 @@
   var MAX_PER_CARD = 5;        // 单张卡片最多重复添加次数
 
   function renderCardWall(){
-    cardWallEl.innerHTML = "";
+    cardWallListEl.innerHTML = "";
     var atTotalCap = state.selected.length >= MAX_TOTAL_SELECTED;
     FAMILIES.forEach(function(family){
       var row = document.createElement("div");
@@ -3295,11 +3366,49 @@
       });
 
       row.appendChild(cardsWrap);
-      cardWallEl.appendChild(row);
+      cardWallListEl.appendChild(row);
     });
     window.requestAnimationFrame(syncTruncatedCardTooltips);
     state.justClickedCardId = null;
   }
+
+  // 卡片库横向折叠：折叠成窄条，右侧面板自适应铺满；桌面端动画期间固定卡片列表宽度，避免内容跟着挤压重排
+  var cardsAnimHandle = null;
+  var CARDS_COLLAPSE_KEY = "thinkFastCardsCollapsed";
+
+  function expandedCardListWidth(){
+    var cs = window.getComputedStyle(cardWallEl);
+    return layoutEl.clientWidth * 0.6 - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  }
+
+  function setCardsCollapsed(collapsed, animate){
+    var canAnimate = animate &&
+      window.matchMedia("(min-width: 981px)").matches &&
+      !appEl.classList.contains("practice-mode");
+    if (canAnimate){
+      var fixedWidth = collapsed ? cardWallListEl.getBoundingClientRect().width : expandedCardListWidth();
+      cardWallListEl.style.width = fixedWidth + "px";
+      layoutEl.classList.add("cards-anim");
+      window.clearTimeout(cardsAnimHandle);
+      cardsAnimHandle = window.setTimeout(function(){
+        layoutEl.classList.remove("cards-anim");
+        cardWallListEl.style.width = "";
+      }, 320);
+    }
+    layoutEl.classList.toggle("cards-collapsed", collapsed);
+    var label = collapsed ? "展开思维卡片库" : "收起思维卡片库";
+    cardsCollapseBtnEl.setAttribute("aria-expanded", collapsed ? "false" : "true");
+    cardsCollapseBtnEl.setAttribute("aria-label", label);
+    cardsCollapseBtnEl.title = label;
+    try { window.localStorage.setItem(CARDS_COLLAPSE_KEY, collapsed ? "1" : "0"); } catch (e) {}
+  }
+
+  cardsCollapseBtnEl.addEventListener("click", function(){
+    setCardsCollapsed(!layoutEl.classList.contains("cards-collapsed"), true);
+  });
+  try {
+    if (window.localStorage.getItem(CARDS_COLLAPSE_KEY) === "1") setCardsCollapsed(true, false);
+  } catch (e) {}
 
   function syncTruncatedCardTooltips(){
     Array.prototype.forEach.call(cardWallEl.querySelectorAll(".card"), function(cardEl){
