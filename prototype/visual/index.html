@@ -1522,16 +1522,11 @@
           </button>
           <ul id="expertSelectMenu" class="select-menu" role="listbox" tabindex="-1" hidden>
             <li role="option" class="select-option selected" aria-selected="true" data-value="custom">自定义思路</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="0" data-label="Steve Jobs">Steve Jobs<span class="option-logic">三个故事，层层追问，收成一句信念。</span></li>
-            <li role="option" class="select-option" aria-selected="false" data-value="1" data-label="Simon Sinek">Simon Sinek<span class="option-logic">抛出“为什么”，反例对正例，压成原则。</span></li>
-            <li role="option" class="select-option" aria-selected="false" data-value="2" data-label="Don Draper">Don Draper<span class="option-logic">重新定义“不是A是B”，借故事佐证，落在情感。</span></li>
-            <li role="option" class="select-option" aria-selected="false" data-value="3" data-label="Feynman">Feynman<span class="option-logic">追问到底，类比讲透，再自曝漏洞。</span></li>
-            <li role="option" class="select-option" aria-selected="false" data-value="4" data-label="Obama">Obama<span class="option-logic">一个人的故事，升到“我们”，重复三次。</span></li>
-            <li role="option" class="select-option" aria-selected="false" data-value="5" data-label="Seth Godin">Seth Godin<span class="option-logic">具体开场，反常识断言，收成短铁律。</span></li>
-            <li role="option" class="select-option" aria-selected="false" data-value="6" data-label="Naval Ravikant">Naval Ravikant<span class="option-logic">推翻常识，拆到底层，一句定论。</span></li>
-            <li role="option" class="select-option" aria-selected="false" data-value="7" data-label="Brené Brown">Brené Brown<span class="option-logic">先自曝糗事，研究撑腰，对仗句下定义。</span></li>
-            <li role="option" class="select-option" aria-selected="false" data-value="8" data-label="Chris Voss">Chris Voss<span class="option-logic">不升华，只走步骤，一步步探对方反应。</span></li>
-            <li role="option" class="select-option" aria-selected="false" data-value="9" data-label="Harari">Harari<span class="option-logic">拉大尺度落差，画面化，留一句警示。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="0" data-label="讲明白">讲明白<span class="option-logic">先说白，再打比方，最后自己拆穿。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="1" data-label="讲进心里">讲进心里<span class="option-logic">只讲事实，不讲道理，最后点一句意义。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="2" data-label="讲服人">讲服人<span class="option-logic">先说“为什么”，反例对正例，压成原则。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="3" data-label="讲醒人">讲醒人<span class="option-logic">先反着说，拆到底层，一句话定论。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="4" data-label="讲动人">讲动人<span class="option-logic">从一个人讲到“我们”，落到行动。</span></li>
           </ul>
         </div>
         <div id="emptyState" class="empty-state">先选择思维卡，再在这里整理思路</div>
@@ -2606,18 +2601,13 @@
     });
   });
 
-  // 十位专家的预设卡片顺序，见 reference/思维训练卡/思维训练卡_十位专家预设顺序.md
+  // 五种说话风格的预设卡片顺序，见 reference/思维训练卡/思维训练卡_五种说话风格展开模板.md
   var EXPERT_PRESETS = [
-    { name:"Steve Jobs", cardIds:["f5c1","f1c1","f5c2","f1c2","f5c3","f1c3","f6c1","f3c1"] },
-    { name:"Simon Sinek", cardIds:["f1c1","f5c1","f6c2","f5c2","f3c2","f1c3"] },
-    { name:"Don Draper", cardIds:["f6c2","f5c3","f6c3","f2c1","f1c3"] },
-    { name:"Feynman", cardIds:["f1c1","f1c2","f5c2","f3c3","f4c1","f5c1"] },
-    { name:"Obama", cardIds:["f5c1","f1c1","f5c2","f1c2","f5c3","f1c3","f2c1"] },
-    { name:"Seth Godin", cardIds:["f5c1","f6c2","f5c2","f3c2","f3c1"] },
-    { name:"Naval Ravikant", cardIds:["f6c2","f1c2","f3c1","f3c2","f1c3"] },
-    { name:"Brené Brown", cardIds:["f5c1","f2c1","f5c2","f6c2","f5c3"] },
-    { name:"Chris Voss", cardIds:["f4c1","f2c2","f4c2","f2c3","f4c3","f2c1"] },
-    { name:"Harari", cardIds:["f6c2","f5c2","f5c1","f6c3","f2c3"] }
+    { name:"讲明白", hint:["XX，说白了就是……","它就像……","比如上次……","不过这个比方在……时不成立","你今天就可以试试……"], cardIds:["f6c1","f6c2","f5c2","f3c3","f4c1"] },
+    { name:"讲进心里", hint:["那天，我在……","他当时说了一句……","后来我才明白，这是因为……","但更根本的是……","所以我相信……"], cardIds:["f5c1","f5c3","f1c1","f1c2","f3c1"] },
+    { name:"讲服人", hint:["为什么……？","归根到底是因为……","大多数人这么做，结果……","但有人反着来，结果……","所以，凡是……都应该……"], cardIds:["f1c1","f1c3","f5c1","f5c2","f3c2"] },
+    { name:"讲醒人", hint:["这不是……，这是……","为什么？因为……而这背后是……","比如……","如果还当成……，最后会……","说到底，就是……"], cardIds:["f6c1","f1c2","f5c2","f2c3","f3c1"] },
+    { name:"讲动人", hint:["有个人叫……她遇到的是……","这不只是她的事，是我们每个人的","还有一个人……","更深的是，我们……","所以，我们要……"], cardIds:["f5c1","f1c1","f5c2","f1c2","f2c1"] }
   ];
 
   var state = {
@@ -2836,8 +2826,9 @@
     value: "custom",
     fallbackLabel: "自定义思路",
     onChange: function(val){
-      if (val === "custom"){ clearSelected(); return; }
+      if (val === "custom"){ clearSelected(); fillStyleNotes(val); return; }
       applyExpertPreset(Number(val));
+      fillStyleNotes(val);
     }
   });
 
@@ -3436,6 +3427,18 @@
     renderCardWall();
     renderSelectedList();
     renderStartButton();
+  }
+
+  // 选风格时把开口提示填进「快速笔记」；只替换空白或未改动的模板，不覆盖用户自己写的内容
+  var styleNotesFill = "";
+  function fillStyleNotes(val){
+    var preset = val === "custom" ? null : EXPERT_PRESETS[Number(val)];
+    var current = quickNotesInputEl.value;
+    if (current !== "" && current !== styleNotesFill) return;
+    styleNotesFill = preset ? preset.hint.map(function(text, i){ return (i + 1) + ". " + text; }).join("\n") : "";
+    quickNotesInputEl.value = styleNotesFill;
+    resizeQuickNotesInput();
+    updateQuickNotesClearButton();
   }
 
   function setExpertValue(val){
