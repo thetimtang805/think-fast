@@ -2601,14 +2601,47 @@
     });
   });
 
-  // 五种说话风格的预设卡片顺序，见 reference/思维训练卡/思维训练卡_五种说话风格展开模板.md
-  var EXPERT_PRESETS = [
-    { name:"讲明白", hint:["XX，说白了就是……","它就像……","比如上次……","不过这个比方在……时不成立","你今天就可以试试……"], cardIds:["f6c1","f6c2","f5c2","f3c3","f4c1"] },
-    { name:"讲进心里", hint:["那天，我在……","他当时说了一句……","后来我才明白，这是因为……","但更根本的是……","所以我相信……"], cardIds:["f5c1","f5c3","f1c1","f1c2","f3c1"] },
-    { name:"讲服人", hint:["为什么……？","归根到底是因为……","大多数人这么做，结果……","但有人反着来，结果……","所以，凡是……都应该……"], cardIds:["f1c1","f1c3","f5c1","f5c2","f3c2"] },
-    { name:"讲醒人", hint:["这不是……，这是……","为什么？因为……而这背后是……","比如……","如果还当成……，最后会……","说到底，就是……"], cardIds:["f6c1","f1c2","f5c2","f2c3","f3c1"] },
-    { name:"讲动人", hint:["有个人叫……她遇到的是……","这不只是她的事，是我们每个人的","还有一个人……","更深的是，我们……","所以，我们要……"], cardIds:["f5c1","f1c1","f5c2","f1c2","f2c1"] }
+  // 预设卡片顺序：日常议题、生活概念用五种说话风格（reference/思维训练卡/思维训练卡_五种说话风格展开模板.md），
+  // UX 面试题用三个回答框架（docs/UX面试题-回答框架规则.md）。hint 为选中后填入「快速笔记」的开口提示。
+  var STYLE_PRESETS = [
+    { name:"讲明白",
+      logic:"先说白，再打比方，最后自己拆穿。",
+      hint:["XX，说白了就是……", "它就像……", "比如上次……", "不过这个比方在……时不成立", "你今天就可以试试……"],
+      cardIds:["f6c1", "f6c2", "f5c2", "f3c3", "f4c1"] },
+    { name:"讲进心里",
+      logic:"只讲事实，不讲道理，最后点一句意义。",
+      hint:["那天，我在……", "他当时说了一句……", "后来我才明白，这是因为……", "但更根本的是……", "所以我相信……"],
+      cardIds:["f5c1", "f5c3", "f1c1", "f1c2", "f3c1"] },
+    { name:"讲服人",
+      logic:"先说“为什么”，反例对正例，压成原则。",
+      hint:["为什么……？", "归根到底是因为……", "大多数人这么做，结果……", "但有人反着来，结果……", "所以，凡是……都应该……"],
+      cardIds:["f1c1", "f1c3", "f5c1", "f5c2", "f3c2"] },
+    { name:"讲醒人",
+      logic:"先反着说，拆到底层，一句话定论。",
+      hint:["这不是……，这是……", "为什么？因为……而这背后是……", "比如……", "如果还当成……，最后会……", "说到底，就是……"],
+      cardIds:["f6c1", "f1c2", "f5c2", "f2c3", "f3c1"] },
+    { name:"讲动人",
+      logic:"从一个人讲到“我们”，落到行动。",
+      hint:["有个人叫……她遇到的是……", "这不只是她的事，是我们每个人的", "还有一个人……", "更深的是，我们……", "所以，我们要……"],
+      cardIds:["f5c1", "f1c1", "f5c2", "f1c2", "f2c1"] }
   ];
+  var INTERVIEW_PRESETS = [
+    { name:"PREP",
+      logic:"Point 观点 → Reason 理由 → Example 案例 → Point 回扣",
+      hint:["我的看法是……", "原因有两点，第一……第二……", "比如在做……项目时，当时……我做了……结果……", "所以，我会……放到这个岗位上，意味着……"],
+      cardIds:["f3c1", "f1c1", "f5c2", "f2c1"] },
+    { name:"SPARK",
+      logic:"Stakes 钩子 → Pivot 岔路 → Act 行动 → Result 代价 → Key takeaway 所悟",
+      hint:["当时……最棘手的是……所以我意识到……", "我有两条路：一是……如果选它，可能……", "我选了……因为……", "我先……因为……", "当时我看到……有人说了一句……", "结果……但代价是……", "这让我意识到……以后我会……", "说到底，我坚守的是……"],
+      cardIds:["f5c1", "f2c3", "f1c1", "f4c1", "f5c3", "f2c1", "f3c2", "f1c3"] },
+    { name:"RANGE",
+      logic:"Reply 立场 → Angles 分几类 → Narrow 挑一类讲透 → Guide 升华 → Engage 邀请",
+      hint:["我的做法是……", "因为……", "我遇到过几类：一是……二是……三是……", "我重点讲第一类：当时……", "我先……因为……结果……", "不论哪一类，我坚守的都是……", "这个方法也有失效的情况，如果你感兴趣，我可以讲……"],
+      cardIds:["f3c1", "f1c1", "f5c1", "f5c2", "f4c1", "f1c3", "f3c3"] }
+  ];
+  function currentPresets(){
+    return state.topicMode === "interview" ? INTERVIEW_PRESETS : STYLE_PRESETS;
+  }
 
   var state = {
     lang: "zh",
@@ -2826,11 +2859,31 @@
     value: "custom",
     fallbackLabel: "自定义思路",
     onChange: function(val){
+      activeExpertValue = val;
       if (val === "custom"){ clearSelected(); fillStyleNotes(val); return; }
       applyExpertPreset(Number(val));
       fillStyleNotes(val);
     }
   });
+
+  // 下拉里的预设选项随话题类型切换：按当前预设集重写文案，多余的槽位隐藏
+  function renderExpertOptions(){
+    var presets = currentPresets();
+    expertSelectOptions.forEach(function(option){
+      var val = option.getAttribute("data-value");
+      if (val === "custom") return;
+      var preset = presets[Number(val)];
+      option.hidden = !preset;
+      if (!preset) return;
+      option.setAttribute("data-label", preset.name);
+      option.textContent = preset.name;
+      var sub = document.createElement("span");
+      sub.className = "option-logic";
+      sub.textContent = preset.logic;
+      option.appendChild(sub);
+    });
+  }
+  renderExpertOptions();
 
   function updateTopicSelectLabels(){
     langSelect.setValue(state.lang);
@@ -2847,7 +2900,13 @@
 
   function selectTopicMode(mode){
     if (state.topicMode === mode) return;
+    // 正在使用某个预设时，切换话题类型会换一套预设，先清掉旧预设的卡片和开口提示
+    if (activeExpertValue !== "custom"){
+      clearSelected();
+      fillStyleNotes("custom");
+    }
     state.topicMode = mode;
+    renderExpertOptions();
     state.topicIndex = pickRandomTopicIndex(null, TOPICS[state.topicMode][state.lang].length);
     updateTopicSelectLabels();
     renderTopicSettled();
@@ -3415,7 +3474,7 @@
   }
 
   function applyExpertPreset(presetIndex){
-    var preset = EXPERT_PRESETS[presetIndex];
+    var preset = currentPresets()[presetIndex];
     if (!preset) return;
     state.selected = [];
     state.counts = {};
@@ -3431,8 +3490,9 @@
 
   // 选风格时把开口提示填进「快速笔记」；只替换空白或未改动的模板，不覆盖用户自己写的内容
   var styleNotesFill = "";
+  var activeExpertValue = "custom";
   function fillStyleNotes(val){
-    var preset = val === "custom" ? null : EXPERT_PRESETS[Number(val)];
+    var preset = val === "custom" ? null : currentPresets()[Number(val)];
     var current = quickNotesInputEl.value;
     if (current !== "" && current !== styleNotesFill) return;
     styleNotesFill = preset ? preset.hint.map(function(text, i){ return (i + 1) + ". " + text; }).join("\n") : "";
@@ -3442,6 +3502,7 @@
   }
 
   function setExpertValue(val){
+    activeExpertValue = val;
     expertSelect.setValue(val);
   }
 
