@@ -735,6 +735,14 @@
     inset:-10px -8px;
   }
   .clear-link:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+  .option-logic{
+    display:block;
+    margin-top:2px;
+    font-size:var(--fs-xs);
+    line-height:18px;
+    color:var(--text-muted);
+    font-weight:400;
+  }
   .empty-state{
     border:1px dashed var(--text-disabled);
     border-radius:var(--radius);
@@ -1514,16 +1522,16 @@
           </button>
           <ul id="expertSelectMenu" class="select-menu" role="listbox" tabindex="-1" hidden>
             <li role="option" class="select-option selected" aria-selected="true" data-value="custom">自定义思路</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="0">Steve Jobs</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="1">Simon Sinek</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="2">Don Draper</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="3">Feynman</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="4">Obama</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="5">Seth Godin</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="6">Naval Ravikant</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="7">Brené Brown</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="8">Chris Voss</li>
-            <li role="option" class="select-option" aria-selected="false" data-value="9">Harari</li>
+            <li role="option" class="select-option" aria-selected="false" data-value="0" data-label="Steve Jobs">Steve Jobs<span class="option-logic">三个故事，层层追问，收成一句信念。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="1" data-label="Simon Sinek">Simon Sinek<span class="option-logic">抛出“为什么”，反例对正例，压成原则。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="2" data-label="Don Draper">Don Draper<span class="option-logic">重新定义“不是A是B”，借故事佐证，落在情感。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="3" data-label="Feynman">Feynman<span class="option-logic">追问到底，类比讲透，再自曝漏洞。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="4" data-label="Obama">Obama<span class="option-logic">一个人的故事，升到“我们”，重复三次。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="5" data-label="Seth Godin">Seth Godin<span class="option-logic">具体开场，反常识断言，收成短铁律。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="6" data-label="Naval Ravikant">Naval Ravikant<span class="option-logic">推翻常识，拆到底层，一句定论。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="7" data-label="Brené Brown">Brené Brown<span class="option-logic">先自曝糗事，研究撑腰，对仗句下定义。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="8" data-label="Chris Voss">Chris Voss<span class="option-logic">不升华，只走步骤，一步步探对方反应。</span></li>
+            <li role="option" class="select-option" aria-selected="false" data-value="9" data-label="Harari">Harari<span class="option-logic">拉大尺度落差，画面化，留一句警示。</span></li>
           </ul>
         </div>
         <div id="emptyState" class="empty-state">先选择思维卡，再在这里整理思路</div>
@@ -2757,7 +2765,7 @@
       var selectedOption = config.options.filter(function(option){
         return option.getAttribute("data-value") === val;
       })[0];
-      config.labelEl.textContent = selectedOption ? selectedOption.textContent : config.fallbackLabel;
+      config.labelEl.textContent = selectedOption ? (selectedOption.getAttribute("data-label") || selectedOption.textContent) : config.fallbackLabel;
       config.options.forEach(function(option){
         var isSelected = option === selectedOption;
         option.classList.toggle("selected", isSelected);
