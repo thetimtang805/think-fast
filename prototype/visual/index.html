@@ -795,6 +795,17 @@
     inset:-10px -8px;
   }
   .clear-link:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
+  .option-badge{
+    margin-left:8px;
+    padding:1px 6px;
+    border-radius:999px;
+    background:var(--border-soft);
+    color:var(--text-muted);
+    font-size:var(--fs-2xs);
+    line-height:16px;
+    font-weight:400;
+    vertical-align:1px;
+  }
   .option-logic{
     display:block;
     margin-top:2px;
@@ -1654,6 +1665,7 @@
   <button id="toastUndoBtn" class="toast-undo" type="button">撤销</button>
 </div>
 
+<script src="interview-guides.js"></script>
 <script>
 (function(){
   "use strict";
@@ -2712,6 +2724,13 @@
     return state.topicMode === "interview" ? INTERVIEW_PRESETS : STYLE_PRESETS;
   }
 
+  // 面试题的定制回答思路（interview-guides.js，按题库题号 1–50 索引；中英文题库顺序一致）
+  var INTERVIEW_GUIDES = window.INTERVIEW_GUIDES || {};
+  function currentInterviewGuide(){
+    if (state.topicMode !== "interview" || state.topicIndex === null) return null;
+    return INTERVIEW_GUIDES[state.topicIndex + 1] || null;
+  }
+
   var state = {
     lang: "zh",
     topicMode: "daily",
@@ -2948,6 +2967,13 @@
       if (!preset) return;
       option.setAttribute("data-label", preset.name);
       option.textContent = preset.name;
+      var guide = currentInterviewGuide();
+      if (guide && guide.fw === preset.name){
+        var badge = document.createElement("span");
+        badge.className = "option-badge";
+        badge.textContent = "推荐";
+        option.appendChild(badge);
+      }
       var sub = document.createElement("span");
       sub.className = "option-logic";
       sub.textContent = preset.logic;
@@ -3078,6 +3104,13 @@
     void topicReelEl.offsetHeight; // 强制重排，让 settled 的最终态样式立即生效
     topicReelEl.classList.add("settled");
     observeSelectedTopicVisibility();
+    syncGuideUI();
+  }
+
+  // 话题变化后：给当前题的推荐框架打「推荐」标；已选框架且笔记没改过时，换成这道题的定制提示
+  function syncGuideUI(){
+    renderExpertOptions();
+    if (activeExpertValue !== "custom") fillStyleNotes(activeExpertValue);
   }
 
   function renderStickyTopic(){
@@ -3604,7 +3637,9 @@
     var preset = val === "custom" ? null : currentPresets()[Number(val)];
     var current = quickNotesInputEl.value;
     if (current !== "" && current !== styleNotesFill) return;
-    styleNotesFill = preset ? preset.hint.map(function(text, i){ return (i + 1) + ". " + text; }).join("\n") : "";
+    var guide = currentInterviewGuide();
+    var lines = !preset ? [] : (guide && guide.fw === preset.name ? guide.say : preset.hint);
+    styleNotesFill = lines.map(function(text, i){ return (i + 1) + ". " + text; }).join("\n");
     quickNotesInputEl.value = styleNotesFill;
     resizeQuickNotesInput();
     updateQuickNotesClearButton();
