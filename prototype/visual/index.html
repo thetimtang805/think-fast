@@ -1176,7 +1176,8 @@
     opacity:1;
     visibility:visible;
   }
-  .timer-running-view .countdown-order{ margin-bottom:28px; }
+  /* 正式计时视图是 flex 居中布局，列表宽度会缩成内容宽；固定成撑满（受 max-width 限制），与预备状态一致 */
+  .timer-running-view .countdown-order{ width:100%; margin-bottom:28px; }
   .timer-running-view .countdown-actions{ gap:10px; }
   .timer-running-view .countdown-result-hint{ margin-top:14px; }
   @keyframes timerNumOut{
