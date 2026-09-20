@@ -1060,10 +1060,6 @@
     margin-bottom:24px;
   }
   /* 进入练习页后的 3、2、1 预备读数，读完自动开始正式计时 */
-  .preroll-number{
-    margin:12px 0 0;
-    text-align:center;
-  }
   @keyframes prerollTick{
     from{ opacity:0; transform:scale(1.25); }
     to{ opacity:1; transform:scale(1); }
@@ -1630,8 +1626,13 @@
       <div class="panel countdown-stage" id="countdownPanel" hidden>
         <div class="timer-stage-content">
           <div class="timer-setup-view" id="timerSetupView">
+            <!-- 与正式倒计时同一套栅格，3、2、1 和 01:30 落在同一位置 -->
+            <div class="timer-running-controls">
+              <span aria-hidden="true"></span>
+              <div class="countdown-number preroll-number" id="prerollNumber" role="timer" aria-live="assertive" aria-label="即将开始">3</div>
+              <span aria-hidden="true"></span>
+            </div>
             <div class="countdown-order" id="timerSetupOrder"></div>
-            <div class="countdown-number preroll-number" id="prerollNumber" role="timer" aria-live="assertive" aria-label="即将开始">3</div>
           </div>
           <div class="timer-running-view" id="timerRunningView" hidden>
             <p class="countdown-complete-message" id="countdownCompleteMessage" hidden aria-live="polite"></p>
