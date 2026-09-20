@@ -1059,13 +1059,16 @@
     gap:10px;
     margin-bottom:24px;
   }
-  .timer-start-btn{
-    display:flex;
-    width:100%;
-    max-width:420px;
-    margin:12px auto 0;
-    justify-content:center;
+  /* 进入练习页后的 3、2、1 预备读数，读完自动开始正式计时 */
+  .preroll-number{
+    margin:12px 0 0;
+    text-align:center;
   }
+  @keyframes prerollTick{
+    from{ opacity:0; transform:scale(1.25); }
+    to{ opacity:1; transform:scale(1); }
+  }
+  .preroll-number.tick{ animation:prerollTick .4s cubic-bezier(.22,1,.36,1); }
   /* 深色倒计时舞台中的主操作采用反相主按钮，保持明确的视觉优先级。 */
   .countdown-stage .btn-primary{
     background:var(--surface);
@@ -1319,7 +1322,8 @@
       transition-duration:0.001ms !important;
     }
     .timer-setup-view.is-leaving,
-    .timer-running-view.is-entering{ animation:none; }
+    .timer-running-view.is-entering,
+    .preroll-number.tick{ animation:none; }
   }
 
   /* 自然专注台：方案二的颜色、表面与分组识别语言。 */
@@ -1627,7 +1631,7 @@
         <div class="timer-stage-content">
           <div class="timer-setup-view" id="timerSetupView">
             <div class="countdown-order" id="timerSetupOrder"></div>
-            <button class="btn btn-primary timer-start-btn" id="timerStartBtn" type="button">开始倒计时</button>
+            <div class="countdown-number preroll-number" id="prerollNumber" role="timer" aria-live="assertive" aria-label="即将开始">3</div>
           </div>
           <div class="timer-running-view" id="timerRunningView" hidden>
             <p class="countdown-complete-message" id="countdownCompleteMessage" hidden aria-live="polite"></p>
@@ -2811,7 +2815,7 @@
   var countdownNumberEl = document.getElementById("countdownNumber");
   var countdownCompleteMessageEl = document.getElementById("countdownCompleteMessage");
   var countdownOrderEl = document.getElementById("countdownOrder");
-  var timerStartBtn = document.getElementById("timerStartBtn");
+  var prerollNumberEl = document.getElementById("prerollNumber");
   var timerRunningControlsEl = document.getElementById("timerRunningControls");
   var timerCloseBtn = document.getElementById("timerCloseBtn");
   var timerRunningAddBtn = document.getElementById("timerRunningAddBtn");
@@ -3802,18 +3806,50 @@
     countdownResultHintEl.classList.remove("complete-enter");
     countdownCompleteMessageEl.hidden = true;
     countdownCompleteMessageEl.textContent = "";
-    timerStartBtn.disabled = false;
+    clearPreroll();
     timerSetupViewEl.hidden = false;
     timerSetupViewEl.classList.remove("is-leaving");
     timerRunningViewEl.hidden = true;
     timerRunningViewEl.classList.remove("is-entering");
   }
 
+  // 进入练习页后先读 3、2、1，读完自动开始正式计时（读秒期间 status 仍是 idle）
+  var PREROLL_SECONDS = 3;
+  var prerollHandle = null;
+
+  function clearPreroll(){
+    if (prerollHandle){
+      window.clearInterval(prerollHandle);
+      prerollHandle = null;
+    }
+  }
+
+  function showPrerollNumber(n){
+    prerollNumberEl.textContent = String(n);
+    prerollNumberEl.classList.remove("tick");
+    void prerollNumberEl.offsetWidth;
+    prerollNumberEl.classList.add("tick");
+  }
+
+  function startPreroll(){
+    clearPreroll();
+    var n = PREROLL_SECONDS;
+    showPrerollNumber(n);
+    prerollHandle = window.setInterval(function(){
+      n -= 1;
+      if (n <= 0){
+        clearPreroll();
+        beginCountdownRun();
+        return;
+      }
+      showPrerollNumber(n);
+    }, 1000);
+  }
+
   function beginCountdownRun(){
     if (state.timer.status !== "idle") return;
     state.timer.status = "running";
     state.timer.remaining = state.duration;
-    timerStartBtn.disabled = true;
     timerRunningControlsEl.hidden = false;
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
     timerRunningViewEl.hidden = false;
@@ -3850,7 +3886,6 @@
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     countdownPanelEl.classList.add("is-complete");
     countdownNumberEl.textContent = "00:00";
-    timerStartBtn.disabled = true;
     timerRunningControlsEl.hidden = true;
     countdownCompleteMessageEl.textContent = COUNTDOWN_COMPLETE_MESSAGES[Math.floor(Math.random() * COUNTDOWN_COMPLETE_MESSAGES.length)];
     countdownCompleteMessageEl.hidden = false;
@@ -3875,6 +3910,7 @@
     window.requestAnimationFrame(resizeTranscriptInput);
     if (reduceMotion){
       state.isTransitioning = false;
+      startPreroll();
       return;
     }
     transcriptPanelEl.classList.add("practice-target-in");
@@ -3883,6 +3919,7 @@
       transcriptPanelEl.classList.remove("practice-target-in");
       countdownPanelEl.classList.remove("practice-target-in");
       state.isTransitioning = false;
+      startPreroll();
     }, 260);
   }
 
@@ -3907,6 +3944,7 @@
   function restartPractice(){
     resetCountdownCompleteAudio();
     resetCountdown();
+    startPreroll();
   }
 
   function endCountdown(){
@@ -3993,6 +4031,7 @@
   }
 
   function stopPractice(backToSelection){
+    clearPreroll();
     if (state.timer.handle){
       window.clearInterval(state.timer.handle);
       state.timer.handle = null;
@@ -4015,7 +4054,6 @@
     state.timer.remaining += 30;
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
   });
-  timerStartBtn.addEventListener("click", beginCountdownRun);
   timerCloseBtn.addEventListener("click", endCountdown);
   restartBtn.addEventListener("click", restartPractice);
   practiceBackBtn.addEventListener("click", function(){ stopPractice(true); });
