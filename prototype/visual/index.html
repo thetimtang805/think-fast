@@ -803,54 +803,6 @@
     inset:-10px -8px;
   }
   .clear-link:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
-  /* 参考逐字稿：面试题模式下，抽到题后显示这道题的完整逐字稿，[方括号] 高亮为待填空 */
-  .script-details{
-    border:var(--border-hairline) solid var(--border-soft);
-    border-radius:var(--radius);
-    padding:0 12px;
-  }
-  .script-details > summary{
-    cursor:pointer;
-    padding:10px 0;
-    font-size:var(--fs-sm);
-    line-height:22px;
-    font-weight:600;
-    color:var(--text);
-  }
-  .script-details[open] > summary{ border-bottom:var(--border-hairline) solid var(--border-soft); }
-  .script-meta{
-    padding:8px 0 4px;
-    font-size:var(--fs-2xs);
-    line-height:18px;
-    color:var(--text-muted);
-  }
-  .script-body{
-    max-height:min(46vh, 420px);
-    overflow-y:auto;
-    overscroll-behavior:contain;
-    padding-right:4px;
-  }
-  .script-label{
-    margin-top:10px;
-    font-size:var(--fs-2xs);
-    line-height:18px;
-    font-weight:600;
-    color:var(--accent);
-  }
-  .script-p{
-    margin:2px 0 0;
-    font-size:var(--fs-sm);
-    line-height:1.75;
-    color:var(--text);
-    text-wrap:pretty;
-  }
-  .script-slot{
-    padding:0 3px;
-    border-radius:4px;
-    background:var(--border-soft);
-    color:var(--accent);
-  }
-  .script-copy{ display:block; margin:8px 0 10px; }
   .option-badge{
     margin-left:8px;
     padding:1px 6px;
@@ -985,7 +937,7 @@
     display:block;
     width:100%;
     min-height:96px;
-    max-height:320px;
+    max-height:440px;
     padding:10px 12px;
     border:var(--border-hairline) solid var(--border);
     border-radius:var(--radius);
@@ -1675,12 +1627,6 @@
           </div>
           <textarea id="quickNotesInput" class="quick-notes-input" placeholder="记下你的观点、例子或想说的一句话…" aria-label="快速笔记"></textarea>
         </div>
-        <details class="script-details" id="scriptDetails" hidden>
-          <summary>参考逐字稿</summary>
-          <div class="script-meta" id="scriptMeta"></div>
-          <div class="script-body" id="scriptBody"></div>
-          <button type="button" class="clear-link script-copy" id="scriptCopyBtn">复制逐字稿</button>
-        </details>
         <button id="startBtn" class="btn btn-primary" style="width:100%;" type="button" disabled>开始练习</button>
       </div>
 
@@ -2803,6 +2749,8 @@
 
   // 面试题的定制回答思路（interview-guides.js，按题库题号 1–50 索引；中英文题库顺序一致）
   var INTERVIEW_GUIDES = window.INTERVIEW_GUIDES || {};
+  // 每题的中英双语完整逐字稿（interview-scripts.js）：选中推荐框架时整篇填进「快速笔记」，[方括号] 是待换成自己内容的提示词
+  var INTERVIEW_SCRIPTS = window.INTERVIEW_SCRIPTS || {};
   function currentInterviewGuide(){
     if (state.topicMode !== "interview" || state.topicIndex === null) return null;
     return INTERVIEW_GUIDES[state.topicIndex + 1] || null;
@@ -3184,55 +3132,8 @@
     syncGuideUI();
   }
 
-  // 参考逐字稿：显示当前面试题的完整逐字稿（随界面语言切换中英文），[方括号] 高亮为待填空
-  var INTERVIEW_SCRIPTS = window.INTERVIEW_SCRIPTS || {};
-  var SCRIPT_LABELS = {
-    zh:{ PREP:["P 观点","R 理由","E 案例","P 回扣"], SPARK:["S 钩子","P 岔路","A 行动","R 代价","K 所悟"], RANGE:["R 立场","A 分几类","N 挑一类讲透","G 升华","E 邀请"] },
-    en:{ PREP:["P · Point","R · Reason","E · Example","P · Point again"], SPARK:["S · Stakes","P · Pivot","A · Act","R · Result","K · Key takeaway"], RANGE:["R · Reply","A · Angles","N · Narrow","G · Guide","E · Engage"] }
-  };
-  var scriptDetailsEl = document.getElementById("scriptDetails");
-  var scriptMetaEl = document.getElementById("scriptMeta");
-  var scriptBodyEl = document.getElementById("scriptBody");
-  var scriptCopyBtn = document.getElementById("scriptCopyBtn");
-  var currentScriptText = "";
-
-  function escapeHtml(text){
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  }
-
-  function renderScript(){
-    var script = currentInterviewGuide() ? INTERVIEW_SCRIPTS[state.topicIndex + 1] : null;
-    if (!script){
-      scriptDetailsEl.hidden = true;
-      return;
-    }
-    var lang = state.lang === "en" ? "en" : "zh";
-    var labels = SCRIPT_LABELS[lang][script.fw];
-    var paragraphs = script[lang];
-    scriptMetaEl.textContent = lang === "en"
-      ? "Recommended: " + script.fw + " · about " + script.seconds + " sec · fill in the [brackets]"
-      : "推荐框架 " + script.fw + " · 约 " + script.seconds + " 秒 · 把 [方括号] 换成你自己的内容";
-    scriptBodyEl.innerHTML = paragraphs.map(function(text, i){
-      return '<div class="script-step"><div class="script-label">' + labels[i] + '</div><p class="script-p">' +
-        escapeHtml(text).replace(/\[([^\]]*)\]/g, '<mark class="script-slot">[$1]</mark>') + '</p></div>';
-    }).join("");
-    currentScriptText = paragraphs.map(function(text, i){ return labels[i] + "\n" + text; }).join("\n\n");
-    scriptDetailsEl.hidden = false;
-  }
-
-  scriptCopyBtn.addEventListener("click", function(){
-    copyText(currentScriptText).then(function(){
-      scriptCopyBtn.textContent = "已复制";
-    }).catch(function(){
-      scriptCopyBtn.textContent = "复制失败";
-    }).then(function(){
-      window.setTimeout(function(){ scriptCopyBtn.textContent = "复制逐字稿"; }, 1800);
-    });
-  });
-
   // 话题变化后：给当前题的推荐框架打「推荐」标；已选框架且笔记没改过时，换成这道题的定制提示
   function syncGuideUI(){
-    renderScript();
     renderExpertOptions();
     if (activeExpertValue !== "custom") fillStyleNotes(activeExpertValue);
   }
@@ -3764,14 +3665,22 @@
     var guide = currentInterviewGuide();
     var en = state.lang === "en";
     var lines = !preset ? [] : (en && preset.hintEn ? preset.hintEn : preset.hint);
+    var sep = "\n";
     if (preset && guide && guide.fw === preset.name){
-      var say = en && guide.sayEn ? guide.sayEn : guide.say;
-      var sense = en && guide.senseEn ? guide.senseEn : guide.sense;
-      lines = say.slice();
-      // 五感加成：并入第 3 步（案例 / 行动 / 挑一类讲透）的同一行；界面切到英文时用英文版
-      if (sense && lines.length > 2) lines[2] += (/[。！？…）」.!?]$/.test(lines[2]) ? " " : (en ? ". " : "。")) + sense;
+      var script = INTERVIEW_SCRIPTS[state.topicIndex + 1];
+      if (script && script[en ? "en" : "zh"]){
+        // 推荐框架：整篇逐字稿，每步一段，段间空一行，方便直接在此基础上改
+        lines = script[en ? "en" : "zh"];
+        sep = "\n\n";
+      } else {
+        var say = en && guide.sayEn ? guide.sayEn : guide.say;
+        var sense = en && guide.senseEn ? guide.senseEn : guide.sense;
+        lines = say.slice();
+        // 五感加成：并入第 3 步（案例 / 行动 / 挑一类讲透）的同一行；界面切到英文时用英文版
+        if (sense && lines.length > 2) lines[2] += (/[。！？…）」.!?]$/.test(lines[2]) ? " " : (en ? ". " : "。")) + sense;
+      }
     }
-    styleNotesFill = lines.map(function(text, i){ return (i + 1) + ". " + text; }).join("\n");
+    styleNotesFill = lines.map(function(text, i){ return (i + 1) + ". " + text; }).join(sep);
     quickNotesInputEl.value = styleNotesFill;
     resizeQuickNotesInput();
     updateQuickNotesClearButton();
