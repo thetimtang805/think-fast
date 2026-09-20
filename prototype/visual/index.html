@@ -1062,13 +1062,11 @@
     margin:0 auto 32px;
     text-align:left;
   }
-  .timer-setup-view .countdown-order{
-    gap:10px;
-    margin-bottom:24px;
-  }
+  /* 预备读数与正式计时下方的步骤列表：间距、边距一致，切换时不能位移 */
+  .timer-setup-view .countdown-order{ margin-bottom:28px; }
   /* 进入练习页后的 3、2、1 预备读数，读完自动开始正式计时 */
   @keyframes prerollTick{
-    from{ opacity:0; transform:scale(1.25); }
+    from{ opacity:0; transform:scale(1.1); }
     to{ opacity:1; transform:scale(1); }
   }
   .preroll-number.tick{ animation:prerollTick .4s cubic-bezier(.22,1,.36,1); }
@@ -1105,11 +1103,13 @@
   .timer-running-view{
     grid-area:1 / 1;
   }
-  .timer-setup-view.is-leaving{
-    animation:timerSetupOut 220ms cubic-bezier(.4,0,1,1) forwards;
+  /* 预备 → 正式：步骤列表原地不动，只有顶部的数字做淡入淡出，没有位移 */
+  .timer-setup-view.is-leaving .timer-running-controls{
+    animation:timerNumOut 200ms ease-out forwards;
   }
-  .timer-running-view.is-entering{
-    animation:timerRunIn 360ms cubic-bezier(.22,1,.36,1) both;
+  .timer-setup-view.is-leaving .countdown-order{ visibility:hidden; }
+  .timer-running-view.is-entering .timer-running-controls{
+    animation:timerNumIn 240ms ease-out both;
   }
   .timer-running-view{
     display:flex;
@@ -1179,12 +1179,11 @@
   .timer-running-view .countdown-order{ margin-bottom:28px; }
   .timer-running-view .countdown-actions{ gap:10px; }
   .timer-running-view .countdown-result-hint{ margin-top:14px; }
-  @keyframes timerSetupOut{
-    to{ opacity:0; transform:translateY(-10px) scale(.985); }
+  @keyframes timerNumOut{
+    to{ opacity:0; }
   }
-  @keyframes timerRunIn{
-    from{ opacity:0; transform:translateY(14px) scale(.985); }
-    to{ opacity:1; transform:translateY(0) scale(1); }
+  @keyframes timerNumIn{
+    from{ opacity:0; }
   }
   .countdown-stage.is-complete{
     padding:24px;
@@ -1324,8 +1323,8 @@
       animation-iteration-count:1 !important;
       transition-duration:0.001ms !important;
     }
-    .timer-setup-view.is-leaving,
-    .timer-running-view.is-entering,
+    .timer-setup-view.is-leaving .timer-running-controls,
+    .timer-running-view.is-entering .timer-running-controls,
     .preroll-number.tick{ animation:none; }
   }
 
@@ -3861,11 +3860,10 @@
     state.timer.remaining = state.duration;
     timerRunningControlsEl.hidden = false;
     countdownNumberEl.textContent = formatTime(state.timer.remaining);
+    // 先加过渡 class 再显示正式计时视图，避免它先以完整不透明度闪一帧
+    timerSetupViewEl.classList.add("is-leaving");
+    timerRunningViewEl.classList.add("is-entering");
     timerRunningViewEl.hidden = false;
-    window.requestAnimationFrame(function(){
-      timerSetupViewEl.classList.add("is-leaving");
-      timerRunningViewEl.classList.add("is-entering");
-    });
     window.setTimeout(function(){
       timerSetupViewEl.hidden = true;
       timerSetupViewEl.classList.remove("is-leaving");
