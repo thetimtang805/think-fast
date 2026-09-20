@@ -3638,7 +3638,12 @@
     var current = quickNotesInputEl.value;
     if (current !== "" && current !== styleNotesFill) return;
     var guide = currentInterviewGuide();
-    var lines = !preset ? [] : (guide && guide.fw === preset.name ? guide.say : preset.hint);
+    var lines = !preset ? [] : preset.hint;
+    if (preset && guide && guide.fw === preset.name){
+      lines = guide.say.slice();
+      // 五感加成：并入第 3 步（案例 / 行动 / 挑一类讲透）的同一行
+      if (guide.sense && lines.length > 2) lines[2] += (/[。！？…）」]$/.test(lines[2]) ? " " : "。") + guide.sense;
+    }
     styleNotesFill = lines.map(function(text, i){ return (i + 1) + ". " + text; }).join("\n");
     quickNotesInputEl.value = styleNotesFill;
     resizeQuickNotesInput();
