@@ -314,8 +314,9 @@
     width:20px;
     height:20px;
     background:currentColor;
-    -webkit-mask:url("assets/icons/arrow-left.svg") center / contain no-repeat;
-    mask:url("assets/icons/arrow-left.svg") center / contain no-repeat;
+    /* 内联 data URI：file:// 下 mask 引用外部 svg 会被跨域拦截，图标显示为空白 */
+    -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M15 19.92 8.48 13.4a1.98 1.98 0 0 1 0-2.8L15 4.08' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
+    mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Cpath d='M15 19.92 8.48 13.4a1.98 1.98 0 0 1 0-2.8L15 4.08' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / contain no-repeat;
   }
 
   .layout{
