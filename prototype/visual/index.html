@@ -2688,36 +2688,44 @@
     { name:"讲明白",
       logic:"先说白，再打比方，最后自己拆穿。",
       hint:["XX，说白了就是……", "它就像……", "比如上次……", "不过这个比方在……时不成立", "你今天就可以试试……"],
+      hintEn:["In plain words, … is basically …", "It's like …", "For example, last time …", "But this analogy breaks down when …", "Try this today: …"],
       cardIds:["f6c1", "f6c2", "f5c2", "f3c3", "f4c1"] },
     { name:"讲进心里",
       logic:"只讲事实，不讲道理，最后点一句意义。",
       hint:["那天，我在……", "他当时说了一句……", "后来我才明白，这是因为……", "但更根本的是……", "所以我相信……"],
+      hintEn:["That day, I was …", "He said one thing that stuck with me: …", "Later I realized it mattered because …", "But the deeper reason is …", "So I believe …"],
       cardIds:["f5c1", "f5c3", "f1c1", "f1c2", "f3c1"] },
     { name:"讲服人",
       logic:"先说“为什么”，反例对正例，压成原则。",
       hint:["为什么……？", "归根到底是因为……", "大多数人这么做，结果……", "但有人反着来，结果……", "所以，凡是……都应该……"],
+      hintEn:["Why …?", "At the root, it's because …", "Most people do it this way, and the result is …", "But some do the opposite, and the result is …", "So whenever …, you should …"],
       cardIds:["f1c1", "f1c3", "f5c1", "f5c2", "f3c2"] },
     { name:"讲醒人",
       logic:"先反着说，拆到底层，一句话定论。",
       hint:["这不是……，这是……", "为什么？因为……而这背后是……", "比如……", "如果还当成……，最后会……", "说到底，就是……"],
+      hintEn:["This isn't …, it's …", "Why? Because … and underneath that …", "For example, …", "If we keep treating it as …, in the end …", "In the end, it comes down to …"],
       cardIds:["f6c1", "f1c2", "f5c2", "f2c3", "f3c1"] },
     { name:"讲动人",
       logic:"从一个人讲到“我们”，落到行动。",
       hint:["有个人叫……她遇到的是……", "这不只是她的事，是我们每个人的", "还有一个人……", "更深的是，我们……", "所以，我们要……"],
+      hintEn:["There's a person named … who faced …", "It's not just their story, it's all of ours.", "There's another person …", "Deeper still, we …", "So, we need to …"],
       cardIds:["f5c1", "f1c1", "f5c2", "f1c2", "f2c1"] }
   ];
   var INTERVIEW_PRESETS = [
     { name:"PREP",
       logic:"Point 观点 → Reason 理由 → Example 案例 → Point 回扣",
       hint:["我的看法是……", "原因有两点，第一……第二……", "比如在做……项目时，当时……我做了……结果……", "所以，我会……放到这个岗位上，意味着……"],
+      hintEn:["My view is …", "There are two reasons: first …, second …", "For example, on a … project, I … and the result was …", "So I would …, and in this role that means …"],
       cardIds:["f3c1", "f1c1", "f5c2", "f2c1"] },
     { name:"SPARK",
       logic:"Stakes 钩子 → Pivot 岔路 → Act 行动 → Result 代价 → Key takeaway 所悟",
       hint:["当时……最棘手的是……所以我意识到……", "我有两条路：一是……二是……我选了……因为……", "我先……因为……当时我看到……", "结果……但代价是……", "这让我意识到……以后我会……说到底，我坚守的是……"],
+      hintEn:["At the time, the trickiest part was …, so I realized I had to …", "I had two paths: one was …, the other was … I chose … because …", "I started by …, because … and I noticed …", "The result was …, but the cost was …", "It taught me … and from now on I …"],
       cardIds:["f5c1", "f1c1", "f4c1", "f2c1", "f3c2"] },
     { name:"RANGE",
       logic:"Reply 立场 → Angles 分几类 → Narrow 挑一类讲透 → Guide 升华 → Engage 邀请",
       hint:["我的做法是……因为……", "我遇到过几类：一是……二是……三是……", "我重点讲第一类：当时……我先……因为……结果……", "不论哪一类，我坚守的都是……", "这个方法也有失效的情况，如果你感兴趣，我可以讲……"],
+      hintEn:["My approach is …, because …", "I've seen a few types: one …, two …, three …", "Let me go deeper on the first one: back then … I … because … and the result was …", "Whichever type it is, what I hold onto is …", "This approach can fail when …; if you're interested, I can walk you through …"],
       cardIds:["f3c1", "f5c1", "f5c2", "f1c3", "f3c3"] }
   ];
   function currentPresets(){
@@ -3638,11 +3646,14 @@
     var current = quickNotesInputEl.value;
     if (current !== "" && current !== styleNotesFill) return;
     var guide = currentInterviewGuide();
-    var lines = !preset ? [] : preset.hint;
+    var en = state.lang === "en";
+    var lines = !preset ? [] : (en && preset.hintEn ? preset.hintEn : preset.hint);
     if (preset && guide && guide.fw === preset.name){
-      lines = guide.say.slice();
-      // 五感加成：并入第 3 步（案例 / 行动 / 挑一类讲透）的同一行
-      if (guide.sense && lines.length > 2) lines[2] += (/[。！？…）」]$/.test(lines[2]) ? " " : "。") + guide.sense;
+      var say = en && guide.sayEn ? guide.sayEn : guide.say;
+      var sense = en && guide.senseEn ? guide.senseEn : guide.sense;
+      lines = say.slice();
+      // 五感加成：并入第 3 步（案例 / 行动 / 挑一类讲透）的同一行；界面切到英文时用英文版
+      if (sense && lines.length > 2) lines[2] += (/[。！？…）」.!?]$/.test(lines[2]) ? " " : (en ? ". " : "。")) + sense;
     }
     styleNotesFill = lines.map(function(text, i){ return (i + 1) + ". " + text; }).join("\n");
     quickNotesInputEl.value = styleNotesFill;

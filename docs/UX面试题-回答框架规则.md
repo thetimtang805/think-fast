@@ -373,7 +373,7 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 
 ## 10. 题库 50 题的定制回答思路
 
-每道题从 PREP、SPARK、RANGE 里选一个最合适的框架，按该框架的步骤给出这道题的定制思路：**思路**是这一步该怎么想，**开口句式**是可以直接开口的句子（用 …… 留空，内容要换成你自己的真实经历）。其中每题第 3 步（PREP 的案例、SPARK 的行动、RANGE 的挑一类讲透）的开口句式后面，并入了一句**五感加成**：一个感官锚点加一个情绪，让故事更容易被记住。网站里抽到面试题时，推荐框架会打上「推荐」标，选中后快速笔记会预填这道题的开口句式（含五感加成，在同一行）。
+每道题从 PREP、SPARK、RANGE 里选一个最合适的框架，按该框架的步骤给出这道题的定制思路：**思路**是这一步该怎么想，**开口句式**是可以直接开口的句子（用 …… 留空，内容要换成你自己的真实经历）。其中每题第 3 步（PREP 的案例、SPARK 的行动、RANGE 的挑一类讲透）的开口句式后面，并入了一句**五感加成**：一个感官锚点加一个情绪，让故事更容易被记住。网站里抽到面试题时，推荐框架会打上「推荐」标，选中后快速笔记会预填这道题的开口句式（含五感加成，在同一行）；界面切到英文时，预填的是每题下方的 English prompts。
 
 共 50 题：PREP 28 题、SPARK 8 题、RANGE 14 题。
 
@@ -452,6 +452,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 案例讲成项目介绍，没落在你的决定上
 - 塞进第二个案例，定位就散了
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I'm a designer who specializes in …, and I'm best at turning … into …, mainly through …
+2. That shows up in two ways: I've spent years working on …, and I've also …
+3. The project that represents me best is …, where I owned …, made a key call on …, with the result … The meeting room was quiet with the projector on …, my palms were a little sweaty, but I really wanted to try …
+4. That's why I'm looking for …, and this role fits because …
+
 #### 第 2 题　为什么选择 UX / 产品设计，而不是纯视觉设计或产品经理？
 
 **推荐框架：** PREP（题目问选择的原因，是动机和判断）　**建议时长：** 90 秒
@@ -469,6 +476,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 说视觉没前途或PM太忙，贬低别的角色
 - 只说UX热门、待遇好
 - 只谈兴趣，没有依据和事例
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I chose UX because what I enjoy most is solving … problems through design, more than …
+2. Two reasons: first, the way I work is …; second, my position between … and … suits me.
+3. On a … project, I realized that the real value wasn't in … but in …, and that confirmed it for me. I still remember staring at the … screen when a small detail changed, and I felt a spark of excitement …
+4. So I want to go deeper in …, which is also why I'm applying for this role.
 
 #### 第 3 题　你为什么想离开现在（或上一份）工作？
 
@@ -489,6 +503,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 与第4题的说法前后矛盾
 - 被动离职要一句话说清，随即转向前
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I'm looking for a place where I can keep growing in …
+2. First, … ; second, …, which lines up with this role.
+3. Over the past year I …, reached …, and next I want to …, but the scope here is limited. One late night only the lights at … were on, I stared at …, felt a bit lost, and wondered what's next …
+4. So what I value most now is …, and that's why this role caught my attention.
+
 #### 第 4 题　为什么选择我们公司、这个产品和这个岗位？
 
 **推荐框架：** PREP（题目问你为何选这家，是带依据的观点题）　**建议时长：** 90 秒
@@ -507,6 +528,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只夸不判断
 - 没有真正用过这个产品
 - 几家公司答案一模一样
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I want to … and you're working on …, so this role sits right where the two meet.
+2. First, on the product side, I noticed …; second, my … matches what the job description asks for.
+3. When I used your …, I noticed …, which reminds me of what I handled in … The first time I opened your …, my thumb reached … and I lit up, feeling a familiar warmth …
+4. So I think I can contribute quickly on …, and I'd like to grow in …
 
 #### 第 5 题　你的职业规划是什么？未来 3 年希望成长为怎样的设计师？
 
@@ -527,6 +555,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 空泛的不断学习成长
 - 只有终点，没有阶段
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. In three years, I want to grow into a designer who's strong at …
+2. First, why …; second, my current foundation is … and the gap I want to close is …
+3. Over the past year I've already started …, for example … I remember the retro where the whiteboard was full of …, I paused with the marker in hand, and felt steadier …
+4. This role gives me a chance to …, and I can bring … to the team.
+
 #### 第 6 题　你认为自己最突出的优势是什么？它如何在项目中产生价值？
 
 **推荐框架：** PREP（题目问你的优势和价值，需先亮观点再举证）　**建议时长：** 90 秒
@@ -545,6 +580,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只说形容词，没有项目佐证
 - 优势与岗位需求对不上
 - 只说优势，没说产生的价值
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. My strongest skill is …, and it helps me solve … kinds of problems.
+2. First, it's uncommon because …; second, it shapes … for users, the business, or the team.
+3. For example, on …, when …, I used it to …, and the result was … On the call, the other person paused for a few seconds, I could hear hesitation in their tone, felt tense, but first …
+4. So in …, I can bring … to this role.
 
 #### 第 7 题　说一个你做得不够好的项目或决定；后来你怎样改进？
 
@@ -566,6 +608,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只讲教训口号，没有改进动作
 - 讲得过度自责，没有向前
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. At the time, … and the hardest part was …; I believed …, but later realized I should have …
+2. I had two options: … or …; I chose … because …, and gave up …
+3. I first … because …; at the time I saw … / someone said '…'. After launch, I read the feedback about … on my screen, my face felt hot, and I felt uneasy about …
+4. The result was …, but the cost was …
+5. That taught me …; next time I'll …; ultimately, what I hold onto is …
+
 #### 第 8 题　当工作节奏快、需求频繁变化时，你如何管理压力和优先级？
 
 **推荐框架：** RANGE（题目问通常怎么应对，且有多种情形要先分类）　**建议时长：** 90 秒
@@ -585,6 +635,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 把管理压力讲成加班硬扛
 - 不说放弃了什么，优先级就不成立
 - 抛出钩子却没准备其他情形
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. My approach is to first …, then …, because …
+2. I've seen a few situations: … , … , and …
+3. Let me focus on the first one: back then …, I …, because …, and the result was … That week notifications kept pinging, sticky notes of … covered my desk, I took a deep breath, felt unsure, but …
+4. In every case, what I hold onto is …
+5. The other situations play out differently, so if you're interested, I can walk you through …
 
 ### 10.2 设计负责人 / 资深设计师：项目深挖与专业判断（9–20）
 
@@ -608,6 +666,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只讲结果，没讲判断和取舍
 - 背景铺得太长，压缩了行动
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. The goal was …; the hardest part was …; so I realized we had to …
+2. I had two paths: … or …; I chose … because …, and gave up …
+3. I first … because …; at the time users or teammates said '…'. I remember first walking into … with the sound of … in my ears, watching them …, and my heart skipped …
+4. The result was …; I personally owned …, and the cost was …
+5. This project taught me …; ultimately, what I hold onto is …
+
 #### 第 10 题　在这个项目里，最初的问题是如何定义的？你如何确认它值得解决？
 
 **推荐框架：** PREP（题目问怎么定义问题、确认价值，是方法与判断题）　**建议时长：** 90 秒
@@ -626,6 +692,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 把需求描述当成问题定义
 - 只讲用户痛点，忽略业务价值
 - 案例里看不出问题是如何被重新定义的
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. My approach is to turn … into a testable problem statement, then check whether it's worth solving.
+2. First, …; second, …
+3. On the … project, it started as …; I reframed it as …, and confirmed the value with … I stared at the dashboard of …, the line for … made me freeze for a few seconds, and my stomach sank …
+4. So I'd start with …, then …, which helps the team …
 
 #### 第 11 题　你做了哪些用户研究？研究结论如何真正改变了设计决策？
 
@@ -647,6 +720,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 把研究说成只有访谈一种
 - 夸大样本或效果，被追问露馅
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I start with the question I need answered, then pick the method, because research should … a decision.
+2. I've done three kinds: … to understand the situation, … to test solutions, and … to measure scale.
+3. The most relevant one here was …; I noticed … and changed … to … Watching the recording, I saw users pause at … again and again, and I felt a bit unsure.
+4. Whatever the method, I insist that findings turn into a testable change in …
+5. Happy to go deeper on how I handled … if that's useful.
+
 #### 第 12 题　当用户需求、业务目标和技术成本冲突时，你如何做取舍？
 
 **推荐框架：** PREP（问「如何做取舍」，是判断与立场，用 PREP）　**建议时长：** 90 秒
@@ -665,6 +746,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只说沟通很重要，没有取舍标准
 - 案例里看不出放弃了什么
 - 把研发或业务描述成对立方
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. My principle is to protect … first, then look for the best solution within … constraints.
+2. Two reasons: first, …; second, …
+3. On a project about …, users wanted …, the business wanted …, engineering estimated …, so I … In the review, when someone said …, the room went quiet for a few seconds and my palms got sweaty.
+4. For me, a trade-off is really about turning … into …, which is what I'd bring to this role.
 
 #### 第 13 题　请讲一次你推翻自己初始设计方案的经历，是什么证据让你改变了判断？
 
@@ -686,6 +774,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 把原方案说得很差，显得缺乏判断
 - 没有讲放弃的代价
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. At the time I was working on …, the hard part was …, and I realized I had to …
+2. I had two paths: … or …; I chose …, because …, and gave up …
+3. First I …, because …; users said …, so I changed … to … I stared at the test recording where … frowned, and my stomach dropped as I became less sure.
+4. The result was …, and the cost was …
+5. Now I treat a design as …, and when I see …, I …
+
 #### 第 14 题　你如何为复杂流程建立信息架构和任务流？
 
 **推荐框架：** RANGE（复杂流程类型不一，需先分类再挑一类讲透）　**建议时长：** 90 秒
@@ -706,6 +802,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只讲主路径，忽略异常与边界
 - 结构讲完没有验证过程
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I start by …, then …, because complexity has to be absorbed by structure.
+2. Complex flows are roughly of three types: …, …, and …
+3. I'll talk about …; the difficulty was …, so I used …, and in the end … I covered the whiteboard with … sticky notes, stepped back to look at the mess, and felt a prickle of dread.
+4. Whatever the type, what I hold onto is that users always know …
+5. On …, I have some thoughts too, and I'm happy to expand.
+
 #### 第 15 题　你怎样区分“用户说想要的”与“用户真正需要的”？
 
 **推荐框架：** PREP（问「怎样区分」，是观点加方法论，用 PREP）　**建议时长：** 90 秒
@@ -724,6 +828,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只讲理论，缺一个追问场景
 - 没有说明如何验证判断
 - 把用户的话完全忽略
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I think what users say is often …, while the real need sits in …
+2. I look at it two ways: first, …; second, …
+3. Once a user asked for …, so I asked …, found the real problem was …, and then … In the interview, when … paused mid-sentence and their tone softened, something clicked for me.
+4. So I treat … as a clue and go looking for …, which is what this role needs.
 
 #### 第 16 题　面对模糊需求，你通常从哪里开始推进？
 
@@ -745,6 +856,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 把模糊归咎于需求方
 - 没有说明如何判断已足够清晰
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I usually start by …, because the root of the vagueness is usually …
+2. Vagueness comes in three forms: …, …, and …, and each has a different starting point.
+3. The most common is …; I asked …, and we eventually … That day I was scrolling through … scattered chats and docs, with piles of loose ends, and felt a little lost.
+4. Whatever the kind, I insist on … first, then …
+5. If the requester is unsure too, I have an approach involving …, which we can discuss.
+
 #### 第 17 题　你如何判断一个界面是清晰、易用且有层级的？
 
 **推荐框架：** PREP（问「如何判断」，是标准与观点，用 PREP）　**建议时长：** 90 秒
@@ -763,6 +882,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只靠自己感觉，不谈验证
 - 编造具体数字
 - 把层级仅当作字号大小
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. My standard is whether users can …, not whether it …
+2. I look from two angles: first, …; second, …
+3. For example, on …, I noticed …, adjusted …, then used … to verify it. I squinted at the … screen and my eyes kept wandering with no clear starting point, which felt frustrating.
+4. So I combine … and … to judge it, so the interface …
 
 #### 第 18 题　讲一个你用数据衡量设计效果的案例：指标是什么、如何归因、结果如何？
 
@@ -784,6 +910,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 编造数据，被追问无法自圆其说
 - 不承认局限和外部影响
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. At that time …, the hard part was …, and I realized I needed …
+2. I had two options: … or …; I chose …, because …, and set aside …
+3. I used … as the metric and attributed the change through …, because … When the … line on the dashboard finally turned upward, I stared at the screen and felt relief wash over me.
+4. The result was …; the limitation was …, and I gave up …
+5. It taught me that measurement has to be … before the design starts.
+
 #### 第 19 题　当可用性测试或线上数据不支持你的方案时，你会怎么做？
 
 **推荐框架：** PREP（问「你会怎么做」，是态度与处理方式，用 PREP）　**建议时长：** 90 秒
@@ -803,6 +937,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 没有诊断过程，直接改设计
 - 案例里没有说明最终决定
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I first …, and only then decide whether to …
+2. Two reasons: first, I check whether the evidence is reliable …; second, I pinpoint …
+3. Once, the data on … showed …, so I checked …, found …, and then … Seeing the … number on the dashboard not move at all, I sat staring at it, feeling a little deflated.
+4. So I let … speak, while keeping my judgment about …, which means …
+
 #### 第 20 题　你如何把一个一次性的设计方案沉淀为组件、规范或设计系统？
 
 **推荐框架：** PREP（问「你如何把……沉淀」，是方法与观点，用 PREP）　**建议时长：** 90 秒
@@ -821,6 +962,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 忽略推动落地与研发协作
 - 过度追求一次做全
 - 没有维护与版本更新的思路
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I only systematize when … repeats, so I first …, then …
+2. Two reasons: first, …; second, premature abstraction adds maintenance cost, so it needs … and usage notes.
+3. I noticed … kept repeating, so I turned … into …, promoted it through …, and saw … Scrolling through … nearly identical layers on screen, my hand kept sliding, and I felt a flicker of irritation.
+4. So I treat … as …, keep …, and that's the long-term impact I want here.
 
 ### 10.3 产品经理：业务理解、策略与协作（21–29）
 
@@ -843,6 +991,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 不追问目标口径就开工
 - 只追转化，不提对体验的影响
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I'd start by defining what 'conversion' means here, before deciding what to design, because …
+2. Two reasons: first, it's unclear which step … refers to; second, drop-off reasons may differ, like …
+3. On a … project, I looked at … data and noticed …, then confirmed the cause through …, and finally … I remember the funnel chart showing a sharp drop at …, and I stared at it, feeling a bit uneasy.
+4. So with a goal like this, I first … and then …, which is how I approach … work
+
 #### 第 22 题　你如何理解这个产品当前最关键的用户价值和商业目标？
 
 **推荐框架：** PREP（问「你怎么理解」，是观点判断，用 PREP）　**建议时长：** 90 秒
@@ -861,6 +1016,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只夸产品，不给判断
 - 把用户价值和商业目标说成对立
 - 没做功课就编造公司数据
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I think the key thing for this product right now is …, which ties to the business goal of …
+2. Two reasons: the product seems to be at the … stage, and users care most about …
+3. I've used … myself and noticed …, which suggests … I was on the subway, walking through … on my phone, when my thumb paused at … and I felt puzzled.
+4. So I think design can help with …, and I'd love to hear how your team sees it
 
 #### 第 23 题　请讲一次你主动发现机会、而不是接到需求后才开始设计的经历。
 
@@ -882,6 +1044,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 编造夸大的成果数字
 - 忽略代价，故事显得太顺
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I was working on …, and the tricky part was nobody had asked for …, so I decided to …
+2. I had two options: … or …. I chose …, because …, and let go of …
+3. I started by …, because …, and I still remember a user saying, '…'. I remember a user in an interview hovering over … with a hesitant finger, and I felt a spark of curiosity.
+4. The result was …, and the cost was that I …
+5. Since then, I believe opportunities in … often hide in …
+
 #### 第 24 题　当你不同意 PM 的需求优先级或方案时，你如何表达并推动决策？
 
 **推荐框架：** RANGE（分歧有多种情形，需先分类再讲透，用 RANGE）　**建议时长：** 90 秒
@@ -902,6 +1072,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 用“最后听PM的”回避决策
 - 贬低PM或公司
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. My approach is to align on the goal first, then bring evidence, because …
+2. Disagreements usually fall into three types: first, … priorities; second, … the solution; third, …
+3. Take the … type: the hard part was …, so I …, and the outcome was … The meeting room went quiet for a few seconds, I could hear … typing, my palms were damp, but I spoke up.
+4. Whichever type it is, what I hold on to is …
+5. If you're interested, I can share the toughest time I had to persuade … on …
+
 #### 第 25 题　你如何将研究洞察转化成可执行、可验证的产品假设？
 
 **推荐框架：** PREP（问「如何转化」，是方法与判断，用 PREP）　**建议时长：** 90 秒
@@ -920,6 +1098,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 假设没有可验证指标
 - 一个洞察堆出很多假设
 - 编造实验数据
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. When I turn an insight into a hypothesis, I spell out … (who, context, expected change, how to test), because …
+2. Two reasons: it should be actionable, meaning … maps to a design move; and testable, meaning … can be measured
+3. On a … project, we found …, so we hypothesized …, tested it with …, and the result was … While replaying the recording, I saw the user swiping back and forth at …, my stomach dropped, and I sensed a lead.
+4. So I turn research into …, which is what I'd like to do in this … role
 
 #### 第 26 题　你会如何设计并评估一个新功能从 0 到 1 的 MVP？
 
@@ -940,6 +1125,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 范围砍得没有理由
 - 忽略基础可用性和信任底线
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. To me, an MVP is the cheapest way to test one core assumption: …
+2. Two reasons: scope should follow the core value, like …, and success criteria need to be set before launch, like …
+3. On …, we kept only …, measured it with …, and found … On launch day I kept refreshing the … dashboard, and when the … number finally moved, I exhaled with relief.
+4. So my MVP approach is …, and I think it fits this … role well
+
 #### 第 27 题　面对短期转化目标与长期用户体验，你会如何选择？
 
 **推荐框架：** PREP（问「你会如何选择」，是取舍观点，用 PREP）　**建议时长：** 90 秒
@@ -958,6 +1150,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 不承认短期目标的合理性
 - 没有指标护栏，只谈感觉
 - 把暗黑模式当成可选项
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I'd choose …, because short-term conversion shouldn't come at the expense of …
+2. Two reasons: long-term experience drives …, and I can set … as a guardrail metric
+3. On a … project, the business wanted …, so I proposed …, and the result was … Halfway through the discussion the other side went quiet, and looking at the … slide on the table, I felt torn.
+4. So I try to protect both … and …, and that's how I'd work in this role
 
 #### 第 28 题　你如何参与需求评审，避免团队做出“看似合理但不解决问题”的功能？
 
@@ -979,6 +1178,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 没有具体追问的话术
 - 编造“救场”成果
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. In reviews, I first ask … , because …
+2. Requests usually come from three places: first, …; second, …; third, …
+3. Take the … type: the hard part was …, so I ask …, and the result was … What stays with me is the … slide on the projector, everyone nodding along, and a quiet doubt in my chest.
+4. Whichever the source, I always insist that …
+5. I once changed the direction of a review on …, and I'm happy to walk you through it
+
 #### 第 29 题　如果上线后核心指标没有改善，你会优先排查哪些可能性？
 
 **推荐框架：** RANGE（可能原因不止一种，需先分类排查，用 RANGE）　**建议时长：** 90 秒
@@ -998,6 +1205,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 一上来就说“是数据的问题”
 - 只列清单，没有排查顺序
 - 没有提如何验证猜测
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I'd first confirm …, then work outward from the nearest cause, because …
+2. I see three possibilities: first, … data or definitions; second, … the usage path; third, … the hypothesis itself
+3. Take the … case: I'd check …, validate it with …, and then … I stared at the … curve as it stayed flat, the office quiet except for …, my chest tightened, then I calmed down.
+4. Whichever it is, I stick to evidence before conclusions, and I feed … back into …
+5. I've faced a situation where …, and I can go into more detail if you like
 
 ### 10.4 工程师 / 技术负责人：可实现性与研发协作（30–36）
 
@@ -1020,6 +1235,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只谈沟通，没有具体阶段
 - 忽略非功能需求，如性能
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I'd bring engineers in as early as the … stage, because …
+2. Two reasons: early on they can judge … and cost, and co-creating leads to …
+3. On a … project, I showed engineers … early, and one pointed out …, so we … He pointed at … on the screen and frowned, and I still remember his words, and suddenly I felt reassured.
+4. So I make a habit of …, which helps me … in this role
+
 #### 第 31 题　请讲一次因技术限制而改方案的经历：你如何找到体验与成本之间的平衡？
 
 **推荐框架：** SPARK（只讲一次经历，重点在判断与取舍）　**建议时长：** 120 秒
@@ -1040,6 +1262,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 不讲放弃了什么，像没有取舍
 - 只讲结果，不讲平衡依据
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I was working on …, and a technical limit around … made it tricky, so I realized I had to … first.
+2. I had two options: … or …. I chose …, because …, and I let go of ….
+3. I started by …, because …. For example, I told the engineer, '…'. I remember the … on my screen, and the engineer paused when saying …; I felt unsure, but I still ….
+4. In the end, we …. The tradeoff was …, and I accepted it because ….
+5. What I took from it: with a technical limit, I first …, and then ….
+
 #### 第 32 题　你如何向工程师交付设计，确保实现效果和设计意图一致？
 
 **推荐框架：** PREP（问做法与判断，先亮方法再举例）　**建议时长：** 90 秒
@@ -1059,6 +1289,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 案例没有落到最终还原度
 - 把走样全归因于工程师
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. My approach is that a handoff is more than a file; I hand over …, not just screens.
+2. There are two reasons. First, … makes my intent readable. Second, … surfaces gaps early.
+3. For example, on …, the … details were easy to lose, so I …, and the result was …. During the review I stared at that frame of …, spotted a small spacing gap, felt a jolt, and then ….
+4. So for me, handoff means …, and in this role I would … with the engineers.
+
 #### 第 33 题　当研发认为方案过于复杂、排期不可接受时，你会如何拆分或降级？
 
 **推荐框架：** PREP（问“你会怎么做”，先亮拆分原则）　**建议时长：** 90 秒
@@ -1077,6 +1314,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 不讲降级后的体验底线
 - 把研发的排期担忧当成借口
 - 没有说明后续如何补齐
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I would first …, protect the core user task, and phase the rest by value and cost.
+2. Two reasons. First, I rank user value by … . Second, engineering cost can be split, not just cut, by ….
+3. For example, on …, engineering estimated …, so I split it into …, with phase one covering …, and later …. The whiteboard was full of …, the room went quiet for a few seconds, my palms felt damp, and then ….
+4. So to me, scoping down means …, not shrinking; in this role I would … together with engineering.
 
 #### 第 34 题　你对前端、平台能力、数据埋点或无障碍分别了解多少？这些知识如何帮助你设计？
 
@@ -1098,6 +1342,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 四类平均用力，没有讲透一类
 - 不提无障碍或埋点的实际用法
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I know enough to use it well in my design, because …, and to talk with the people who build it.
+2. On front-end, I …; on platform capabilities, …; on analytics, …; and on accessibility, ….
+3. The one most relevant here is …. For example, when …, I …, and as a result …. I still remember the … line in the debug panel, suddenly understanding …, and feeling much more grounded.
+4. Whichever area it is, what I hold onto is making design … , measurable, and usable by everyone.
+5. I also have some hands-on experience with …, and I'm happy to go deeper if that's useful.
+
 #### 第 35 题　设计走查时，你最关注哪些问题？发现偏差后如何推进修复？
 
 **推荐框架：** RANGE（关注点分几类，先分类再挑一类讲透）　**建议时长：** 90 秒
@@ -1118,6 +1370,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 把走查变成挑错，气氛对立
 - 没有讲怎么跟进到修复完成
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I start by sorting issues by how much they affect users, because ….
+2. Roughly three groups: … issues, … issues, and … issues.
+3. The most critical is …. I spot it by …, talk to the engineer by …, for example …. I put … side by side and zoomed in, that detail at … looked wrong right away, my stomach dropped, then ….
+4. Whichever group, my goal is to restore the design intent and keep the conversation blame-free, by ….
+5. As for how I prioritize the fixes, I can walk you through ….
+
 #### 第 36 题　讲一次你与工程师发生分歧的经历：分歧是什么，最终如何达成一致？
 
 **推荐框架：** SPARK（讲一次分歧经历，重点在过程与判断）　**建议时长：** 120 秒
@@ -1137,6 +1397,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只说“沟通后就好了”，没有细节
 - 结果全是对方让步
 - 没有讲清分歧本质是什么
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I was working on …, and we disagreed about …. The hard part was …, so I realized I needed to ….
+2. I could … or …. I chose …, because …, and I gave up ….
+3. I first …, because …. Then I used … to show it, and I said, '…'. We were standing by … desk, their tone was …, I paused, took a breath, and then said ….
+4. In the end, we …. I gave up …, and in return we got ….
+5. What I learned: when we disagree, I first …, then ….
 
 ### 10.5 跨职能伙伴：研究、运营、商业与客户成功（37–41）
 
@@ -1159,6 +1427,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 把研究员当成外包服务方
 - 忽略团队一起参与解读
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. My approach is to involve research from the start and aim for … as the end point.
+2. Two reasons. First, aligning on … early keeps research focused. Second, findings only matter once turned into ….
+3. For example, on …, the researcher and I … together, and as a result … changed. I sat outside the observation room, heard that sigh when the user said …, and sat up straight.
+4. So I would …, so research truly …, and in this role I would work with researchers by ….
+
 #### 第 38 题　当运营希望增加活动曝光、弹窗或引导，而你担心打扰用户时，你会怎么处理？
 
 **推荐框架：** PREP（问“你会怎么处理”，先亮立场再举例）　**建议时长：** 90 秒
@@ -1177,6 +1452,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 没有数据或实验支撑担忧
 - 不给替代方案
 - 忽略频控与可关闭等具体设计
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I would first understand the goal behind …, then look with the team for a … way to reach it.
+2. Two reasons. First, the operations goal is real, because …. Second, too many interruptions hurt … and trust.
+3. For example, for a … campaign, operations wanted …; I suggested …, tested it with …, and the result was …. When the … line on the dashboard dipped, I felt uneasy, but seeing … brought some relief.
+4. So I would make exposure and experience work together, by …; in this role I would … with operations.
 
 #### 第 39 题　你如何与数据分析师定义漏斗、实验和成功指标？
 
@@ -1198,6 +1480,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 把分析师当成取数工具
 - 忽略实验样本与周期的限制
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I start from the user goal, because a metric should …, and I define it together with the analyst.
+2. Three parts: for the funnel, …; for experiments, …; for metrics, ….
+3. The most important is …. For example, when …, I worked with the analyst to …, and we …. We gathered around that funnel chart of …, saw the drop at …, my chest tightened, and then ….
+4. Whichever part, what I hold onto is making design judgment … by evidence.
+5. If metrics conflict, I have thoughts on …, and I can go deeper on that or on experiment design.
+
 #### 第 40 题　如果销售或客户成功团队反馈“大客户需要一个定制功能”，你如何判断是否应该做？
 
 **推荐框架：** PREP（问“你如何判断”，先亮标准再举例）　**建议时长：** 90 秒
@@ -1217,6 +1507,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 没有考虑长期维护与产品一致性
 - 不给客户替代方案
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I would first look at …, to judge whether it's a one-off … or a shared ….
+2. Two reasons. First, is the problem common, and does it fit …? Second, consider maintenance and opportunity cost of ….
+3. For example, when a client asked for …, I first …, and in the end we …. On the call, the salesperson spoke quickly about …, I took notes, felt a bit torn, but still ….
+4. So my criteria matter more than the answer; in this role I would work with sales and customer success by ….
+
 #### 第 41 题　你如何向非设计背景的利益相关者解释设计价值并争取支持？
 
 **推荐框架：** PREP（问“怎么解释、怎么争取”，是立场与方法）　**建议时长：** 90 秒
@@ -1234,6 +1531,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 满口设计术语，对方听不懂
 - 只说“设计很重要”，没有对方的收益
 - 把对方当成不懂设计的人，居高临下
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I explain design value in terms of what you care about, like … and …, not design jargon.
+2. Two reasons. First, I align with your metric, …. Second, I make the value visible with evidence like … .
+3. For example, on …, the stakeholder cared about …, so I showed … instead, and the result was … . When I presented that … slide, I saw a slight frown and a pause, and I felt uneasy.
+4. So I start with … and then …, which lets me turn design from execution into co-creation in this role.
 
 ### 10.6 管理者 / 终面：影响力、领导力与组织视角（42–45）
 
@@ -1256,6 +1560,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只讲结果，不讲你用了什么影响手段
 - 抱怨对方不配合
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. Without formal authority, I usually drive work through … because … keeps everyone moving in the same direction.
+2. I see three common situations: one, goals align but resources are short; two, goals differ; three, … .
+3. Let me take the … case. We were stuck on …, so I …, and the outcome was … . When the line went quiet for a few seconds after …, I gripped my pen and felt tense, but kept talking.
+4. In every situation, I stay committed to making sure each person can see … in it for them.
+5. If it helps, I can go deeper into how I handle disagreement when … .
+
 #### 第 43 题　请讲一次你处理多个重要项目冲突的经历；你的排序依据是什么？
 
 **推荐框架：** SPARK（要讲一次具体经历，重点在排序判断）　**建议时长：** 120 秒
@@ -1274,6 +1586,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 只说“我很能抗压”，没有排序依据
 - 排序只凭主观，没提沟通
 - 把被延后的一方说成不重要
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. At the time, … projects were running together, and the hardest part was …; I realized I first needed … .
+2. I had two options: … or …. I chose … because …, and gave up … .
+3. I ranked them by …, because …, and told … that … . That afternoon, two messages popped up on my screen almost together, and staring at my … calendar, my chest felt tight.
+4. The result was …, and the cost was … ; to make up for it, I … .
+5. That taught me the core of prioritizing is … .
 
 #### 第 44 题　你如何帮助初级设计师成长，或如何接受并运用反馈？
 
@@ -1294,6 +1614,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 说“我很开放”，没有具体动作
 - 把初级设计师的不足当作负面谈资
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. To me, growth comes from feedback that is specific, timely and actionable, in both directions, because … .
+2. I usually see three situations: one, onboarding newcomers; two, giving feedback and following up; three, … .
+3. Take the … case. At the time, …; I did …, and as a result … . I remember the look on his face as he pushed the … draft over, the office was quiet, and I felt relieved.
+4. Whichever direction it goes, I insist on turning feedback into a concrete next step, such as … .
+5. On …, I have another example I can expand on.
+
 #### 第 45 题　如果入职后前 90 天由你负责规划，你会如何了解业务、建立关系并创造价值？
 
 **推荐框架：** PREP（问“你会怎么规划”，是判断加方法）　**建议时长：** 90 秒
@@ -1311,6 +1639,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 计划只有“学习”，没有交付价值
 - 一上来就要改造现有设计
 - 没有对应这家公司的业务重点
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. My plan is to first …, then …, and finally deliver … .
+2. Two reasons. First, understanding … lets me judge priorities. Second, building relationships gets me … and earns trust.
+3. For example, when I joined … last time, in the first … weeks I …, then …, and … . In week one, sitting next to … and listening, all the unfamiliar terms made me nervous, but I gradually felt steady.
+4. So in this role, by day 30 I'd …, by day 60 …, and by day 90 … .
 
 ### 10.7 AI 相关：产品机会、体验设计与责任边界（46–50）
 
@@ -1332,6 +1667,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 没有说清哪些环节保留判断
 - 泛谈技术，没有具体工作流
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I think AI will speed up …, but … will still be the designer's responsibility.
+2. Two reasons. First, AI is good at …, but lacks … context. Second, explainability, privacy and accountability need … .
+3. For example, I used AI for … in …; I stepped in at … to judge …, and … . Staring at the … AI had just produced, something felt off, and a small chill made me decide to judge it myself.
+4. So I would use AI for …, and keep … judgment for myself.
+
 #### 第 47 题　如果要为现有产品加入 AI 功能，你会怎样判断它是在解决真实问题，而不是为了“有 AI”？
 
 **推荐框架：** PREP（问怎么判断，是立场加论证）　**建议时长：** 90 秒
@@ -1349,6 +1691,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 直接列举 AI 功能创意
 - 没有对照方案，无法证明必须用 AI
 - 只谈技术可行，不提错误与隐私风险
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I would first ask whether the problem with … really exists, and only then whether AI is the right fix.
+2. Two reasons. First, I validate the pain point with … . Second, I compare with a non-AI option, measured by … .
+3. For example, in …, we found …, compared … with …, measured by …, and the result was … . Replaying the user's recording, I saw him frown at … with his finger frozen mid-air, and suddenly felt clear.
+4. So I judge it with …, and that lets me … in this role.
 
 #### 第 48 题　请设计一个 AI 助手的关键交互：用户如何输入意图、理解生成结果、修改结果并恢复控制权？
 
@@ -1370,6 +1719,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 忽略撤销、版本与错误恢复
 - 不提隐私与可解释性
 
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. My principle is to design … so the user can always … .
+2. There are three key moments: one, stating intent; two, understanding the result; three, … and regaining control.
+3. I'd focus on …, where users tend to …; I would …, and evaluate it with … . Imagining the user staring at that … output, cursor hovering in the input box, I feel a bit anxious for them.
+4. At every step, I insist that users can understand, edit, and exit … at any time.
+5. On …, I also thought about … , and I can expand on that.
+
 #### 第 49 题　当 AI 输出不准确、有偏见或不确定时，界面该如何传达可信度、风险和下一步行动？
 
 **推荐框架：** PREP（问界面该怎么做，是立场加论证）　**建议时长：** 90 秒
@@ -1388,6 +1745,13 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 用百分比展示置信度，用户看不懂
 - 不提偏见及高风险场景
 - 没有提供纠错或求助路径
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I believe the interface should …, so users know … and what they can do next.
+2. Two reasons. First, it calibrates trust and avoids over-reliance. Second, higher risk needs … and human confirmation.
+3. For example, in …, I used … to show it, so the user could …, and the result was … . In testing, I heard the user mutter … and saw him hover over that … without clicking, and my stomach dropped.
+4. So I would …, so users can … when … .
 
 #### 第 50 题　你如何设计 AI 产品的反馈闭环：收集哪些反馈、如何保护隐私、怎样用反馈提升体验？
 
@@ -1408,6 +1772,14 @@ PREP = **Point → Reason → Example → Point**，「观点先行、理由支�
 - 默认收集用户内容，没有同意
 - 不区分行为数据与内容数据
 - 没有评估指标
+
+**English prompts**（界面切到英文时，快速笔记预填这几行；第 3 行已并入五感加成）：
+
+1. I design feedback loops to be … and purposeful, because user trust depends on … .
+2. I group feedback into three types: one, explicit signals; two, implicit behavior; three, … .
+3. I'll focus on …. I collect …, protect privacy with …, and then turn it into … . Reading that … comment a user left, the resignation between the lines softened me, and I felt more careful.
+4. Whichever type, I insist users are informed, can opt out, and can … .
+5. On bias in … feedback, I have some thoughts I can share.
 
 
 ---
