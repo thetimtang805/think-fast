@@ -1601,7 +1601,6 @@
           <div class="panel-title" id="panelTitle">整理思路</div>
           <div class="panel-title-right">
             <span class="selected-count" id="selectedCount">0 / 10</span>
-            <button id="clearSelectedBtn" class="clear-link" type="button" hidden>清除</button>
           </div>
         </div>
         <div class="select-wrap" id="expertSelectWrap">
@@ -2812,7 +2811,6 @@
   var emptyStateEl = document.getElementById("emptyState");
   var selectedListEl = document.getElementById("selectedList");
   var selectedCountEl = document.getElementById("selectedCount");
-  var clearSelectedBtn = document.getElementById("clearSelectedBtn");
   var expertSelectWrapEl = document.getElementById("expertSelectWrap");
   var expertSelectBtnEl = document.getElementById("expertSelectBtn");
   var expertSelectLabelEl = document.getElementById("expertSelectLabel");
@@ -3505,7 +3503,6 @@
 
   function updateSelectedListMeta(){
     selectedCountEl.textContent = state.selected.length + " / " + MAX_TOTAL_SELECTED;
-    clearSelectedBtn.hidden = state.selected.length === 0;
     emptyStateEl.hidden = state.selected.length !== 0;
     selectedListEl.hidden = state.selected.length === 0;
   }
@@ -3691,7 +3688,6 @@
     expertSelect.setValue(val);
   }
 
-  clearSelectedBtn.addEventListener("click", clearSelected);
 
   function buildSelectedItemEl(item, index, container){
     var meta = CARD_BY_ID[item.cardId];
@@ -3743,7 +3739,6 @@
 
   function renderSelectedList(){
     selectedCountEl.textContent = state.selected.length + " / " + MAX_TOTAL_SELECTED;
-    clearSelectedBtn.hidden = state.selected.length === 0;
     if (state.selected.length === 0){
       emptyStateEl.hidden = false;
       selectedListEl.hidden = true;
