@@ -1581,8 +1581,8 @@
     <div class="col-left">
       <div class="panel" id="cardWall">
         <div class="cards-head">
-          <span class="cards-head-title">思维卡片库</span>
-          <button type="button" id="cardsCollapseBtn" class="cards-collapse-btn" aria-expanded="true" aria-controls="cardWallList" aria-label="收起思维卡片库" title="收起思维卡片库">
+          <span class="cards-head-title">选择思维卡片</span>
+          <button type="button" id="cardsCollapseBtn" class="cards-collapse-btn" aria-expanded="true" aria-controls="cardWallList" aria-label="收起选择思维卡片" title="收起选择思维卡片">
             <svg class="cards-icon-side" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
             <svg class="cards-icon-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
           </button>
@@ -1598,7 +1598,7 @@
       <!-- 选卡 + 设置倒计时 面板 -->
       <div class="panel" id="selectionPanel">
         <div class="panel-title-row">
-          <div class="panel-title" id="panelTitle">选择思维卡片</div>
+          <div class="panel-title" id="panelTitle">整理思路</div>
           <div class="panel-title-right">
             <span class="selected-count" id="selectedCount">0 / 10</span>
             <button id="clearSelectedBtn" class="clear-link" type="button" hidden>清除</button>
@@ -3454,7 +3454,7 @@
       }, 320);
     }
     layoutEl.classList.toggle("cards-collapsed", collapsed);
-    var label = collapsed ? "展开思维卡片库" : "收起思维卡片库";
+    var label = collapsed ? "展开选择思维卡片" : "收起选择思维卡片";
     cardsCollapseBtnEl.setAttribute("aria-expanded", collapsed ? "false" : "true");
     cardsCollapseBtnEl.setAttribute("aria-label", label);
     cardsCollapseBtnEl.title = label;
