@@ -362,6 +362,13 @@
   }
   @media (hover:hover) and (pointer:fine){ .cards-collapse-btn:hover{ background:var(--border-soft); } }
   .cards-collapse-btn:active{ transform:scale(0.96); }
+  /* 卡片库在左侧时用侧栏图标；窄屏堆到下方时改用箭头：展开朝上（收起），收起朝下（展开） */
+  .cards-icon-arrow{ display:none; transition:transform 200ms ease-out; }
+  @media (max-width: 980px){
+    .cards-icon-side{ display:none; }
+    .cards-icon-arrow{ display:block; }
+    .layout.cards-collapsed .cards-icon-arrow{ transform:rotate(180deg); }
+  }
   .cards-collapse-btn:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
   .app.practice-mode .cards-head{ display:none; }
   .layout.cards-anim #cardWall{ overflow:hidden; }
@@ -1576,7 +1583,8 @@
         <div class="cards-head">
           <span class="cards-head-title">思维卡片库</span>
           <button type="button" id="cardsCollapseBtn" class="cards-collapse-btn" aria-expanded="true" aria-controls="cardWallList" aria-label="收起思维卡片库" title="收起思维卡片库">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+            <svg class="cards-icon-side" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+            <svg class="cards-icon-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>
           </button>
         </div>
         <div id="cardWallList"></div>
