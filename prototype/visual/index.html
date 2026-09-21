@@ -952,6 +952,20 @@
     transition:height 120ms ease-out, border-color 150ms ease-out, box-shadow 150ms ease-out;
   }
   .quick-notes-input::placeholder{ color:var(--text-disabled); }
+  /* 文字超出输入框时，鼠标移进来（或聚焦）才显示纵向滚动条；平时隐藏，避免打扰 */
+  .quick-notes-input{
+    scrollbar-width:thin;
+    scrollbar-color:transparent transparent;
+  }
+  .quick-notes-input:hover,
+  .quick-notes-input:focus{ scrollbar-color:rgba(33,93,75,0.38) transparent; }
+  @supports not (scrollbar-color:auto){
+    .quick-notes-input::-webkit-scrollbar{ width:8px; }
+    .quick-notes-input::-webkit-scrollbar-track{ background:transparent; }
+    .quick-notes-input::-webkit-scrollbar-thumb{ background:transparent; border-radius:4px; }
+    .quick-notes-input:hover::-webkit-scrollbar-thumb,
+    .quick-notes-input:focus::-webkit-scrollbar-thumb{ background:rgba(33,93,75,0.38); }
+  }
   .quick-notes-input:focus-visible{ outline:2px solid var(--focus-ring); outline-offset:2px; }
 
   .divider{
